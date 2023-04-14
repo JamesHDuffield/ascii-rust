@@ -42,14 +42,11 @@ struct Engine {
 #[derive(Component)]
 struct MainCamera;
 
-#[derive(Component)]
-struct AnimateRotation;
-
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load("fonts/AnonymousPro-Regular.ttf");
     let text_style = TextStyle {
         font: font.clone(),
-        font_size: 20.0,
+        font_size: 40.0,
         color: colour::PLAYER,
     };
     // Spawn the Camera
@@ -63,11 +60,20 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         Text2dBundle {
             text: Text::from_section("o", text_style.clone()).with_alignment(TextAlignment::Center),
-            transform: Transform { translation: Vec3 { x: 100.0, y: 100.0, z: 0.0 }, scale: Vec3 { x: 1.0, y: 1.0, z: 1.0 }, ..default() },
+            transform: Transform { translation: Vec3 { x: 100.0, y: 100.0, z: 0.0 }, scale: Vec3 { x: 0.5, y: 0.5, z: 1.0 }, ..default() },
             ..default()
         },
         IsPlayer,
-        AnimateRotation,
+        Physics { acceleration: Vec2 { x: 10.0, y: 0.0 }, velocity: Vec2 { x: 0.0, y: 0.0 }, drag: 5.0 },
+        Engine { target: None, power: 15.0, speed: 0.0, max_speed: 50.0, depower_factor: 5.0 },
+    ));
+    // Spawn an enemy
+    commands.spawn((
+        Text2dBundle {
+            text: Text::from_section("w", text_style.clone()).with_alignment(TextAlignment::Center),
+            transform: Transform { translation: Vec3 { x: -100.0, y: -100.0, z: 0.0 }, scale: Vec3 { x: 0.5, y: 0.5, z: 1.0 }, ..default() },
+            ..default()
+        },
         Physics { acceleration: Vec2 { x: 10.0, y: 0.0 }, velocity: Vec2 { x: 0.0, y: 0.0 }, drag: 5.0 },
         Engine { target: None, power: 15.0, speed: 0.0, max_speed: 50.0, depower_factor: 5.0 },
     ));
