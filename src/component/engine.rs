@@ -8,3 +8,11 @@ pub struct Engine {
     pub max_speed: f32,
     pub depower_factor: f32
 }
+
+impl Engine {
+
+    pub fn new(power: f32, max_speed: f32) -> Engine {
+        Engine { target: None, power, speed: 0.0, max_speed, depower_factor: 5.0 }
+    }
+
+}

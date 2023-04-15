@@ -8,6 +8,11 @@ pub struct Physics {
 }
 
 impl Physics {
+
+    pub fn new(drag: f32) -> Physics {
+        Physics { acceleration: Vec2 { x: 10.0, y: 0.0 }, velocity: Vec2 { x: 0.0, y: 0.0 }, drag }
+    }
+
     pub fn add_force(&mut self, force: Vec2) -> () {
         self.acceleration += force;
     }

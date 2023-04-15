@@ -41,8 +41,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         BaseGlyphRotation { rotation: Quat::from_rotation_z(PI / 2.0) },
         IsPlayer,
-        Physics { acceleration: Vec2 { x: 10.0, y: 0.0 }, velocity: Vec2 { x: 0.0, y: 0.0 }, drag: 5.0 },
-        Engine { target: None, power: 15.0, speed: 0.0, max_speed: 50.0, depower_factor: 5.0 },
+        Physics::new(5.0),
+        Engine::new(15.0, 50.0),
     ));
     // Spawn an enemy
     commands.spawn((
@@ -51,7 +51,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             transform: Transform { translation: Vec3 { x: -100.0, y: -100.0, z: 0.0 }, scale: Vec3 { x: 0.5, y: 0.5, z: 1.0 }, ..default() },
             ..default()
         },
-        Physics { acceleration: Vec2 { x: 10.0, y: 0.0 }, velocity: Vec2 { x: 0.0, y: 0.0 }, drag: 5.0 },
-        Engine { target: None, power: 15.0, speed: 0.0, max_speed: 50.0, depower_factor: 5.0 },
+        Physics::new(5.0),
+        Engine::new(10.0, 40.0),
     ));
 }
