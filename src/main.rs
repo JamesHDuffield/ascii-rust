@@ -15,6 +15,7 @@ fn main() {
         .add_system(physics_system)
         .add_system(engine_system)
         .add_system(player_control)
+        .add_system(camera_follow)
         .run();
 }
 
