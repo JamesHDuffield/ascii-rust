@@ -1,9 +1,12 @@
 mod colour;
 mod math;
+mod component;
+mod system;
 
 use std::f32::consts::PI;
-
-use bevy::{prelude::*, core_pipeline::clear_color::ClearColorConfig, window::Window};
+use component::*;
+use system::*;
+use bevy::{prelude::*, core_pipeline::clear_color::ClearColorConfig};
 
 fn main() {
     App::new()
@@ -14,39 +17,6 @@ fn main() {
         .add_system(player_control)
         .run();
 }
-
-#[derive(Component)]
-struct IsPlayer;
-
-#[derive(Component)]
-struct BaseGlyphRotation {
-    rotation: Quat,
-}
-
-#[derive(Component)]
-struct Physics {
-    acceleration: Vec2,
-    velocity: Vec2,
-    pub drag: f32
-}
-
-impl Physics {
-    fn add_force(&mut self, force: Vec2) -> () {
-        self.acceleration += force;
-    }
-}
-
-#[derive(Component)]
-struct Engine {
-    pub target: Option<Vec2>,
-    power: f32,
-    speed: f32,
-    max_speed: f32,
-    depower_factor: f32
-}
-
-#[derive(Component)]
-struct MainCamera;
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load("fonts/AnonymousPro-Regular.ttf");
@@ -85,66 +55,3 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Engine { target: None, power: 15.0, speed: 0.0, max_speed: 50.0, depower_factor: 5.0 },
     ));
 }
-
-fn physics_system(
-    time: Res<Time>,
-    mut query: Query<(&mut Transform, &mut Physics, Option<&BaseGlyphRotation>), (With<Transform>, With<Physics>)>,
-) {
-    for (mut transform, mut physics, base_rotation) in &mut query {
-        // Not sure how to avoid cloning here
-        let current_acceleration = physics.acceleration.clone();
-        let drag = physics.drag.clone();
-        physics.velocity += current_acceleration;
-        transform.translation += physics.velocity.extend(0.0) * time.delta_seconds();
-        // TODO make acceleration ramp down
-        physics.acceleration = Vec2::ZERO;
-        physics.velocity *= 1.0 - (drag * time.delta_seconds());
-
-        // Face velocity
-        transform.rotation = math::quaternion_from_2d_vector(physics.velocity);
-
-        if let Some(base_rotation) = base_rotation {
-            transform.rotation *= base_rotation.rotation; // Multiplication is like combining rotations together
-        }
-    }
-}
-
-fn engine_system(
-    time: Res<Time>,
-    mut query: Query<(&Transform, &mut Physics, &mut Engine), (With<Transform>, With<Physics>, With<Engine>)>,
-) {
-    for (transform, mut physics, mut engine) in &mut query {
-        let current = transform.translation.truncate();
-        if let Some(target) = engine.target {
-            engine.speed += engine.power * time.delta_seconds();
-            if engine.speed > engine.max_speed { engine.speed = engine.max_speed; }
-            let to_target = (target - current).normalize() * engine.speed;
-            physics.add_force(to_target);
-        } else {
-            engine.speed -= engine.power * time.delta_seconds() * engine.depower_factor;
-            if engine.speed < 0.0 { engine.speed = 0.0 }
-        }
-    }
-}
-
-fn player_control(
-    mouse_button_input: Res<Input<MouseButton>>,
-    windows: Query<&Window>,
-    camera_q: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
-    mut query: Query<(&IsPlayer, &mut Engine), (With<IsPlayer>, With<Engine>)>,
-) {
-    for (_, mut engine) in &mut query {
-        if mouse_button_input.pressed(MouseButton::Left) {
-            // Calculate current position to mouse position
-            let (camera, camera_transform) = camera_q.single();
-            let window = windows.get_single().expect("no primary window");
-
-            engine.target = window.cursor_position()
-                .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
-                .map(|ray| ray.origin.truncate());
-        } else {
-            engine.target = None;
-        }
-    }
-}
-
