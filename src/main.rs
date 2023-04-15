@@ -1,6 +1,7 @@
-pub mod colour;
+mod colour;
+mod math;
 
-use std::{ops::{AddAssign}};
+use std::f32::consts::PI;
 
 use bevy::{prelude::*, core_pipeline::clear_color::ClearColorConfig, window::Window};
 
@@ -18,6 +19,11 @@ fn main() {
 struct IsPlayer;
 
 #[derive(Component)]
+struct BaseGlyphRotation {
+    rotation: Quat,
+}
+
+#[derive(Component)]
 struct Physics {
     acceleration: Vec2,
     velocity: Vec2,
@@ -26,7 +32,7 @@ struct Physics {
 
 impl Physics {
     fn add_force(&mut self, force: Vec2) -> () {
-        self.acceleration.add_assign(force)
+        self.acceleration += force;
     }
 }
 
@@ -59,10 +65,11 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Spawn the player
     commands.spawn((
         Text2dBundle {
-            text: Text::from_section("o", text_style.clone()).with_alignment(TextAlignment::Center),
+            text: Text::from_section("V", text_style.clone()).with_alignment(TextAlignment::Center),
             transform: Transform { translation: Vec3 { x: 100.0, y: 100.0, z: 0.0 }, scale: Vec3 { x: 0.5, y: 0.5, z: 1.0 }, ..default() },
             ..default()
         },
+        BaseGlyphRotation { rotation: Quat::from_rotation_z(PI / 2.0) },
         IsPlayer,
         Physics { acceleration: Vec2 { x: 10.0, y: 0.0 }, velocity: Vec2 { x: 0.0, y: 0.0 }, drag: 5.0 },
         Engine { target: None, power: 15.0, speed: 0.0, max_speed: 50.0, depower_factor: 5.0 },
@@ -81,9 +88,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 fn physics_system(
     time: Res<Time>,
-    mut query: Query<(&mut Transform, &mut Physics), (With<Transform>, With<Physics>)>,
+    mut query: Query<(&mut Transform, &mut Physics, Option<&BaseGlyphRotation>), (With<Transform>, With<Physics>)>,
 ) {
-    for (mut transform, mut physics) in &mut query {
+    for (mut transform, mut physics, base_rotation) in &mut query {
         // Not sure how to avoid cloning here
         let current_acceleration = physics.acceleration.clone();
         let drag = physics.drag.clone();
@@ -92,6 +99,13 @@ fn physics_system(
         // TODO make acceleration ramp down
         physics.acceleration = Vec2::ZERO;
         physics.velocity *= 1.0 - (drag * time.delta_seconds());
+
+        // Face velocity
+        transform.rotation = math::quaternion_from_2d_vector(physics.velocity);
+
+        if let Some(base_rotation) = base_rotation {
+            transform.rotation *= base_rotation.rotation; // Multiplication is like combining rotations together
+        }
     }
 }
 
