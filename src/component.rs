@@ -1,6 +1,8 @@
 mod physics;
 mod engine;
 mod health;
+mod turret;
+mod bullet;
 
 use bevy::prelude::*;
 
@@ -9,6 +11,8 @@ use bevy::prelude::*;
 pub use physics::*;
 pub use engine::*;
 pub use health::*;
+pub use turret::*;
+pub use bullet::*;
 
 // Simple components
 #[derive(Component)]

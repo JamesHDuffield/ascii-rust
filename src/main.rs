@@ -17,6 +17,8 @@ fn main() {
         .add_system(engine_system)
         .add_system(player_control)
         .add_system(camera_follow)
+        .add_system(turret_system)
+        .add_system(bullet_system)
         .run();
 }
 
@@ -44,9 +46,12 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         BaseGlyphRotation { rotation: Quat::from_rotation_z(PI / 2.0) },
         IsPlayer,
         Physics::new(5.0),
-        Engine::new(15.0, 50.0),
+        Engine::new(10.0, 20.0),
         Health::new(100, 100),
-    ));
+    )).with_children(|parent| {
+        parent.spawn(Turret::new(5.0, 200.0));
+    });
+
     // Spawn an enemy
     commands.spawn((
         Text2dBundle {
@@ -55,7 +60,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         Physics::new(5.0),
-        Engine::new(10.0, 40.0),
+        Engine::new(10.0, 10.0),
         Health::new(60, 20),
     ));
 

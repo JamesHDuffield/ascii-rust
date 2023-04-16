@@ -16,9 +16,9 @@ pub fn ui_system(
 ) {
     if let Ok((engine, health)) = player_query.get_single() {
         let displays = vec![
-            format!("{} {}", health.health, bar(health.health, health.max_health, 10)),
-            format!("{} {}", health.shield, bar(health.shield, health.max_shield, 10)),
-            format!("{} m/s", engine.speed.round()),
+            format!("Armor  {} {}", bar(health.health, health.max_health, 10), health.health),
+            format!("Shield {} {}", bar(health.shield, health.max_shield, 10), health.shield),
+            format!("Speed  {} m/s", engine.speed.round()),
         ];
 
         // Loop over children and update display values
