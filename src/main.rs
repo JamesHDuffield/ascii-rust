@@ -10,7 +10,7 @@ use bevy::{prelude::*, core_pipeline::clear_color::ClearColorConfig};
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(WindowPlugin { primary_window: Some(Window { title: String::from("Outer Shell"), ..Default::default() }), ..Default::default() }))
         .add_startup_system(setup)
         .add_system(ui_system)
         .add_system(physics_system)
@@ -35,7 +35,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         ..Default::default()
     }, MainCamera));
     // Spawn the player
-    let player = commands.spawn((
+    commands.spawn((
         Text2dBundle {
             text: Text::from_section("V", text_style.clone()).with_alignment(TextAlignment::Center),
             transform: Transform { translation: Vec3 { x: 100.0, y: 100.0, z: 0.0 }, scale: Vec3 { x: 0.5, y: 0.5, z: 1.0 }, ..default() },
@@ -46,8 +46,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Physics::new(5.0),
         Engine::new(15.0, 50.0),
         Health::new(100, 100),
-    )).id();
-    println!("{:?}", player);
+    ));
     // Spawn an enemy
     commands.spawn((
         Text2dBundle {
