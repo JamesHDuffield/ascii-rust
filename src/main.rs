@@ -12,6 +12,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup)
+        .add_system(ui_system)
         .add_system(physics_system)
         .add_system(engine_system)
         .add_system(player_control)
@@ -34,7 +35,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         ..Default::default()
     }, MainCamera));
     // Spawn the player
-    commands.spawn((
+    let player = commands.spawn((
         Text2dBundle {
             text: Text::from_section("V", text_style.clone()).with_alignment(TextAlignment::Center),
             transform: Transform { translation: Vec3 { x: 100.0, y: 100.0, z: 0.0 }, scale: Vec3 { x: 0.5, y: 0.5, z: 1.0 }, ..default() },
@@ -44,7 +45,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         IsPlayer,
         Physics::new(5.0),
         Engine::new(15.0, 50.0),
-    ));
+        Health::new(100, 100),
+    )).id();
+    println!("{:?}", player);
     // Spawn an enemy
     commands.spawn((
         Text2dBundle {
@@ -54,5 +57,53 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         Physics::new(5.0),
         Engine::new(10.0, 40.0),
+        Health::new(60, 20),
     ));
+
+    // UI
+    commands.spawn((
+        NodeBundle {
+            style: Style {
+                size: Size { width: Val::Percent(20.0), height: Val::Percent(20.0)},
+                margin: UiRect::all(Val::Px(5.0)),
+                gap: Size { height: Val::Px(2.0), ..Default::default() },
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            ..default()
+        },
+        UINode,
+    )).with_children(|parent| {
+        parent.spawn(
+            TextBundle::from_section(
+                "Health",
+                TextStyle {
+                    font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                    font_size: 12.0,
+                    color: Color::WHITE,
+                },
+            ),
+        );
+        parent.spawn(
+            TextBundle::from_section(
+                "Shield",
+                TextStyle {
+                    font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                    font_size: 12.0,
+                    color: Color::WHITE,
+                },
+            ),
+        );
+        parent.spawn(
+            TextBundle::from_section(
+                "Engine",
+                TextStyle {
+                    font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                    font_size: 12.0,
+                    color: Color::WHITE,
+                },
+            ),
+        );
+    });
 }
+
