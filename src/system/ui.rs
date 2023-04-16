@@ -16,7 +16,7 @@ pub fn ui_system(
 ) {
     if let Ok((engine, health)) = player_query.get_single() {
         let displays = vec![
-            format!("{} {}", health.health, bar(health.health, health.max_health * 2, 10)),
+            format!("{} {}", health.health, bar(health.health, health.max_health, 10)),
             format!("{} {}", health.shield, bar(health.shield, health.max_shield, 10)),
             format!("{} m/s", engine.speed.round()),
         ];
