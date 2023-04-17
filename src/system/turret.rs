@@ -30,7 +30,8 @@ pub fn turret_system(
             transform: Transform { translation: parent_transform.translation.clone(), ..Default::default() },
             ..default()
           },
-          Physics { acceleration: Vec2::ZERO, velocity: direction.truncate(), drag: 0.0 }
+          Physics { acceleration: Vec2::ZERO, velocity: direction.truncate(), drag: 0.0 },
+          Collider { radius: 5.0, layer: 0b00000000, mask: 0b00000010 },
         ));
       }
     }

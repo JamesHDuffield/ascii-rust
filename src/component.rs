@@ -28,3 +28,10 @@ pub struct BaseGlyphRotation {
 
 #[derive(Component)]
 pub struct UINode;
+
+#[derive(Component)]
+pub struct Collider {
+    pub radius: f32,
+    pub layer: u8,
+    pub mask: u8,
+}
