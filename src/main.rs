@@ -76,6 +76,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             Engine::new(10.0, 20.0),
             Health::new(100, 100),
             Collider { radius: 5.0 },
+            Targettable,
         ))
         .with_children(|parent| {
             parent.spawn(Turret::new(5.0, 200.0));
@@ -116,6 +117,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             Engine::new(10.0, 10.0),
             Health::new(60, 20),
             Collider { radius: 5.0 },
+            Targettable,
         ))
         .with_children(|parent| {
             parent.spawn(Turret::new(1.0, 200.0));

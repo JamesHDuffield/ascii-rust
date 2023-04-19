@@ -36,3 +36,6 @@ pub struct Collider {
 
 #[derive(Reflect, Component)]
 pub struct Owner(pub Entity);
+
+#[derive(Component)]
+pub struct Targettable;
