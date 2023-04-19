@@ -32,6 +32,7 @@ pub struct UINode;
 #[derive(Component)]
 pub struct Collider {
     pub radius: f32,
-    pub layer: u8,
-    pub mask: u8,
 }
+
+#[derive(Reflect, Component)]
+pub struct Owner(pub Entity);

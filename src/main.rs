@@ -49,7 +49,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Physics::new(5.0),
         Engine::new(10.0, 20.0),
         Health::new(100, 100),
-        Collider { radius: 5.0, layer: 0b00000001, mask: 0b00000000 },
+        Collider { radius: 5.0 },
     )).with_children(|parent| {
         parent.spawn(Turret::new(5.0, 200.0));
     });
@@ -61,11 +61,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             transform: Transform { translation: Vec3 { x: -100.0, y: -100.0, z: 0.0 }, scale: Vec3 { x: 0.5, y: 0.5, z: 1.0 }, ..default() },
             ..default()
         },
+        BaseGlyphRotation { rotation: Quat::from_rotation_z(PI / 2.0) },
         Physics::new(5.0),
         Engine::new(10.0, 10.0),
         Health::new(60, 20),
-        Collider { radius: 5.0, layer: 0b00000010, mask: 0b00000000 },
-    ));
+        Collider { radius: 5.0 },
+    )).with_children(|parent| {
+        parent.spawn(Turret::new(1.0, 200.0));
+    });
 
     // UI
     commands.spawn((
