@@ -3,6 +3,7 @@ mod engine;
 mod health;
 mod turret;
 mod bullet;
+mod spawner;
 
 use bevy::prelude::*;
 
@@ -13,6 +14,7 @@ pub use engine::*;
 pub use health::*;
 pub use turret::*;
 pub use bullet::*;
+pub use spawner::*;
 
 // Simple components
 #[derive(Component)]
@@ -39,8 +41,3 @@ pub struct Owner(pub Entity);
 
 #[derive(Component)]
 pub struct Targettable;
-
-#[derive(Component)]
-pub struct Spawner {
-    pub cooldown_timer: Timer,
-}

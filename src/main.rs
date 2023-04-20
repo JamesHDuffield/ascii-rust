@@ -87,7 +87,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Spawn an enemy spawner
     commands
         .spawn((
-            Spawner { cooldown_timer: Timer::from_seconds(30.0, TimerMode::Repeating) },
+            Spawner::new(30.0, 2.0),
             Transform {
                 translation: Vec3 {
                     x: -100.0,
