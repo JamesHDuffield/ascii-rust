@@ -70,12 +70,20 @@ pub fn turret_system(
             }
 
             if let Some(target) = turret.target {
+                // Check target still exists and if not clear it
+                match commands.get_entity(target) {
+                    None => {
+                        turret.target = None;
+                        break;
+                    },
+                    Some(_) => ()
+                }
                 turret.timer.tick(time.delta());
                 // Shoot the target
                 if turret.timer.just_finished() {
                     // Shoot a projectile towards the target
                     let target_translation =
-                        target_query.get(target).map(|t| t.1.translation).unwrap();
+                        target_query.get(target).map(|t| t.1.translation).unwrap_or(Vec3::X);
                     let direction = (target_translation - parent_transform.translation).normalize();
                     spawn_bullet(
                         &mut commands,

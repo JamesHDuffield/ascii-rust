@@ -26,6 +26,7 @@ fn main() {
         .add_system(turret_system)
         .add_system(bullet_system)
         .add_system(bullet_collision_system)
+        .add_system(combat_system)
         .run();
 }
 
