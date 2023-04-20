@@ -39,3 +39,8 @@ pub struct Owner(pub Entity);
 
 #[derive(Component)]
 pub struct Targettable;
+
+#[derive(Component)]
+pub struct Spawner {
+    pub cooldown_timer: Timer,
+}

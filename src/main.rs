@@ -27,6 +27,7 @@ fn main() {
         .add_system(bullet_system)
         .add_system(bullet_collision_system)
         .add_system(combat_system)
+        .add_system(spawner_system)
         .run();
 }
 
@@ -83,46 +84,19 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             parent.spawn(Turret::new(5.0, 200.0));
         });
 
-    // Spawn an enemy
+    // Spawn an enemy spawner
     commands
         .spawn((
-            Text2dBundle {
-                text: Text::from_section(
-                    "w",
-                    TextStyle {
-                        font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
-                        font_size: 32.0,
-                        color: colour::ENEMY,
-                    },
-                )
-                .with_alignment(TextAlignment::Center),
-                transform: Transform {
-                    translation: Vec3 {
-                        x: -100.0,
-                        y: -100.0,
-                        z: 0.0,
-                    },
-                    scale: Vec3 {
-                        x: 0.5,
-                        y: 0.5,
-                        z: 1.0,
-                    },
-                    ..default()
+            Spawner { cooldown_timer: Timer::from_seconds(30.0, TimerMode::Repeating) },
+            Transform {
+                translation: Vec3 {
+                    x: -100.0,
+                    y: -100.0,
+                    z: 0.0,
                 },
                 ..default()
             },
-            BaseGlyphRotation {
-                rotation: Quat::from_rotation_z(PI / 2.0),
-            },
-            Physics::new(5.0),
-            Engine::new(10.0, 10.0),
-            Health::new(60, 20),
-            Collider { radius: 5.0 },
-            Targettable,
-        ))
-        .with_children(|parent| {
-            parent.spawn(Turret::new(1.0, 200.0));
-        });
+        ));
 
     // UI
     commands
