@@ -7,6 +7,7 @@ mod turret;
 mod bullet;
 mod combat;
 mod spawner;
+mod ai;
 
 pub use engine::*;
 pub use physics::*;
@@ -17,3 +18,4 @@ pub use turret::*;
 pub use bullet::*;
 pub use combat::*;
 pub use spawner::*;
+pub use ai::*;

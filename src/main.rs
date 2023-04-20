@@ -28,6 +28,7 @@ fn main() {
         .add_system(bullet_collision_system)
         .add_system(combat_system)
         .add_system(spawner_system)
+        .add_system(ai_system)
         .run();
 }
 
