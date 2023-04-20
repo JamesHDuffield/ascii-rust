@@ -29,6 +29,7 @@ fn main() {
         .add_system(combat_system)
         .add_system(spawner_system)
         .add_system(ai_system)
+        .add_system(laser_render_system)
         .run();
 }
 
@@ -82,7 +83,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             Targettable,
         ))
         .with_children(|parent| {
-            parent.spawn(Turret::new(5.0, 200.0));
+            parent.spawn(Turret::blast_laser());
         });
 
     // Spawn an enemy spawner

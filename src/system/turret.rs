@@ -1,41 +1,7 @@
-use crate::{colour, component::*};
-use bevy::prelude::*;
+use std::f32::consts::PI;
 
-fn spawn_bullet(
-    commands: &mut Commands,
-    asset_server: &Res<AssetServer>,
-    entity: Entity,
-    position: Vec3,
-    direction: Vec2,
-) {
-    let bullet_speed = 1000.0;
-    commands.spawn((
-        Bullet::new(3.2),
-        Text2dBundle {
-            text: Text::from_section(
-                ".",
-                TextStyle {
-                    font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
-                    font_size: 12.0,
-                    color: colour::WHITE,
-                },
-            )
-            .with_alignment(TextAlignment::Center),
-            transform: Transform {
-                translation: position,
-                ..Default::default()
-            },
-            ..default()
-        },
-        Physics {
-            acceleration: Vec2::ZERO,
-            velocity: direction * bullet_speed,
-            drag: 0.0,
-        },
-        Collider { radius: 5.0 },
-        Owner(entity),
-    ));
-}
+use crate::{colour, component::*, math};
+use bevy::prelude::*;
 
 pub fn turret_system(
     mut commands: Commands,
@@ -79,23 +45,82 @@ pub fn turret_system(
                     Some(_) => ()
                 }
                 turret.timer.tick(time.delta());
-                // Shoot the target
                 if turret.timer.just_finished() {
-                    // Shoot a projectile towards the target
+                    // Fire!
                     let target_translation =
                         target_query.get(target).map(|t| t.1.translation).unwrap_or(Vec3::X);
                     let direction = (target_translation - parent_transform.translation).normalize();
-                    spawn_bullet(
-                        &mut commands,
-                        &asset_server,
-                        parent_entity,
-                        parent_transform.translation.clone(),
-                        direction.truncate(),
-                    );
+                    match turret.class {
+                        TurretClass::AutoCannon => spawn_bullet(&mut commands, &asset_server, parent_entity, parent_transform.translation.clone(), direction.truncate()),
+                        TurretClass::BlastLaser => spawn_laser(&mut commands, parent_entity, parent_transform.translation.truncate(), target_translation.truncate()),
+                    }
+
                 }
             } else {
                 turret.timer.reset();
             }
         }
     }
+}
+
+fn spawn_bullet(
+    commands: &mut Commands,
+    asset_server: &Res<AssetServer>,
+    entity: Entity,
+    position: Vec3,
+    direction: Vec2,
+) {
+    let bullet_speed = 1000.0;
+    commands.spawn((
+        Bullet::new(3.2),
+        Text2dBundle {
+            text: Text::from_section(
+                ".",
+                TextStyle {
+                    font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                    font_size: 12.0,
+                    color: colour::WHITE,
+                },
+            )
+            .with_alignment(TextAlignment::Center),
+            transform: Transform {
+                translation: position,
+                ..Default::default()
+            },
+            ..default()
+        },
+        Physics {
+            acceleration: Vec2::ZERO,
+            velocity: direction * bullet_speed,
+            drag: 0.0,
+        },
+        Collider { radius: 5.0 },
+        Owner(entity),
+    ));
+}
+
+fn spawn_laser(
+    commands: &mut Commands,
+    entity: Entity,
+    origin: Vec2,
+    target: Vec2,
+) {
+    let distance = target.distance(origin);
+    let direction = (target - origin).normalize();
+    commands.spawn((
+        Bullet::new(0.1),
+        LaserRender,
+        SpriteBundle {
+            sprite: Sprite {
+                color: colour::RED,
+                anchor: bevy::sprite::Anchor::BottomCenter,
+                custom_size: Some(Vec2::new(2.0, distance)),
+                ..default()
+            },
+            transform: Transform { translation: origin.extend(0.0), rotation: math::quaternion_from_2d_vector(direction) * Quat::from_rotation_z(-PI / 2.0), ..Default::default()},
+            ..default()
+        },
+        Owner(entity),
+    ));
+    // Immediate hit TODO
 }

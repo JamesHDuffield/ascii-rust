@@ -8,6 +8,7 @@ mod bullet;
 mod combat;
 mod spawner;
 mod ai;
+mod laser_render;
 
 pub use engine::*;
 pub use physics::*;
@@ -19,3 +20,4 @@ pub use bullet::*;
 pub use combat::*;
 pub use spawner::*;
 pub use ai::*;
+pub use laser_render::*;

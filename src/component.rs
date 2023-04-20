@@ -44,3 +44,9 @@ pub struct Owner(pub Entity);
 
 #[derive(Component)]
 pub struct Targettable;
+
+// Turret components
+
+// Bullet Components
+#[derive(Component)]
+pub struct LaserRender;
