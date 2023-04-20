@@ -8,7 +8,7 @@ pub fn combat_system(
 ) {
   for (mut health, entity) in &mut query {
     if health.health <= 0 {
-      commands.entity(entity).despawn();
+      commands.entity(entity).despawn_recursive();
       continue;
     }
     // Recharge shield
