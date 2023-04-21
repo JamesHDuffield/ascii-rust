@@ -10,6 +10,7 @@ pub fn turret_system(
     mut query: Query<(&mut Turret, &Parent), With<Turret>>,
     target_query: Query<(Entity, &Transform), (With<Targettable>, With<Transform>)>,
     parent_query: Query<(&Transform, Entity)>,
+    mut existing_query: Query<(&Transform, Option<&mut Health>), With<Transform>>
 ) {
     let potential_targets: Vec<(Entity, &Transform)> = target_query.iter().collect();
     for (mut turret, parent) in &mut query {
@@ -47,14 +48,13 @@ pub fn turret_system(
                 turret.timer.tick(time.delta());
                 if turret.timer.just_finished() {
                     // Fire!
-                    let target_translation =
-                        target_query.get(target).map(|t| t.1.translation).unwrap_or(Vec3::X);
-                    let direction = (target_translation - parent_transform.translation).normalize();
-                    match turret.class {
-                        TurretClass::AutoCannon => spawn_bullet(&mut commands, &asset_server, parent_entity, parent_transform.translation.clone(), direction.truncate()),
-                        TurretClass::BlastLaser => spawn_laser(&mut commands, parent_entity, parent_transform.translation.truncate(), target_translation.truncate()),
+                    if let Ok((target_transform, target_health)) = existing_query.get_mut(target) {
+                        let origin = parent_transform.translation.truncate();
+                        match turret.class {
+                            TurretClass::AutoCannon => spawn_bullet(&mut commands, &asset_server, parent_entity, origin, target_transform.translation.truncate()),
+                            TurretClass::BlastLaser => spawn_laser(&mut commands, parent_entity, origin, target_transform.translation.truncate(), target_health),
+                        }
                     }
-
                 }
             } else {
                 turret.timer.reset();
@@ -67,10 +67,11 @@ fn spawn_bullet(
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
     entity: Entity,
-    position: Vec3,
-    direction: Vec2,
+    origin: Vec2,
+    target: Vec2,
 ) {
     let bullet_speed = 1000.0;
+    let direction = (target - origin).normalize();
     commands.spawn((
         Bullet::new(3.2),
         Text2dBundle {
@@ -84,7 +85,7 @@ fn spawn_bullet(
             )
             .with_alignment(TextAlignment::Center),
             transform: Transform {
-                translation: position,
+                translation: origin.extend(0.0),
                 ..Default::default()
             },
             ..default()
@@ -104,6 +105,7 @@ fn spawn_laser(
     entity: Entity,
     origin: Vec2,
     target: Vec2,
+    target_health: Option<Mut<Health>>,
 ) {
     let distance = target.distance(origin);
     let direction = (target - origin).normalize();
@@ -122,5 +124,8 @@ fn spawn_laser(
         },
         Owner(entity),
     ));
-    // Immediate hit TODO
+    // Immediate hit
+    if let Some(mut health) = target_health {
+        health.take_damage(1);
+    }
 }
