@@ -1,7 +1,6 @@
-use std::f32::consts::PI;
-
-use crate::{colour, component::*, math};
+use crate::{colour, component::*};
 use bevy::prelude::*;
+use bevy_prototype_lyon::prelude::*;
 
 pub fn turret_system(
     mut commands: Commands,
@@ -10,13 +9,12 @@ pub fn turret_system(
     mut query: Query<(&mut Turret, &Parent), With<Turret>>,
     target_query: Query<(Entity, &Transform), (With<Targettable>, With<Transform>)>,
     parent_query: Query<(&Transform, Entity)>,
-    mut existing_query: Query<(&Transform, Option<&mut Health>), With<Transform>>
+    mut existing_query: Query<(&Transform, Option<&mut Health>), With<Transform>>,
 ) {
     let potential_targets: Vec<(Entity, &Transform)> = target_query.iter().collect();
     for (mut turret, parent) in &mut query {
         // Get parent (ship)
-        if let Ok((parent_transform, parent_entity)) = parent_query.get(parent.get())
-        {
+        if let Ok((parent_transform, parent_entity)) = parent_query.get(parent.get()) {
             if turret.target == None {
                 // Look for a target
                 let mut potentials_without_parent: Vec<&(Entity, &Transform)> = potential_targets
@@ -42,8 +40,8 @@ pub fn turret_system(
                     None => {
                         turret.target = None;
                         break;
-                    },
-                    Some(_) => ()
+                    }
+                    Some(_) => (),
                 }
                 turret.timer.tick(time.delta());
                 if turret.timer.just_finished() {
@@ -51,8 +49,20 @@ pub fn turret_system(
                     if let Ok((target_transform, target_health)) = existing_query.get_mut(target) {
                         let origin = parent_transform.translation.truncate();
                         match turret.class {
-                            TurretClass::AutoCannon => spawn_bullet(&mut commands, &asset_server, parent_entity, origin, target_transform.translation.truncate()),
-                            TurretClass::BlastLaser => spawn_laser(&mut commands, parent_entity, origin, target_transform.translation.truncate(), target_health),
+                            TurretClass::AutoCannon => spawn_bullet(
+                                &mut commands,
+                                &asset_server,
+                                parent_entity,
+                                origin,
+                                target_transform.translation.truncate(),
+                            ),
+                            TurretClass::BlastLaser => spawn_laser(
+                                &mut commands,
+                                parent_entity,
+                                origin,
+                                target_transform.translation.truncate(),
+                                target_health,
+                            ),
                         }
                     }
                 }
@@ -107,21 +117,14 @@ fn spawn_laser(
     target: Vec2,
     target_health: Option<Mut<Health>>,
 ) {
-    let distance = target.distance(origin);
-    let direction = (target - origin).normalize();
     commands.spawn((
         Bullet::new(0.1),
         LaserRender,
-        SpriteBundle {
-            sprite: Sprite {
-                color: colour::RED,
-                anchor: bevy::sprite::Anchor::BottomCenter,
-                custom_size: Some(Vec2::new(2.0, distance)),
-                ..default()
-            },
-            transform: Transform { translation: origin.extend(0.0), rotation: math::quaternion_from_2d_vector(direction) * Quat::from_rotation_z(-PI / 2.0), ..Default::default()},
+        ShapeBundle {
+            path: GeometryBuilder::build_as(&shapes::Line(origin, target)),
             ..default()
         },
+        Stroke::new(colour::RED, 1.0),
         Owner(entity),
     ));
     // Immediate hit

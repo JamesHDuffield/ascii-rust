@@ -45,6 +45,13 @@ pub struct Owner(pub Entity);
 #[derive(Component)]
 pub struct Targettable;
 
+#[derive(Component)]
+pub struct ExplosionRender {
+    pub origin: Vec2,
+    pub radius: f32,
+    pub ttl: Timer,
+}
+
 // Turret components
 
 // Bullet Components

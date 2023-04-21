@@ -7,9 +7,11 @@ use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
 use component::*;
 use std::f32::consts::PI;
 use system::*;
+use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::new()
+        .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: String::from("Outer Shell"),
@@ -17,7 +19,9 @@ fn main() {
             }),
             ..Default::default()
         }))
+        .add_plugin(ShapePlugin)
         .add_startup_system(setup)
+        .add_startup_system(debug_setup)
         .add_system(ui_system)
         .add_system(physics_system)
         .add_system(engine_system)
@@ -30,6 +34,7 @@ fn main() {
         .add_system(spawner_system)
         .add_system(ai_system)
         .add_system(laser_render_system)
+        .add_system(explosion_render_system)
         .run();
 }
 
@@ -148,3 +153,5 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ));
         });
 }
+
+fn debug_setup(mut commands: Commands, asset_server: Res<AssetServer>) {}
