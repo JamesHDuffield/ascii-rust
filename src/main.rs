@@ -36,6 +36,8 @@ fn main() {
         .add_system(ai_system)
         .add_system(laser_render_system)
         .add_system(explosion_render_system)
+        .add_system(death_system)
+        .add_system(loot_system)
         .run();
 }
 

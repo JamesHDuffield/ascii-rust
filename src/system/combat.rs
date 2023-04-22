@@ -10,7 +10,8 @@ pub fn combat_system(
 ) {
     for (mut health, entity, transform) in &mut query {
         if health.health <= 0 {
-            death(&mut commands, entity, transform);
+            commands.entity(entity).insert(ShouldDespawn);
+            death(&mut commands, transform);
             continue;
         }
         // Recharge shield
@@ -27,9 +28,7 @@ pub fn combat_system(
     }
 }
 
-fn death(commands: &mut Commands, entity: Entity, transform: &Transform) {
-    // Despawn
-    commands.entity(entity).despawn_recursive();
+fn death(commands: &mut Commands, transform: &Transform) {
     // Spawn several explosions
     let mut rng = rand::thread_rng();
     for _ in 0..3 {

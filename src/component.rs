@@ -61,6 +61,12 @@ pub struct ExplosionRender {
     pub ttl: Timer,
 }
 
+#[derive(Component)]
+pub struct ShouldDespawn;
+
+#[derive(Component)]
+pub struct DropsLoot;
+
 // Turret components
 
 // Bullet Components

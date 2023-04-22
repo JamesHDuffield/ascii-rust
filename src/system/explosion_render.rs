@@ -16,7 +16,7 @@ pub fn explosion_render_system(
     };
     *path = GeometryBuilder::build_as(&shape);
     if explosion.ttl.finished() {
-      commands.entity(entity).despawn();
+      commands.entity(entity).insert(ShouldDespawn);
     }
   }
 }

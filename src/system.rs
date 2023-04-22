@@ -10,6 +10,8 @@ mod spawner;
 mod ai;
 mod laser_render;
 mod explosion_render;
+mod death;
+mod loot;
 
 pub use engine::*;
 pub use physics::*;
@@ -23,3 +25,5 @@ pub use spawner::*;
 pub use ai::*;
 pub use laser_render::*;
 pub use explosion_render::*;
+pub use death::*;
+pub use loot::*;

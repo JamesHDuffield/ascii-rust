@@ -37,6 +37,7 @@ fn spawn_enemy(commands: &mut Commands, asset_server: &Res<AssetServer>, positio
             Targettable(Allegiance::ENEMY),
             WillTarget(vec![Allegiance::PLAYER]),
             AI,
+            DropsLoot,
         ))
         .with_children(|parent| {
             parent.spawn(Turret::new(1.0, 200.0));

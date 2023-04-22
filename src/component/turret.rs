@@ -12,7 +12,7 @@ pub struct Turret {
 impl Turret {
 
     pub fn blast_laser() -> Turret {
-        let rate_of_fire = 0.5;
+        let rate_of_fire = 5.0;
         Turret { target: None, rate_of_fire, range: 200.0, timer: Timer::from_seconds(1.0 / rate_of_fire, TimerMode::Repeating), class: TurretClass::BlastLaser }
     }
 

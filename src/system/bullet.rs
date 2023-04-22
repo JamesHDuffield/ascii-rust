@@ -9,7 +9,7 @@ pub fn bullet_system(
   for (mut bullet, entity) in &mut query {
     bullet.ttl.tick(time.delta());
     if bullet.ttl.just_finished() {
-      commands.entity(entity).despawn();
+      commands.entity(entity).insert(ShouldDespawn);
     }
   }
 }
@@ -26,7 +26,7 @@ pub fn bullet_collision_system(
       }
       if transform.translation.distance(potential_transform.translation) <= collider.radius + potential_collider.radius {
         potential_health.take_damage(1);
-        commands.entity(entity).despawn();
+        commands.entity(entity).insert(ShouldDespawn);
       }
     }
   }
