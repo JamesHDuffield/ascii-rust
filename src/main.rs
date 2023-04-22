@@ -38,6 +38,7 @@ fn main() {
         .add_system(explosion_render_system)
         .add_system(death_system)
         .add_system(loot_magnet_system)
+        .add_system(loot_cargo_collision)
         .run();
 }
 
@@ -91,7 +92,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             Targettable(Allegiance::PLAYER),
             WillTarget(vec![Allegiance::ENEMY]),
             Cargo::new(),
-            Magnet { range: 100.0, strength: 1.0 },
+            Magnet { range: 500.0, strength: 5.0 },
         ))
         .with_children(|parent| {
             parent.spawn(Turret::blast_laser());
@@ -141,6 +142,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
                     font_size: 12.0,
                     color: colour::INACTIVE,
+                },
+            ));
+            parent.spawn(TextBundle::from_section(
+                "Cargo",
+                TextStyle {
+                    font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                    font_size: 12.0,
+                    color: colour::RED,
                 },
             ));
         });

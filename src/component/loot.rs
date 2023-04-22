@@ -6,7 +6,7 @@ pub struct IsLoot;
 pub struct DropsLoot;
 
 #[derive(Component)]
-pub struct Cargo(u32);
+pub struct Cargo(pub u32);
 
 impl Cargo {
     pub fn new() -> Cargo {

@@ -10,15 +10,16 @@ fn bar(current: i32, max: i32, width: i32) -> String {
 }
 
 pub fn ui_system(
-    player_query: Query<(&Engine, &Health), (With<IsPlayer>, With<Engine>, With<Health>)>,
+    player_query: Query<(&Engine, &Health, &Cargo), (With<IsPlayer>, With<Engine>, With<Health>, With<Cargo>)>,
     mut query: Query<&Children, With<UINode>>,
     mut q_child: Query<&mut Text>,
 ) {
-    if let Ok((engine, health)) = player_query.get_single() {
+    if let Ok((engine, health, cargo)) = player_query.get_single() {
         let displays = vec![
             format!("Armor  {} {}", bar(health.health, health.max_health, 10), health.health),
             format!("Shield {} {}", bar(health.shield, health.max_shield, 10), health.shield),
             format!("Speed  {} m/s", engine.speed.round()),
+            format!("Cargo  {} scrap", cargo.0),
         ];
 
         // Loop over children and update display values

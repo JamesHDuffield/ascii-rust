@@ -38,6 +38,7 @@ fn spawn_loot(commands: &mut Commands, asset_server: &Res<AssetServer>, position
                     ..Default::default()
                 },
                 Physics { acceleration: Vec2 { x: rng.gen_range(-1.0..1.0), y: rng.gen_range(-1.0..1.0) }.normalize_or_zero() * rng.gen_range(50.0..100.0), drag: 1.0, velocity: Vec2::ZERO },
+                Collider { radius: 20.0 },
             )
         })
         .collect::<Vec<_>>();
