@@ -37,7 +37,7 @@ fn main() {
         .add_system(laser_render_system)
         .add_system(explosion_render_system)
         .add_system(death_system)
-        .add_system(loot_system)
+        .add_system(loot_magnet_system)
         .run();
 }
 
@@ -90,6 +90,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             Collider { radius: 5.0 },
             Targettable(Allegiance::PLAYER),
             WillTarget(vec![Allegiance::ENEMY]),
+            Cargo::new(),
+            Magnet { range: 100.0, strength: 1.0 },
         ))
         .with_children(|parent| {
             parent.spawn(Turret::blast_laser());

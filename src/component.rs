@@ -1,20 +1,21 @@
+use bevy::prelude::*;
+
 mod physics;
 mod engine;
 mod health;
 mod turret;
 mod bullet;
 mod spawner;
-
-use bevy::prelude::*;
+mod loot;
 
 // Complex components
-
 pub use physics::*;
 pub use engine::*;
 pub use health::*;
 pub use turret::*;
 pub use bullet::*;
 pub use spawner::*;
+pub use loot::*;
 
 // Simple components
 #[derive(Component)]
@@ -63,9 +64,6 @@ pub struct ExplosionRender {
 
 #[derive(Component)]
 pub struct ShouldDespawn;
-
-#[derive(Component)]
-pub struct DropsLoot;
 
 // Turret components
 

@@ -23,6 +23,7 @@ fn spawn_loot(commands: &mut Commands, asset_server: &Res<AssetServer>, position
     let loots = (0..rng.gen_range(1..=3))
         .map(|_| {
             (
+                IsLoot,
                 Text2dBundle {
                     text: Text::from_section(
                         "*",
