@@ -4,14 +4,14 @@ mod math;
 mod system;
 
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
+use bevy_prototype_lyon::prelude::*;
 use component::*;
 use std::f32::consts::PI;
 use system::*;
-use bevy_prototype_lyon::prelude::*;
+use rand::*;
 
 fn main() {
     App::new()
-        .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: String::from("Outer Shell"),
@@ -21,6 +21,7 @@ fn main() {
         }))
         .add_plugin(ShapePlugin)
         .add_startup_system(setup)
+        .add_startup_system(spawn_spawners)
         .add_startup_system(debug_setup)
         .add_system(ui_system)
         .add_system(physics_system)
@@ -85,25 +86,12 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             Engine::new(10.0, 20.0),
             Health::new(100, 100),
             Collider { radius: 5.0 },
-            Targettable,
+            Targettable(Allegiance::PLAYER),
+            WillTarget(vec![Allegiance::ENEMY]),
         ))
         .with_children(|parent| {
             parent.spawn(Turret::blast_laser());
         });
-
-    // Spawn an enemy spawner
-    commands
-        .spawn((
-            Spawner::new(30.0, 2.0),
-            Transform {
-                translation: Vec3 {
-                    x: -100.0,
-                    y: -100.0,
-                    z: 0.0,
-                },
-                ..default()
-            },
-        ));
 
     // UI
     commands
@@ -152,6 +140,24 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 },
             ));
         });
+}
+
+fn spawn_spawners(mut commands: Commands) {
+    let mut rng = rand::thread_rng();
+    // Spawn enemy spawners
+    for _ in 0..10 {
+        commands.spawn((
+            Spawner::new(30.0, 2.0),
+            Transform {
+                translation: Vec3 {
+                    x: rng.gen_range(-1000.0..1000.0),
+                    y: rng.gen_range(-1000.0..1000.0),
+                    z: 0.0,
+                },
+                ..default()
+            },
+        ));
+    }
 }
 
 fn debug_setup(mut commands: Commands, asset_server: Res<AssetServer>) {}

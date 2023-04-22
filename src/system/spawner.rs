@@ -34,7 +34,8 @@ fn spawn_enemy(commands: &mut Commands, asset_server: &Res<AssetServer>, positio
             Engine::new(10.0, 10.0),
             Health::new(60, 20),
             Collider { radius: 5.0 },
-            Targettable,
+            Targettable(Allegiance::ENEMY),
+            WillTarget(vec![Allegiance::PLAYER]),
             AI,
         ))
         .with_children(|parent| {

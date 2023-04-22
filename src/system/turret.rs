@@ -7,19 +7,19 @@ pub fn turret_system(
     asset_server: Res<AssetServer>,
     time: Res<Time>,
     mut query: Query<(&mut Turret, &Parent), With<Turret>>,
-    target_query: Query<(Entity, &Transform), (With<Targettable>, With<Transform>)>,
-    parent_query: Query<(&Transform, Entity)>,
+    target_query: Query<(Entity, &Transform, &Targettable), (With<Targettable>, With<Transform>)>,
+    parent_query: Query<(&Transform, Entity, &WillTarget), (With<Transform>, With<WillTarget>)>,
     mut existing_query: Query<(&Transform, Option<&mut Health>), With<Transform>>,
 ) {
-    let potential_targets: Vec<(Entity, &Transform)> = target_query.iter().collect();
+    let potential_targets: Vec<(Entity, &Transform, &Targettable)> = target_query.iter().collect();
     for (mut turret, parent) in &mut query {
         // Get parent (ship)
-        if let Ok((parent_transform, parent_entity)) = parent_query.get(parent.get()) {
+        if let Ok((parent_transform, parent_entity, parent_will_target)) = parent_query.get(parent.get()) {
             if turret.target == None {
                 // Look for a target
-                let mut potentials_without_parent: Vec<&(Entity, &Transform)> = potential_targets
+                let mut potentials_without_parent: Vec<&(Entity, &Transform, &Targettable)> = potential_targets
                     .iter()
-                    .filter(|a| a.0 != parent_entity)
+                    .filter(|a| a.0 != parent_entity && parent_will_target.0.contains(&a.2.0))
                     .collect();
                 potentials_without_parent.sort_by(|a, b| {
                     a.1.translation

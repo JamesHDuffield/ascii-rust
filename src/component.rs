@@ -42,8 +42,17 @@ pub struct Collider {
 #[derive(Reflect, Component)]
 pub struct Owner(pub Entity);
 
+#[derive(PartialEq)]
+pub enum Allegiance {
+    PLAYER,
+    ENEMY,
+}
+
 #[derive(Component)]
-pub struct Targettable;
+pub struct Targettable(pub Allegiance);
+
+#[derive(Component)]
+pub struct WillTarget(pub Vec<Allegiance>);
 
 #[derive(Component)]
 pub struct ExplosionRender {
