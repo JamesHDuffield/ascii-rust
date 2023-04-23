@@ -86,7 +86,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             },
             IsPlayer,
             Physics::new(5.0),
-            Engine::new(10.0, 20.0),
+            Engine::new_with_steering(10.0, 20.0, 20.0),
             Health::new(100, 100),
             Collider { radius: 5.0 },
             Targettable(Allegiance::PLAYER),

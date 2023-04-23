@@ -17,11 +17,16 @@ pub fn engine_system(
             EngineMethod::Keep(distance) => keep_at_distance(current, target, distance),
             EngineMethod::Orbit(distance) => orbit(current, target, distance),
           };
-          // Only kick in engines when target is not really close
-          const CLOSE_TOLERANCE: f32 = 20.0;
-          if to_target.length() > CLOSE_TOLERANCE {
-            physics.add_force(to_target.normalize() * engine.speed);
+          // Can only steer so many degrees per second
+          let max_steer_this_step = time.delta_seconds() * PI * engine.steering_factor;
+          let mut desired_steer = to_target.angle_between(physics.velocity);
+          if desired_steer.is_nan() { // When 0 velocity
+            desired_steer = 0.0;
           }
+          let clamped_steer = desired_steer.clamp(-max_steer_this_step, max_steer_this_step);
+          let to_target = Vec2::from_angle(clamped_steer).rotate(to_target);
+
+          physics.add_force(to_target.normalize() * engine.speed);
       } else {
           engine.speed -= engine.power * time.delta_seconds() * engine.depower_factor;
           if engine.speed < 0.0 { engine.speed = 0.0 }
