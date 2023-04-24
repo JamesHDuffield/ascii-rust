@@ -6,9 +6,21 @@ mod system;
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
 use bevy_prototype_lyon::prelude::*;
 use component::*;
+use rand::*;
 use std::f32::consts::PI;
 use system::*;
-use rand::*;
+
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
+enum AppState {
+    #[default]
+    Menu,
+    InGame,
+}
+
+#[derive(Resource)]
+struct MenuData {
+    button_entity: Entity,
+}
 
 fn main() {
     App::new()
@@ -20,29 +32,40 @@ fn main() {
             ..Default::default()
         }))
         .add_plugin(ShapePlugin)
+        .add_state::<AppState>()
         .add_startup_system(setup)
-        .add_startup_system(spawn_spawners)
-        .add_startup_system(debug_setup)
-        .add_system(ui_system)
-        .add_system(physics_system)
-        .add_system(engine_system)
-        .add_system(player_control)
-        .add_system(camera_follow)
-        .add_system(turret_system)
-        .add_system(bullet_system)
-        .add_system(bullet_collision_system)
-        .add_system(combat_system)
-        .add_system(spawner_system)
-        .add_system(ai_system)
-        .add_system(laser_render_system)
-        .add_system(explosion_render_system)
-        .add_system(death_system)
-        .add_system(loot_magnet_system)
-        .add_system(loot_cargo_collision)
+        // Menu
+        .add_system(setup_menu.in_schedule(OnEnter(AppState::Menu)))
+        .add_system(menu.in_set(OnUpdate(AppState::Menu)))
+        .add_system(cleanup_menu.in_schedule(OnExit(AppState::Menu)))
+        // InGame
+        .add_systems(
+            (setup_player, setup_hud, setup_spawners).in_schedule(OnEnter(AppState::InGame)),
+        )
+        .add_systems(
+            (
+                ui_system,
+                physics_system,
+                engine_system,
+                player_control,
+                camera_follow,
+                turret_system,
+                bullet_system,
+                bullet_collision_system,
+                combat_system,
+                spawner_system,
+                ai_system,
+                laser_render_system,
+                explosion_render_system,
+                death_system,
+            )
+                .in_set(OnUpdate(AppState::InGame)),
+        )
+        .add_systems((loot_magnet_system, loot_cargo_collision).in_set(OnUpdate(AppState::InGame)))
         .run();
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(mut commands: Commands) {
     // Spawn the Camera
     commands.spawn((
         Camera2dBundle {
@@ -53,7 +76,10 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         MainCamera,
     ));
-    // Spawn the player
+}
+
+// Spawn the player
+fn setup_player(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn((
             Text2dBundle {
@@ -92,13 +118,37 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             Targettable(Allegiance::PLAYER),
             WillTarget(vec![Allegiance::ENEMY]),
             Cargo::new(),
-            Magnet { range: 500.0, strength: 5.0 },
+            Magnet {
+                range: 500.0,
+                strength: 5.0,
+            },
         ))
         .with_children(|parent| {
             parent.spawn(Turret::blast_laser());
         });
+}
 
-    // UI
+// Spawn the enemy spawners
+fn setup_spawners(mut commands: Commands) {
+    let mut rng = rand::thread_rng();
+    // Spawn enemy spawners
+    for _ in 0..10 {
+        commands.spawn((
+            Spawner::new(30.0, 2.0),
+            Transform {
+                translation: Vec3 {
+                    x: rng.gen_range(-1000.0..1000.0),
+                    y: rng.gen_range(-1000.0..1000.0),
+                    z: 0.0,
+                },
+                ..default()
+            },
+        ));
+    }
+}
+
+// Spawn the hud
+fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn((
             NodeBundle {
@@ -155,22 +205,73 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         });
 }
 
-fn spawn_spawners(mut commands: Commands) {
-    let mut rng = rand::thread_rng();
-    // Spawn enemy spawners
-    for _ in 0..10 {
-        commands.spawn((
-            Spawner::new(30.0, 2.0),
-            Transform {
-                translation: Vec3 {
-                    x: rng.gen_range(-1000.0..1000.0),
-                    y: rng.gen_range(-1000.0..1000.0),
-                    z: 0.0,
-                },
+// Menu
+fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+    const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
+    let button_entity = commands
+        .spawn(NodeBundle {
+            style: Style {
+                // center button
+                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
                 ..default()
             },
-        ));
+            ..default()
+        })
+        .with_children(|parent| {
+            parent
+                .spawn(ButtonBundle {
+                    style: Style {
+                        size: Size::new(Val::Px(150.0), Val::Px(65.0)),
+                        // horizontally center child text
+                        justify_content: JustifyContent::Center,
+                        // vertically center child text
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
+                    background_color: NORMAL_BUTTON.into(),
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent.spawn(TextBundle::from_section(
+                        "Play",
+                        TextStyle {
+                            font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                            font_size: 40.0,
+                            color: Color::rgb(0.9, 0.9, 0.9),
+                        },
+                    ));
+                });
+        })
+        .id();
+    commands.insert_resource(MenuData { button_entity });
+}
+
+fn menu(
+    mut next_state: ResMut<NextState<AppState>>,
+    mut interaction_query: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<Button>),
+    >,
+) {
+    const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
+    const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
+    for (interaction, mut color) in &mut interaction_query {
+        match *interaction {
+            Interaction::Clicked => {
+                next_state.set(AppState::InGame);
+            }
+            Interaction::Hovered => {
+                *color = HOVERED_BUTTON.into();
+            }
+            Interaction::None => {
+                *color = NORMAL_BUTTON.into();
+            }
+        }
     }
 }
 
-fn debug_setup(mut commands: Commands, asset_server: Res<AssetServer>) {}
+fn cleanup_menu(mut commands: Commands, menu_data: Res<MenuData>) {
+    commands.entity(menu_data.button_entity).despawn_recursive();
+}
