@@ -5,15 +5,27 @@ use rand::prelude::*;
 pub fn death_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut query: Query<(Entity, Option<&DropsLoot>, Option<&Transform>), With<ShouldDespawn>>,
+    mut query: Query<
+        (
+            Entity,
+            Option<&DropsLoot>,
+            Option<&Transform>,
+            Option<&IsPlayer>,
+        ),
+        With<ShouldDespawn>,
+    >,
 ) {
-    for (entity, drops_loot, transform) in &mut query {
+    for (entity, drops_loot, transform, is_player) in &mut query {
         commands.entity(entity).despawn_recursive();
 
         if let Some(transform) = transform {
             if let Some(drops_loot) = drops_loot {
                 spawn_loot(&mut commands, &asset_server, transform.translation);
             }
+        }
+
+        if let Some(_) = is_player {
+            game_over(&mut commands, &asset_server);
         }
     }
 }
@@ -37,10 +49,21 @@ fn spawn_loot(commands: &mut Commands, asset_server: &Res<AssetServer>, position
                     transform: Transform::from_translation(position),
                     ..Default::default()
                 },
-                Physics { acceleration: Vec2 { x: rng.gen_range(-1.0..1.0), y: rng.gen_range(-1.0..1.0) }.normalize_or_zero() * rng.gen_range(50.0..100.0), drag: 1.0, velocity: Vec2::ZERO },
+                Physics {
+                    acceleration: Vec2 {
+                        x: rng.gen_range(-1.0..1.0),
+                        y: rng.gen_range(-1.0..1.0),
+                    }
+                    .normalize_or_zero()
+                        * rng.gen_range(50.0..100.0),
+                    drag: 1.0,
+                    velocity: Vec2::ZERO,
+                },
                 Collider { radius: 20.0 },
             )
         })
         .collect::<Vec<_>>();
     commands.spawn_batch(loots);
 }
+
+fn game_over(commands: &mut Commands, asset_server: &Res<AssetServer>) {}
