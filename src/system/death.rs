@@ -1,10 +1,10 @@
-use crate::{colour, component::*};
+use crate::{colour, component::*, resource::Fonts};
 use bevy::prelude::*;
 use rand::prelude::*;
 
 pub fn death_system(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    fonts: Res<Fonts>,
     mut query: Query<
         (
             Entity,
@@ -20,17 +20,17 @@ pub fn death_system(
 
         if let Some(transform) = transform {
             if let Some(drops_loot) = drops_loot {
-                spawn_loot(&mut commands, &asset_server, transform.translation);
+                spawn_loot(&mut commands, &fonts, transform.translation);
             }
         }
 
         if let Some(_) = is_player {
-            game_over(&mut commands, &asset_server);
+            game_over(&mut commands);
         }
     }
 }
 
-fn spawn_loot(commands: &mut Commands, asset_server: &Res<AssetServer>, position: Vec3) {
+fn spawn_loot(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
     let mut rng = rand::thread_rng();
     let loots = (0..rng.gen_range(1..=3))
         .map(|_| {
@@ -40,7 +40,7 @@ fn spawn_loot(commands: &mut Commands, asset_server: &Res<AssetServer>, position
                     text: Text::from_section(
                         "*",
                         TextStyle {
-                            font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                            font: fonts.primary.clone(),
                             font_size: 12.0,
                             color: colour::INACTIVE,
                         },
@@ -66,4 +66,4 @@ fn spawn_loot(commands: &mut Commands, asset_server: &Res<AssetServer>, position
     commands.spawn_batch(loots);
 }
 
-fn game_over(commands: &mut Commands, asset_server: &Res<AssetServer>) {}
+fn game_over(commands: &mut Commands) {}

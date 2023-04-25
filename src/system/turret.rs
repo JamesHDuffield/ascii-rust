@@ -1,10 +1,10 @@
-use crate::{colour, component::*};
+use crate::{colour, component::*, resource::Fonts};
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 
 pub fn turret_system(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    fonts: Res<Fonts>,
     time: Res<Time>,
     mut query: Query<(&mut Turret, &Parent), With<Turret>>,
     target_query: Query<(Entity, &Transform, &Targettable), (With<Targettable>, With<Transform>)>,
@@ -51,7 +51,7 @@ pub fn turret_system(
                         match turret.class {
                             TurretClass::AutoCannon => spawn_bullet(
                                 &mut commands,
-                                &asset_server,
+                                &fonts,
                                 parent_entity,
                                 origin,
                                 target_transform.translation.truncate(),
@@ -75,7 +75,7 @@ pub fn turret_system(
 
 fn spawn_bullet(
     commands: &mut Commands,
-    asset_server: &Res<AssetServer>,
+    fonts: &Res<Fonts>,
     entity: Entity,
     origin: Vec2,
     target: Vec2,
@@ -88,7 +88,7 @@ fn spawn_bullet(
             text: Text::from_section(
                 ".",
                 TextStyle {
-                    font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                    font: fonts.primary.clone(),
                     font_size: 12.0,
                     color: colour::WHITE,
                 },

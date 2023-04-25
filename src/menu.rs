@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::AppState;
+use crate::{AppState, resource::Fonts};
 
 #[derive(Resource)]
 struct MainMenuData {
@@ -21,7 +21,7 @@ impl Plugin for MainMenuPlugin {
     }
 }
 
-fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup_menu(mut commands: Commands, fonts: Res<Fonts>) {
   let button_entity = commands
       .spawn(NodeBundle {
           style: Style {
@@ -51,7 +51,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                   parent.spawn(TextBundle::from_section(
                       "Play",
                       TextStyle {
-                          font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                          font: fonts.primary.clone(),
                           font_size: 40.0,
                           color: Color::rgb(0.9, 0.9, 0.9),
                       },

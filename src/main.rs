@@ -1,16 +1,19 @@
 mod colour;
 mod component;
-mod math;
+mod resource;
 mod system;
+mod math;
 mod menu;
+
 
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
 use bevy_prototype_lyon::prelude::*;
 use component::*;
+use resource::*;
+use system::*;
 use menu::MainMenuPlugin;
 use rand::*;
 use std::f32::consts::PI;
-use system::*;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum AppState {
@@ -59,7 +62,9 @@ fn main() {
         .run();
 }
 
-fn setup(mut commands: Commands) {
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+    // Create resources
+    commands.insert_resource(Fonts { primary: asset_server.load("fonts/AnonymousPro-Regular.ttf") });
     // Spawn the Camera
     commands.spawn((
         Camera2dBundle {
@@ -73,14 +78,14 @@ fn setup(mut commands: Commands) {
 }
 
 // Spawn the player
-fn setup_player(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
     commands
         .spawn((
             Text2dBundle {
                 text: Text::from_section(
                     "V",
                     TextStyle {
-                        font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                        font: fonts.primary.clone(),
                         font_size: 40.0,
                         color: colour::PLAYER,
                     },
@@ -142,7 +147,7 @@ fn setup_spawners(mut commands: Commands) {
 }
 
 // Spawn the hud
-fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
     commands
         .spawn((
             NodeBundle {
@@ -167,7 +172,7 @@ fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
             parent.spawn(TextBundle::from_section(
                 "Health",
                 TextStyle {
-                    font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                    font: fonts.primary.clone(),
                     font_size: 12.0,
                     color: colour::WHITE,
                 },
@@ -175,7 +180,7 @@ fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
             parent.spawn(TextBundle::from_section(
                 "Shield",
                 TextStyle {
-                    font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                    font: fonts.primary.clone(),
                     font_size: 12.0,
                     color: colour::SHIELD,
                 },
@@ -183,7 +188,7 @@ fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
             parent.spawn(TextBundle::from_section(
                 "Engine",
                 TextStyle {
-                    font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                    font: fonts.primary.clone(),
                     font_size: 12.0,
                     color: colour::INACTIVE,
                 },
@@ -191,7 +196,7 @@ fn setup_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
             parent.spawn(TextBundle::from_section(
                 "Cargo",
                 TextStyle {
-                    font: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+                    font: fonts.primary.clone(),
                     font_size: 12.0,
                     color: colour::RED,
                 },
