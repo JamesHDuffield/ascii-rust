@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::component::*;
+use crate::{component::*, GameState};
 
 pub fn player_control(
   mouse_button_input: Res<Input<MouseButton>>,
@@ -19,5 +19,19 @@ pub fn player_control(
       } else {
           engine.target = None;
       }
+  }
+}
+
+pub fn pause_control(
+  key_input: Res<Input<KeyCode>>,
+  game_state: Res<State<GameState>>,
+  mut change_game_state: ResMut<NextState<GameState>>
+) {
+  if key_input.just_pressed(KeyCode::Escape) {
+    match game_state.0 {
+      GameState::Running => change_game_state.set(GameState::Paused),
+      GameState::Paused => change_game_state.set(GameState::Running),
+      _ => ()
+    }
   }
 }

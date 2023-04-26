@@ -1,4 +1,4 @@
-use crate::{colour, component::*, resource::Fonts};
+use crate::{colour, component::*, resource::Fonts, GameState};
 use bevy::prelude::*;
 use rand::prelude::*;
 
@@ -14,6 +14,7 @@ pub fn death_system(
         ),
         With<ShouldDespawn>,
     >,
+    mut game_state: ResMut<NextState<GameState>>,
 ) {
     for (entity, drops_loot, transform, is_player) in &mut query {
         commands.entity(entity).despawn_recursive();
@@ -25,7 +26,7 @@ pub fn death_system(
         }
 
         if let Some(_) = is_player {
-            game_over(&mut commands);
+            game_state.set(GameState::GameOver);
         }
     }
 }
@@ -65,5 +66,3 @@ fn spawn_loot(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
         .collect::<Vec<_>>();
     commands.spawn_batch(loots);
 }
-
-fn game_over(commands: &mut Commands) {}

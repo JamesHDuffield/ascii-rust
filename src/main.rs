@@ -1,25 +1,32 @@
 mod colour;
 mod component;
-mod resource;
-mod system;
 mod math;
 mod menu;
-
+mod resource;
+mod system;
 
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
 use bevy_prototype_lyon::prelude::*;
 use component::*;
-use resource::*;
-use system::*;
 use menu::MainMenuPlugin;
 use rand::*;
+use resource::*;
 use std::f32::consts::PI;
+use system::*;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum AppState {
     #[default]
     Menu,
     InGame,
+}
+
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
+pub enum GameState {
+    #[default]
+    Running,
+    Paused,
+    GameOver,
 }
 
 fn main() {
@@ -33,15 +40,18 @@ fn main() {
         }))
         .add_plugin(ShapePlugin)
         .add_state::<AppState>()
+        .add_state::<GameState>()
         .add_startup_system(setup)
         .add_plugin(MainMenuPlugin)
         // InGame
         .add_systems(
             (setup_player, setup_hud, setup_spawners).in_schedule(OnEnter(AppState::InGame)),
         )
+        // Always run while game is running
+        .add_systems((ui_system, pause_control).in_set(OnUpdate(AppState::InGame)))
+        // Only run when unpaused
         .add_systems(
             (
-                ui_system,
                 physics_system,
                 engine_system,
                 player_control,
@@ -50,21 +60,33 @@ fn main() {
                 bullet_system,
                 bullet_collision_system,
                 combat_system,
-                spawner_system,
-                ai_system,
                 laser_render_system,
                 explosion_render_system,
+                ai_system,
                 death_system,
+                loot_magnet_system,
+                loot_cargo_collision,
             )
-                .in_set(OnUpdate(AppState::InGame)),
+                .distributive_run_if(game_not_paused).in_set(OnUpdate(AppState::InGame)),
         )
-        .add_systems((loot_magnet_system, loot_cargo_collision).in_set(OnUpdate(AppState::InGame)))
+        // Stop when game over
+        .add_system(spawner_system.run_if(game_not_over))
         .run();
+}
+
+fn game_not_over(game_state: Res<State<GameState>>) -> bool {
+    game_state.0 != GameState::GameOver
+}
+
+fn game_not_paused(game_state: Res<State<GameState>>) -> bool {
+    game_state.0 != GameState::Paused
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Create resources
-    commands.insert_resource(Fonts { primary: asset_server.load("fonts/AnonymousPro-Regular.ttf") });
+    commands.insert_resource(Fonts {
+        primary: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+    });
     // Spawn the Camera
     commands.spawn((
         Camera2dBundle {
