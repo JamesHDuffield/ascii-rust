@@ -193,6 +193,7 @@ name = "ascii"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_embedded_assets",
  "bevy_prototype_lyon",
  "rand",
 ]
@@ -279,7 +280,6 @@ version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b93f906133305915d63f04108e6873c1b93a6605fe374b8f3391f6bda093e396"
 dependencies = [
- "bevy_dylib",
  "bevy_internal",
 ]
 
@@ -437,15 +437,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_dylib"
-version = "0.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5256c735e1e1587f9eab08b9268fcd881fc2e6403d75a89580582ed35cc79193"
-dependencies = [
- "bevy_internal",
-]
-
-[[package]]
 name = "bevy_ecs"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -475,6 +466,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
+]
+
+[[package]]
+name = "bevy_embedded_assets"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2a1d4ecf67c553196cfdef560cf0748f1f699db5a86ed2aa211c958e2a379451"
+dependencies = [
+ "bevy",
+ "cargo-emit",
 ]
 
 [[package]]
@@ -1087,6 +1088,12 @@ name = "bytes"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "89b2fd2a0dcf38d7971e2194b6b6eebab45ae01067456a7fd93d5547a61b70be"
+
+[[package]]
+name = "cargo-emit"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1582e1c9e755dd6ad6b224dcffb135d199399a4568d454bd89fe515ca8425695"
 
 [[package]]
 name = "cc"

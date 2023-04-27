@@ -1,3 +1,5 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 mod colour;
 mod component;
 mod math;
@@ -6,6 +8,7 @@ mod resource;
 mod system;
 
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
+use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_prototype_lyon::prelude::*;
 use component::*;
 use menu::MainMenuPlugin;
@@ -31,13 +34,18 @@ pub enum GameState {
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                title: String::from("Outer Shell"),
-                ..Default::default()
-            }),
-            ..Default::default()
-        }))
+        .add_plugins(
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        title: String::from("Outer Shell"),
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                })
+                .build()
+                .add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin),
+        )
         .add_plugin(ShapePlugin)
         .add_state::<AppState>()
         .add_state::<GameState>()

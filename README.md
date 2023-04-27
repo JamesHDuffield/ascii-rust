@@ -1,1 +1,3 @@
-Bevy WSL dependencies `sudo apt install g++ pkg-config libx11-dev libasound2-dev libudev-dev libwayland-dev libxkbcommon-dev mesa-vulkan-drivers`
+## Outer Shell
+
+use `cargo run --features bevy/dynamic_linking` to run locally

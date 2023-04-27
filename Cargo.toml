@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.10.1", features = ["dynamic_linking"] }
+bevy = "0.10.1"
+bevy_embedded_assets = "0.7.0"
 bevy_prototype_lyon = "0.8.0"
 rand = "0.8.5"
 
