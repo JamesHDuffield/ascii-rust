@@ -31,7 +31,7 @@ fn spawn_enemy(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
                 rotation: Quat::from_rotation_z(PI / 2.0),
             },
             Physics::new(5.0),
-            Engine::new(10.0, 10.0),
+            Engine::new(18.0, 18.0),
             Health::new(60, 20),
             Collider { radius: 5.0 },
             Targettable(Allegiance::ENEMY),

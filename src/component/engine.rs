@@ -14,7 +14,7 @@ pub struct Engine {
 impl Engine {
 
     pub fn new(power: f32, max_speed: f32) -> Engine {
-        Engine { target: None, method: EngineMethod::Approach, power, speed: 0.0, max_speed, depower_factor: 5.0, steering_factor: 40.0 }
+        Engine { target: None, method: EngineMethod::Approach, power, speed: 0.0, max_speed, depower_factor: 5.0, steering_factor: 20.0 }
     }
 
     pub fn new_with_steering(power: f32, max_speed: f32, steering_factor: f32) -> Engine {

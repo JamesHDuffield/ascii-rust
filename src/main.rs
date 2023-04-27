@@ -136,7 +136,7 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
             },
             IsPlayer,
             Physics::new(5.0),
-            Engine::new_with_steering(10.0, 20.0, 20.0),
+            Engine::new_with_steering(20.0, 40.0, 10.0),
             Health::new(100, 100),
             Collider { radius: 5.0 },
             Targettable(Allegiance::PLAYER),
