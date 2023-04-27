@@ -19,6 +19,9 @@ jobs:
     - uses: dtolnay/rust-toolchain@stable
       with:
         targets: wasm32-unknown-unknown
-    - uses: jetli/wasm-bindgen-action@v0.2.0
+    - name: Install wasm-bindgen 
+      run:  cargo install wasm-bindgen-cli
     - name: Build
-      run: cargo build --release --target wasm32-unknown-unknown && wasm-bindgen --out-dir ./out/ --target web ./target/wasm32-unknown-unknown/release/ascii.wasm
+      run: cargo build --release --target wasm32-unknown-unknown
+    - name: Wasm Bundle
+      run: wasm-bindgen --out-dir ./out/ --target web ./target/wasm32-unknown-unknown/release/ascii.wasm
