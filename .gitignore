@@ -1,1 +1,4 @@
 /target
+/out/*.js
+/out/*.ts
+/out/*.wasm

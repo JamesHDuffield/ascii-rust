@@ -39,6 +39,7 @@ fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         title: String::from("Outer Shell"),
+                        fit_canvas_to_parent: true,
                         ..Default::default()
                     }),
                     ..Default::default()
