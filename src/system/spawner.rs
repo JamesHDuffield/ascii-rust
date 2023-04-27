@@ -38,6 +38,7 @@ fn spawn_enemy(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
             WillTarget(vec![Allegiance::PLAYER]),
             AI,
             DropsLoot,
+            DespawnWithScene,
         ))
         .with_children(|parent| {
             parent.spawn(Turret::new(1.0, 200.0));

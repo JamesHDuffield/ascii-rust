@@ -67,15 +67,18 @@ fn main() {
                 loot_magnet_system,
                 loot_cargo_collision,
             )
-                .distributive_run_if(game_not_paused).in_set(OnUpdate(AppState::InGame)),
+                .distributive_run_if(game_not_paused)
+                .in_set(OnUpdate(AppState::InGame)),
         )
         // Stop when game over
-        .add_system(spawner_system.run_if(game_not_over))
+        .add_system(
+            spawner_system
+                .run_if(in_state(GameState::Running))
+                .in_set(OnUpdate(AppState::InGame)),
+        )
+        // Cleanup
+        .add_system(reset_game.in_schedule(OnExit(AppState::InGame)))
         .run();
-}
-
-fn game_not_over(game_state: Res<State<GameState>>) -> bool {
-    game_state.0 != GameState::GameOver
 }
 
 fn game_not_paused(game_state: Res<State<GameState>>) -> bool {
@@ -143,6 +146,7 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
                 range: 500.0,
                 strength: 5.0,
             },
+            DespawnWithScene,
         ))
         .with_children(|parent| {
             parent.spawn(Turret::blast_laser());
@@ -164,6 +168,7 @@ fn setup_spawners(mut commands: Commands) {
                 },
                 ..default()
             },
+            DespawnWithScene,
         ));
     }
 }
@@ -189,6 +194,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                 ..default()
             },
             UINode,
+            DespawnWithScene,
         ))
         .with_children(|parent| {
             parent.spawn(TextBundle::from_section(
@@ -224,4 +230,15 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                 },
             ));
         });
+}
+
+fn reset_game(
+    mut commands: Commands,
+    query: Query<Entity, With<DespawnWithScene>>,
+    mut next_game_state: ResMut<NextState<GameState>>,
+) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+    next_game_state.set(GameState::Running);
 }

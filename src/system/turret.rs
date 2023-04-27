@@ -107,6 +107,7 @@ fn spawn_bullet(
         },
         Collider { radius: 5.0 },
         Owner(entity),
+        DespawnWithScene,
     ));
 }
 
@@ -126,6 +127,7 @@ fn spawn_laser(
         },
         Stroke::new(colour::RED, 1.0),
         Owner(entity),
+        DespawnWithScene,
     ));
     // Immediate hit
     if let Some(mut health) = target_health {

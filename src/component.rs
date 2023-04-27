@@ -65,6 +65,9 @@ pub struct ExplosionRender {
 #[derive(Component)]
 pub struct ShouldDespawn;
 
+#[derive(Component)]
+pub struct DespawnWithScene;
+
 // Turret components
 
 // Bullet Components

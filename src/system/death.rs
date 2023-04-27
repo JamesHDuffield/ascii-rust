@@ -20,7 +20,7 @@ pub fn death_system(
         commands.entity(entity).despawn_recursive();
 
         if let Some(transform) = transform {
-            if let Some(drops_loot) = drops_loot {
+            if let Some(_drops_loot) = drops_loot {
                 spawn_loot(&mut commands, &fonts, transform.translation);
             }
         }
