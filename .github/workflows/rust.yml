@@ -25,3 +25,7 @@ jobs:
       run: cargo build --release --target wasm32-unknown-unknown
     - name: Wasm Bundle
       run: wasm-bindgen --out-dir ./out/ --target web ./target/wasm32-unknown-unknown/release/ascii.wasm
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: output
