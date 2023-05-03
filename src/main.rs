@@ -109,6 +109,13 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         MainCamera,
     ));
+    // Spawn a shape so that the shape loop always runs (fixes bug with library cleaning itself up)
+    commands.spawn((
+        ShapeBundle {
+            path: GeometryBuilder::build_as(&shapes::Line(Vec2::ZERO, Vec2::ZERO)),
+            ..default()
+        },
+    ));
 }
 
 // Spawn the player
