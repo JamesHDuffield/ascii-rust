@@ -25,9 +25,9 @@ jobs:
     - name: Install wasm-bindgen 
       run:  cargo install wasm-bindgen-cli
     - name: Build
-      run: cargo build --release --target wasm32-unknown-unknown
+      run: cargo build --profile release-web --target wasm32-unknown-unknown
     - name: Wasm Bundle
-      run: wasm-bindgen --out-dir ./out/ --target web ./target/wasm32-unknown-unknown/release/ascii.wasm
+      run: wasm-bindgen --out-dir ./out/ --target web ./target/wasm32-unknown-unknown/release-web/ascii.wasm
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@v4
       with:

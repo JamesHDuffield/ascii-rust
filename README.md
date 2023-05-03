@@ -6,5 +6,5 @@ use `cargo run --features bevy/dynamic_linking` to run locally
 
 - `rustup target install wasm32-unknown-unknown`
 - `cargo install wasm-bindgen-cli`
-- `cargo build --release --target wasm32-unknown-unknown`
-- `wasm-bindgen --out-dir ./out/ --target web ./target/wasm32-unknown-unknown/release/ascii.wasm`
+- `cargo build --profile release-web --target wasm32-unknown-unknown`
+- `wasm-bindgen --out-dir ./out/ --target web ./target/wasm32-unknown-unknown/release-web/ascii.wasm`
