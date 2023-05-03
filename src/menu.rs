@@ -10,7 +10,6 @@ struct MenuButton(pub ButtonAction);
 
 enum ButtonAction {
     Play,
-    Options,
     Exit,
     ToTitle,
 }
@@ -53,7 +52,7 @@ fn setup_menu(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<M
         })
         .with_children(|parent| {
             button(parent, &fonts, "Play", ButtonAction::Play);
-            button(parent, &fonts, "Options", ButtonAction::Options);
+            #[cfg(not(target_arch = "wasm32"))]
             button(parent, &fonts, "Exit", ButtonAction::Exit);
         })
         .id();
@@ -73,7 +72,6 @@ fn menu(
             Interaction::Clicked => {
                 match button.0 {
                     ButtonAction::Play => next_state.set(AppState::InGame),
-                    ButtonAction::Options => (),
                     ButtonAction::Exit => exit.send(AppExit),
                     ButtonAction::ToTitle => next_state.set(AppState::Menu),
                 }
