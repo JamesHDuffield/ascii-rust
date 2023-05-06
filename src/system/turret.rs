@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use crate::{colour, component::*, resource::Fonts};
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
@@ -63,6 +65,13 @@ pub fn turret_system(
                                 target_transform.translation.truncate(),
                                 target_health,
                             ),
+                            TurretClass::RocketLauncher => spawn_rocket(
+                                &mut commands,
+                                &fonts,
+                                parent_entity,
+                                origin,
+                                target,
+                            ),
                         }
                     }
                 }
@@ -83,14 +92,14 @@ fn spawn_bullet(
     let bullet_speed = 1000.0;
     let direction = (target - origin).normalize();
     commands.spawn((
-        Bullet::new(3.2),
+        Bullet::new(1.2),
         Text2dBundle {
             text: Text::from_section(
                 ".",
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
-                    color: colour::WHITE,
+                    color: colour::RED,
                 },
             )
             .with_alignment(TextAlignment::Center),
@@ -133,4 +142,46 @@ fn spawn_laser(
     if let Some(mut health) = target_health {
         health.take_damage(1);
     }
+}
+
+fn spawn_rocket(
+    commands: &mut Commands,
+    fonts: &Res<Fonts>,
+    owner: Entity,
+    origin: Vec2,
+    target: Entity,
+) {
+    commands.spawn((
+        Bullet::new(3.0),
+        Text2dBundle {
+            text: Text::from_section(
+                "!",
+                TextStyle {
+                    font: fonts.primary.clone(),
+                    font_size: 12.0,
+                    color: colour::WHITE,
+                },
+            )
+            .with_alignment(TextAlignment::Center),
+            transform: Transform {
+                translation: origin.extend(0.0),
+                ..Default::default()
+            },
+            ..default()
+        },
+        BaseGlyphRotation {
+            rotation: Quat::from_rotation_z(PI / 2.0),
+        },
+        Physics {
+            acceleration: Vec2::ZERO,
+            velocity: Vec2::ZERO,
+            drag: 0.0,
+        },
+        Engine::new_with_steering(40.0, 10.0, 0.5),
+        Seeker(target),
+        Collider { radius: 5.0 },
+        Owner(owner),
+        ExplodesOnDespawn::default(),
+        DespawnWithScene,
+    ));
 }

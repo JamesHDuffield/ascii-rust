@@ -57,3 +57,18 @@ fn orbit(current: Vec2, target: Vec2, distance: f32) -> Vec2 {
     return approach(current, new_target)
   }
 }
+
+pub fn seeker_system(
+  mut commands: Commands,
+  mut query: Query<(&Seeker, &mut Engine), (With<Seeker>, With<Engine>)>,
+  target_query: Query<&Transform, With<Transform>>,
+) {
+  for (seeker, mut engine) in &mut query {
+    if let Some(_) = commands.get_entity(seeker.0) {
+      if let Ok(target) = target_query.get(seeker.0) {
+        engine.target = Some(target.translation.truncate());
+      }
+    }
+  }
+  
+}

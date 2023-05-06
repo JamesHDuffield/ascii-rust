@@ -17,6 +17,8 @@ pub use bullet::*;
 pub use spawner::*;
 pub use loot::*;
 
+use crate::colour;
+
 // Simple components
 #[derive(Component)]
 pub struct IsPlayer;
@@ -68,8 +70,38 @@ pub struct ShouldDespawn;
 #[derive(Component)]
 pub struct DespawnWithScene;
 
+#[derive(Component)]
+pub struct ExplodesOnDespawn {
+    pub amount_min: u32,
+    pub amount_max: u32,
+    pub spread: f32,
+    pub colour: Color,
+    pub duration_min: f32,
+    pub duration_max: f32,
+    pub size_min: f32,
+    pub size_max: f32,
+}
+
+impl ExplodesOnDespawn {
+    pub fn default() -> ExplodesOnDespawn {
+        ExplodesOnDespawn {
+            amount_min: 1,
+            amount_max: 1,
+            colour: colour::RED,
+            duration_min: 0.3,
+            duration_max: 0.4,
+            size_min: 20.0,
+            size_max: 50.0,
+            spread: 10.0,
+        }
+    }
+}
+
 // Turret components
 
 // Bullet Components
 #[derive(Component)]
 pub struct LaserRender;
+
+#[derive(Component)]
+pub struct Seeker(pub Entity);

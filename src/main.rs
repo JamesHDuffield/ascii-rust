@@ -75,6 +75,7 @@ fn main() {
                 death_system,
                 loot_magnet_system,
                 loot_cargo_collision,
+                seeker_system,
             )
                 .distributive_run_if(game_not_paused)
                 .in_set(OnUpdate(AppState::InGame)),
@@ -162,10 +163,11 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
                 range: 500.0,
                 strength: 5.0,
             },
+            ExplodesOnDespawn::default(),
             DespawnWithScene,
         ))
         .with_children(|parent| {
-            parent.spawn(Turret::blast_laser());
+            parent.spawn(Turret::rocket_launcher());
         });
 }
 

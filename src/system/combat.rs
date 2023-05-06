@@ -1,17 +1,14 @@
-use crate::{colour, component::*};
+use crate::component::*;
 use bevy::prelude::*;
-use bevy_prototype_lyon::prelude::*;
-use rand::Rng;
 
 pub fn combat_system(
     mut commands: Commands,
     time: Res<Time>,
-    mut query: Query<(&mut Health, Entity, &Transform), With<Health>>,
+    mut query: Query<(&mut Health, Entity), With<Health>>,
 ) {
-    for (mut health, entity, transform) in &mut query {
+    for (mut health, entity) in &mut query {
         if health.health <= 0 {
             commands.entity(entity).insert(ShouldDespawn);
-            death(&mut commands, transform);
             continue;
         }
         // Recharge shield
@@ -25,28 +22,5 @@ pub fn combat_system(
                 health.shield += 1;
             }
         }
-    }
-}
-
-fn death(commands: &mut Commands, transform: &Transform) {
-    // Spawn several explosions
-    let mut rng = rand::thread_rng();
-    for _ in 0..3 {
-      let offset = Vec2 { x: rng.gen_range(-10.0..=10.0), y: rng.gen_range(-10.0..=10.0) };
-      commands.spawn((
-          ExplosionRender {
-              origin: transform.translation.truncate() + offset,
-              radius: rng.gen_range(20.0..=50.0),
-              ttl: Timer::from_seconds(rng.gen_range(0.3..=0.4), TimerMode::Once),
-          },
-          ShapeBundle {
-              path: GeometryBuilder::build_as(&shapes::Circle {
-                  center: transform.translation.truncate(),
-                  radius: 0.0,
-              }),
-              ..default()
-          },
-          Stroke::new(colour::RED, 1.0),
-      ));
     }
 }

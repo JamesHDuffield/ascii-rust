@@ -1,5 +1,6 @@
 use crate::{colour, component::*, resource::Fonts, GameState};
 use bevy::prelude::*;
+use bevy_prototype_lyon::prelude::*;
 use rand::prelude::*;
 
 pub fn death_system(
@@ -11,17 +12,21 @@ pub fn death_system(
             Option<&DropsLoot>,
             Option<&Transform>,
             Option<&IsPlayer>,
+            Option<&ExplodesOnDespawn>,
         ),
         With<ShouldDespawn>,
     >,
     mut game_state: ResMut<NextState<GameState>>,
 ) {
-    for (entity, drops_loot, transform, is_player) in &mut query {
+    for (entity, drops_loot, transform, is_player, explodes) in &mut query {
         commands.entity(entity).despawn_recursive();
 
         if let Some(transform) = transform {
             if let Some(_drops_loot) = drops_loot {
                 spawn_loot(&mut commands, &fonts, transform.translation);
+            }
+            if let Some(explodes) = explodes {
+                explode(&mut commands, explodes, transform.translation.truncate());
             }
         }
 
@@ -61,8 +66,32 @@ fn spawn_loot(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
                     velocity: Vec2::ZERO,
                 },
                 Collider { radius: 20.0 },
+                DespawnWithScene,
             )
         })
         .collect::<Vec<_>>();
     commands.spawn_batch(loots);
+}
+
+fn explode(commands: &mut Commands, explodes: &ExplodesOnDespawn, position: Vec2) {
+    // Spawn several explosions
+    let mut rng = rand::thread_rng();
+    for _ in explodes.amount_min..=explodes.amount_max {
+      let offset = Vec2 { x: rng.gen_range(-explodes.spread..=explodes.spread), y: rng.gen_range(-explodes.spread..=explodes.spread) };
+      commands.spawn((
+          ExplosionRender {
+              origin: position + offset,
+              radius: rng.gen_range(explodes.size_min..=explodes.size_max),
+              ttl: Timer::from_seconds(rng.gen_range(explodes.duration_min..=explodes.duration_max), TimerMode::Once),
+          },
+          ShapeBundle {
+              path: GeometryBuilder::build_as(&shapes::Circle {
+                  center: position,
+                  radius: 0.0,
+              }),
+              ..default()
+          },
+          Stroke::new(explodes.colour, 1.0),
+      ));
+    }
 }
