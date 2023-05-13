@@ -116,6 +116,7 @@ fn spawn_bullet(
         },
         Collider { radius: 5.0 },
         Owner(entity),
+        DirectDamage(2),
         DespawnWithScene,
     ));
 }
@@ -182,6 +183,7 @@ fn spawn_rocket(
         Collider { radius: 5.0 },
         Owner(owner),
         ExplodesOnDespawn::default(),
+        AoeDamage { damage: 5, range: 40.0 },
         DespawnWithScene,
     ));
 }

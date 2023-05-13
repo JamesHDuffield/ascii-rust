@@ -90,8 +90,8 @@ impl ExplodesOnDespawn {
             colour: colour::RED,
             duration_min: 0.3,
             duration_max: 0.4,
-            size_min: 20.0,
-            size_max: 50.0,
+            size_min: 40.0,
+            size_max: 40.0,
             spread: 10.0,
         }
     }
@@ -105,3 +105,12 @@ pub struct LaserRender;
 
 #[derive(Component)]
 pub struct Seeker(pub Entity);
+
+#[derive(Component)]
+pub struct DirectDamage(pub i32);
+
+#[derive(Component)]
+pub struct AoeDamage {
+    pub damage: i32,
+    pub range: f32,
+}
