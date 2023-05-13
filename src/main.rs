@@ -167,7 +167,7 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
             DespawnWithScene,
         ))
         .with_children(|parent| {
-            parent.spawn(Turret::rocket_launcher());
+            parent.spawn(Turret::mine_launcher());
         });
 }
 

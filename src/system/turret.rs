@@ -72,6 +72,12 @@ pub fn turret_system(
                                 origin,
                                 target,
                             ),
+                            TurretClass::MineLauncher => spawn_mine(
+                                &mut commands,
+                                &fonts,
+                                parent_entity,
+                                origin,
+                            ),
                         }
                     }
                 }
@@ -181,6 +187,39 @@ fn spawn_rocket(
         Engine::new_with_steering(40.0, 10.0, 0.5),
         Seeker(target),
         Collider { radius: 5.0 },
+        Owner(owner),
+        ExplodesOnDespawn::default(),
+        AoeDamage { damage: 5, range: 40.0 },
+        DespawnWithScene,
+    ));
+}
+
+fn spawn_mine(
+    commands: &mut Commands,
+    fonts: &Res<Fonts>,
+    owner: Entity,
+    origin: Vec2,
+) {
+    commands.spawn((
+        Bullet::new(30.0),
+        Text2dBundle {
+            text: Text::from_section(
+                "+",
+                TextStyle {
+                    font: fonts.primary.clone(),
+                    font_size: 12.0,
+                    color: colour::WHITE,
+                },
+            )
+            .with_alignment(TextAlignment::Center),
+            transform: Transform {
+                translation: origin.extend(0.0),
+                ..Default::default()
+            },
+            ..default()
+        },
+        Health::new(1, 0),
+        Collider { radius: 40.0 },
         Owner(owner),
         ExplodesOnDespawn::default(),
         AoeDamage { damage: 5, range: 40.0 },
