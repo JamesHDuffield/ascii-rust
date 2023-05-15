@@ -7,6 +7,7 @@ mod turret;
 mod bullet;
 mod spawner;
 mod loot;
+mod worth_points;
 
 // Complex components
 pub use physics::*;
@@ -16,6 +17,7 @@ pub use turret::*;
 pub use bullet::*;
 pub use spawner::*;
 pub use loot::*;
+pub use worth_points::*;
 
 use crate::colour;
 

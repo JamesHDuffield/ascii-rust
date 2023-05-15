@@ -100,6 +100,10 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.insert_resource(Fonts {
         primary: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
     });
+
+    // Create point count
+    commands.insert_resource(Points { value: 0 });
+
     // Spawn the Camera
     commands.spawn((
         Camera2dBundle {
@@ -254,9 +258,11 @@ fn reset_game(
     mut commands: Commands,
     query: Query<Entity, With<DespawnWithScene>>,
     mut next_game_state: ResMut<NextState<GameState>>,
+    mut points: ResMut<Points>,
 ) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
     next_game_state.set(GameState::Running);
+    points.value = 0;
 }

@@ -1,6 +1,6 @@
 use bevy::{prelude::*, app::AppExit};
 
-use crate::{resource::Fonts, AppState, GameState};
+use crate::{resource::*, AppState, GameState};
 
 #[derive(Resource)]
 struct MenuData(pub Vec<Entity>);
@@ -160,7 +160,7 @@ fn setup_paused(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut
     menu_data.0.push(root_entity);
 }
 
-fn setup_game_over(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<MenuData>) {
+fn setup_game_over(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<MenuData>, points: Res<Points>) {
     let root_entity = commands
         .spawn(NodeBundle {
             style: Style {
@@ -175,6 +175,14 @@ fn setup_game_over(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: Res
             ..default()
         })
         .with_children(|parent| {
+            parent.spawn(TextBundle::from_section(
+                format!("{} points!", points.into_inner()),
+                TextStyle {
+                    font: fonts.primary.clone(),
+                    font_size: 30.0,
+                    color: Color::rgb(0.9, 0.9, 0.9),
+                },
+            ));
             button(parent, &fonts, "Return To Title", ButtonAction::ToTitle);
         })
         .id();
