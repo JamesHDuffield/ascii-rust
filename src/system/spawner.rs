@@ -40,6 +40,7 @@ fn spawn_enemy(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
             DropsLoot,
             ExplodesOnDespawn::default(),
             DespawnWithScene,
+            WorthPoints { value: 10 },
         ))
         .with_children(|parent| {
             parent.spawn(Turret::auto_cannon());

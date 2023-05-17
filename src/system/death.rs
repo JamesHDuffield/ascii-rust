@@ -1,4 +1,4 @@
-use crate::{colour, component::*, resource::Fonts, GameState};
+use crate::{colour, component::*, resource::{Fonts, Points}, GameState};
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use rand::prelude::*;
@@ -13,12 +13,14 @@ pub fn death_system(
             Option<&Transform>,
             Option<&IsPlayer>,
             Option<&ExplodesOnDespawn>,
+            Option<&WorthPoints>,
         ),
         With<ShouldDespawn>,
     >,
     mut game_state: ResMut<NextState<GameState>>,
+    mut points: ResMut<Points>,
 ) {
-    for (entity, drops_loot, transform, is_player, explodes) in &mut query {
+    for (entity, drops_loot, transform, is_player, explodes, worth_points) in &mut query {
         commands.entity(entity).despawn_recursive();
 
         if let Some(transform) = transform {
@@ -28,6 +30,10 @@ pub fn death_system(
             if let Some(explodes) = explodes {
                 explode(&mut commands, explodes, transform.translation.truncate());
             }
+        }
+
+        if let Some(worth_points) = worth_points {
+            points.value += worth_points.value;
         }
 
         if let Some(_) = is_player {
@@ -67,6 +73,7 @@ fn spawn_loot(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
                 },
                 Collider { radius: 20.0 },
                 DespawnWithScene,
+                WorthPoints { value: 1 },
             )
         })
         .collect::<Vec<_>>();
