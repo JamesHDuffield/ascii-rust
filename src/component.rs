@@ -5,7 +5,6 @@ mod engine;
 mod health;
 mod turret;
 mod bullet;
-mod spawner;
 mod loot;
 mod worth_points;
 
@@ -15,7 +14,6 @@ pub use engine::*;
 pub use health::*;
 pub use turret::*;
 pub use bullet::*;
-pub use spawner::*;
 pub use loot::*;
 pub use worth_points::*;
 

@@ -16,3 +16,10 @@ impl fmt::Display for Points {
         write!(f, "{}", self.value)
     }
 }
+
+#[derive(Resource)]
+pub struct Spawning {
+    pub max: u32,
+    pub batch_size: u32,
+    pub timer: Timer,
+}

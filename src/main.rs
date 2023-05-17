@@ -12,7 +12,6 @@ use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_prototype_lyon::prelude::*;
 use component::*;
 use menu::MainMenuPlugin;
-use rand::*;
 use resource::*;
 use std::f32::consts::PI;
 use system::*;
@@ -54,7 +53,7 @@ fn main() {
         .add_plugin(MainMenuPlugin)
         // InGame
         .add_systems(
-            (setup_player, setup_hud, setup_spawners).in_schedule(OnEnter(AppState::InGame)),
+            (setup_player, setup_hud).in_schedule(OnEnter(AppState::InGame)),
         )
         // Always run while game is running
         .add_systems((ui_system, pause_control).in_set(OnUpdate(AppState::InGame)))
@@ -103,6 +102,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     // Create point count
     commands.insert_resource(Points { value: 0 });
+
+    // Set spawn limit (TODO increase with Time / Level)
+    commands.insert_resource(Spawning { max: 100, batch_size: 20, timer: Timer::from_seconds(5.0, TimerMode::Repeating) });
 
     // Spawn the Camera
     commands.spawn((
@@ -173,26 +175,6 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
         .with_children(|parent| {
             parent.spawn(Turret::mine_launcher());
         });
-}
-
-// Spawn the enemy spawners
-fn setup_spawners(mut commands: Commands) {
-    let mut rng = rand::thread_rng();
-    // Spawn enemy spawners
-    for _ in 0..10 {
-        commands.spawn((
-            Spawner::new(30.0, 2.0),
-            Transform {
-                translation: Vec3 {
-                    x: rng.gen_range(-1000.0..1000.0),
-                    y: rng.gen_range(-1000.0..1000.0),
-                    z: 0.0,
-                },
-                ..default()
-            },
-            DespawnWithScene,
-        ));
-    }
 }
 
 // Spawn the hud
