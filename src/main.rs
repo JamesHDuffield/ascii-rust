@@ -13,7 +13,7 @@ use bevy_prototype_lyon::prelude::*;
 use component::*;
 use menu::MainMenuPlugin;
 use resource::*;
-use std::f32::consts::PI;
+use std::{f32::consts::PI, time::Duration};
 use system::*;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
@@ -94,17 +94,23 @@ fn game_not_paused(game_state: Res<State<GameState>>) -> bool {
     game_state.0 != GameState::Paused
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>, time: Res<Time>) {
     // Create resources
     commands.insert_resource(Fonts {
         primary: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
     });
 
+    // Set the start time
+    commands.insert_resource(GameTime { start_time: time.elapsed().clone() });
+
     // Create point count
     commands.insert_resource(Points { value: 0 });
 
-    // Set spawn limit (TODO increase with Time / Level)
-    commands.insert_resource(Spawning { max: 100, batch_size: 20, timer: Timer::from_seconds(5.0, TimerMode::Repeating) });
+    // Set spawn limit
+    let seconds = 30.0;
+    let mut timer = Timer::from_seconds(seconds, TimerMode::Repeating);
+    timer.set_elapsed(Duration::from_secs_f32(seconds - 1.0));
+    commands.insert_resource(Spawning { max: 100, timer });
 
     // Spawn the Camera
     commands.spawn((

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use std::fmt;
+use std::{fmt, time::Duration};
 
 #[derive(Resource)]
 pub struct Fonts {
@@ -20,6 +20,10 @@ impl fmt::Display for Points {
 #[derive(Resource)]
 pub struct Spawning {
     pub max: u32,
-    pub batch_size: u32,
     pub timer: Timer,
+}
+
+#[derive(Resource)]
+pub struct GameTime {
+    pub start_time: Duration,
 }

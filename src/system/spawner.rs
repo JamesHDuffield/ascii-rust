@@ -1,6 +1,6 @@
 use std::{f32::consts::PI, cmp::min};
 
-use crate::{colour, component::*, resource::{Fonts, Spawning}, math::random_2d_unit_vector};
+use crate::{colour, component::*, resource::{Fonts, Spawning, GameTime}, math::random_2d_unit_vector};
 use bevy::prelude::*;
 
 fn spawn_enemy(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
@@ -51,15 +51,19 @@ pub fn spawner_system(
     mut commands: Commands,
     fonts: Res<Fonts>,
     time: Res<Time>,
+    game_time: Res<GameTime>,
     mut spawning: ResMut<Spawning>,
     enemies_query: Query<Entity, With<AI>>,
     player_query: Query<&Transform, With<IsPlayer>>,
 ) {
 
-    spawning.timer.tick(time.delta());
+    let seconds_since_start: u32 = (time.elapsed() - game_time.start_time).as_secs().try_into().unwrap_or_default();
+    let difficulty = seconds_since_start / 30 + 1; // Goes from 1-20 difficulty in 10 minutes
+
+    spawning.timer.tick(time.delta() * difficulty); // Spawns quicker as time goes on
 
     if spawning.timer.just_finished() {
-    
+
         if let Ok(player_transformation) = player_query.get_single() {
             // pick a random location off screen from player
             const DISTANCE_OFFSCREEN: f32 = 1000.0;
@@ -68,7 +72,7 @@ pub fn spawner_system(
             // Get current total amount of enemies
             let num_enemies: u32 = enemies_query.iter().len().try_into().unwrap_or(spawning.max);
 
-            let max_num_enemies_to_spawn = min(spawning.batch_size, spawning.max - num_enemies);
+            let max_num_enemies_to_spawn = min(difficulty * 5, spawning.max - num_enemies); // Spawns more as time goes on
 
             for _ in 0..max_num_enemies_to_spawn {
                 // Ensure they spawn in a pack not on top of eachother
