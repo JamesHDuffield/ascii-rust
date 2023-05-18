@@ -1,25 +1,31 @@
 use bevy::prelude::*;
+use bevy_parallax::ParallaxMoveEvent;
 use crate::component::*;
 
 pub fn camera_follow(
   time: Res<Time>,
   player_q: Query<&Transform, (With<Transform>, With<IsPlayer>, Without<MainCamera>)>,
-  mut camera_q: Query<&mut Transform, (With<Transform>, With<MainCamera>, Without<IsPlayer>)>,
+  camera_q: Query<&Transform, (With<Transform>, With<MainCamera>, Without<IsPlayer>)>,
+  mut move_event_writer: EventWriter<ParallaxMoveEvent>,
 ) {
 
-  if let Ok(mut camera_transform) = camera_q.get_single_mut() {
+  if let Ok(camera_transform) = camera_q.get_single() {
 
     if let Ok(player_transform) = player_q.get_single() {
 
       // Calculate the new camera position based on the player's position
-      let target_position = Vec3::new(
+      let target_position = Vec2::new(
           player_transform.translation.x + 1.0,
           player_transform.translation.y,
-          camera_transform.translation.z, // Keep the original camera z position
       );
 
-      // Smoothly interpolate the camera position towards the target position
-      camera_transform.translation = camera_transform.translation.lerp(target_position, 5.0 * time.delta_seconds());
+      let current_position = Vec2::new(
+        camera_transform.translation.x,
+        camera_transform.translation.y
+      );
+
+      let smooth_move_position = current_position.lerp(target_position, 5.0 * time.delta_seconds());
+      move_event_writer.send(ParallaxMoveEvent { camera_move_speed: smooth_move_position - current_position });
     }
 
   }

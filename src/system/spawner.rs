@@ -77,7 +77,7 @@ pub fn spawner_system(
             for _ in 0..max_num_enemies_to_spawn {
                 // Ensure they spawn in a pack not on top of eachother
                 let jiggled_spawn = spawn_point + random_2d_unit_vector() * 10.0;
-                spawn_enemy(&mut commands, &fonts, jiggled_spawn.extend(0.0));
+                spawn_enemy(&mut commands, &fonts, jiggled_spawn.extend(2.0));
             }
         }
 

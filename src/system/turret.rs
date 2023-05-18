@@ -110,7 +110,7 @@ fn spawn_bullet(
             )
             .with_alignment(TextAlignment::Center),
             transform: Transform {
-                translation: origin.extend(0.0),
+                translation: origin.extend(0.9),
                 ..Default::default()
             },
             ..default()
@@ -171,7 +171,7 @@ fn spawn_rocket(
             )
             .with_alignment(TextAlignment::Center),
             transform: Transform {
-                translation: origin.extend(0.0),
+                translation: origin.extend(0.9),
                 ..Default::default()
             },
             ..default()
@@ -213,7 +213,7 @@ fn spawn_mine(
             )
             .with_alignment(TextAlignment::Center),
             transform: Transform {
-                translation: origin.extend(0.0),
+                translation: origin.extend(0.9),
                 ..Default::default()
             },
             ..default()
