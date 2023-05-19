@@ -2,6 +2,7 @@
 
 mod colour;
 mod component;
+mod layer;
 mod math;
 mod menu;
 mod selection;
@@ -10,8 +11,10 @@ mod system;
 
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
 use bevy_embedded_assets::EmbeddedAssetPlugin;
+use bevy_parallax::{LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin, ParallaxResource, ParallaxSystems};
 use bevy_prototype_lyon::prelude::*;
 use component::*;
+use layer::RenderLayer;
 use menu::MainMenuPlugin;
 use selection::SelectionPlugin;
 use resource::*;
@@ -50,6 +53,7 @@ fn main() {
                 .add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin),
         )
         .add_plugin(ShapePlugin)
+        .add_plugin(ParallaxPlugin)
         .add_state::<AppState>()
         .add_state::<GameState>()
         .add_startup_system(setup)
@@ -67,7 +71,7 @@ fn main() {
                 physics_system,
                 engine_system,
                 player_control,
-                camera_follow,
+                camera_follow.before(ParallaxSystems),
                 turret_system,
                 bullet_system,
                 bullet_collision_system,
@@ -99,6 +103,27 @@ fn main() {
         )
         // Cleanup
         .add_system(reset_game.in_schedule(OnExit(AppState::InGame)))
+        .insert_resource(ParallaxResource {
+            layer_data: vec![
+                LayerData {
+                    speed: LayerSpeed::Bidirectional(0.95, 0.95),
+                    path: "nebula-tile.png".to_string(),
+                    tile_size: Vec2::new(1024.0, 1024.0),
+                    scale: 5.0,
+                    z: RenderLayer::Background.as_z_with_offset(-10.),
+                    ..default()
+                },
+                LayerData {
+                    speed: LayerSpeed::Bidirectional(0.9, 0.9),
+                    path: "stars-tile.png".to_string(),
+                    tile_size: Vec2::new(1024.0, 1024.0),
+                    scale: 1.0,
+                    z: RenderLayer::Background.as_z(),
+                    ..default()
+                },
+            ],
+            ..default()
+        })
         .run();
 }
 
@@ -128,15 +153,17 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, time: Res<Time>
     commands.insert_resource(Spawning { max: 100, timer });
 
     // Spawn the Camera
-    commands.spawn((
-        Camera2dBundle {
-            camera_2d: Camera2d {
-                clear_color: ClearColorConfig::Custom(colour::BLACK),
+    commands
+        .spawn((
+            Camera2dBundle {
+                camera_2d: Camera2d {
+                    clear_color: ClearColorConfig::Custom(colour::BLACK),
+                },
+                ..Default::default()
             },
-            ..Default::default()
-        },
-        MainCamera,
-    ));
+            MainCamera,
+        ))
+        .insert(ParallaxCameraComponent);
     // Spawn a shape so that the shape loop always runs (fixes bug with library cleaning itself up)
     commands.spawn((
         ShapeBundle {
@@ -164,7 +191,7 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
                     translation: Vec3 {
                         x: 100.0,
                         y: 100.0,
-                        z: 0.0,
+                        z: RenderLayer::Player.as_z(),
                     },
                     scale: Vec3 {
                         x: 0.5,

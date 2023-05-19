@@ -1,6 +1,6 @@
 use std::f32::consts::PI;
 
-use crate::{colour, component::*, resource::Fonts};
+use crate::{colour, component::*, resource::Fonts, layer::RenderLayer};
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 
@@ -20,9 +20,9 @@ pub fn turret_targetting_system(
                     .filter(|a| a.0 != parent_entity && parent_will_target.0.contains(&a.2.0))
                     .collect();
                 potentials_without_parent.sort_by(|a, b| {
-                    a.1.translation
-                        .distance(parent_transform.translation)
-                        .partial_cmp(&b.1.translation.distance(parent_transform.translation))
+                    a.1.translation.truncate()
+                        .distance(parent_transform.translation.truncate())
+                        .partial_cmp(&b.1.translation.truncate().distance(parent_transform.translation.truncate()))
                         .unwrap()
                 });
                 targets.target = potentials_without_parent
@@ -118,7 +118,7 @@ fn spawn_bullet(
             )
             .with_alignment(TextAlignment::Center),
             transform: Transform {
-                translation: origin.extend(0.0),
+                translation: origin.extend(RenderLayer::Bullet.as_z()),
                 ..Default::default()
             },
             ..default()
@@ -147,6 +147,7 @@ fn spawn_laser(
         LaserRender,
         ShapeBundle {
             path: GeometryBuilder::build_as(&shapes::Line(origin, target)),
+            transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
             ..default()
         },
         Stroke::new(colour::RED, 1.0),
@@ -179,7 +180,7 @@ fn spawn_rocket(
             )
             .with_alignment(TextAlignment::Center),
             transform: Transform {
-                translation: origin.extend(0.0),
+                translation: origin.extend(RenderLayer::Bullet.as_z()),
                 ..Default::default()
             },
             ..default()
@@ -221,7 +222,7 @@ fn spawn_mine(
             )
             .with_alignment(TextAlignment::Center),
             transform: Transform {
-                translation: origin.extend(0.0),
+                translation: origin.extend(RenderLayer::Bullet.as_z()),
                 ..Default::default()
             },
             ..default()

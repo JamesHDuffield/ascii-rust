@@ -193,6 +193,7 @@ name = "ascii"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy-parallax",
  "bevy_embedded_assets",
  "bevy_prototype_lyon",
  "rand",
@@ -281,6 +282,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b93f906133305915d63f04108e6873c1b93a6605fe374b8f3391f6bda093e396"
 dependencies = [
  "bevy_internal",
+]
+
+[[package]]
+name = "bevy-parallax"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12025beb406b3c0d61f982600c844316e297f8ec359e9a8fda23fa1daedb4a20"
+dependencies = [
+ "bevy",
+ "serde",
 ]
 
 [[package]]
