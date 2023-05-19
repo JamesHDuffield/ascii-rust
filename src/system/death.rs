@@ -96,7 +96,7 @@ fn explode(commands: &mut Commands, explodes: &ExplodesOnDespawn, position: Vec2
                   center: position,
                   radius: 0.0,
               }),
-              transform: Transform::from_xyz(0., 0., RenderLayer::Effects.with_offset(0.)),
+              transform: Transform::from_xyz(0., 0., RenderLayer::Effects.as_z()),
               ..default()
           },
           Stroke::new(explodes.colour, 1.0),

@@ -110,7 +110,7 @@ fn spawn_bullet(
             )
             .with_alignment(TextAlignment::Center),
             transform: Transform {
-                translation: origin.extend(RenderLayer::Bullet.with_offset(0.)),
+                translation: origin.extend(RenderLayer::Bullet.as_z()),
                 ..Default::default()
             },
             ..default()
@@ -139,7 +139,7 @@ fn spawn_laser(
         LaserRender,
         ShapeBundle {
             path: GeometryBuilder::build_as(&shapes::Line(origin, target)),
-            transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.with_offset(0.)),
+            transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
             ..default()
         },
         Stroke::new(colour::RED, 1.0),
@@ -172,7 +172,7 @@ fn spawn_rocket(
             )
             .with_alignment(TextAlignment::Center),
             transform: Transform {
-                translation: origin.extend(RenderLayer::Bullet.with_offset(0.)),
+                translation: origin.extend(RenderLayer::Bullet.as_z()),
                 ..Default::default()
             },
             ..default()
@@ -214,7 +214,7 @@ fn spawn_mine(
             )
             .with_alignment(TextAlignment::Center),
             transform: Transform {
-                translation: origin.extend(RenderLayer::Bullet.with_offset(0.)),
+                translation: origin.extend(RenderLayer::Bullet.as_z()),
                 ..Default::default()
             },
             ..default()

@@ -98,7 +98,7 @@ fn main() {
                     path: "nebula-tile.png".to_string(),
                     tile_size: Vec2::new(1024.0, 1024.0),
                     scale: 5.0,
-                    z: RenderLayer::Background.with_offset(-10.),
+                    z: RenderLayer::Background.as_z_with_offset(-10.),
                     ..default()
                 },
                 LayerData {
@@ -106,7 +106,7 @@ fn main() {
                     path: "stars-tile.png".to_string(),
                     tile_size: Vec2::new(1024.0, 1024.0),
                     scale: 1.0,
-                    z: RenderLayer::Background.with_offset(0.),
+                    z: RenderLayer::Background.as_z(),
                     ..default()
                 },
             ],
@@ -176,7 +176,7 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
                     translation: Vec3 {
                         x: 100.0,
                         y: 100.0,
-                        z: RenderLayer::Player.with_offset(0.),
+                        z: RenderLayer::Player.as_z(),
                     },
                     scale: Vec3 {
                         x: 0.5,
