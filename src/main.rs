@@ -79,6 +79,13 @@ fn main() {
                 .distributive_run_if(game_not_paused)
                 .in_set(OnUpdate(AppState::InGame)),
         )
+        .add_systems(
+            (
+                turret_targetting_system,
+            )
+                .distributive_run_if(game_not_paused)
+                .in_set(OnUpdate(AppState::InGame)),
+        )
         // Stop when game over
         .add_system(
             spawner_system

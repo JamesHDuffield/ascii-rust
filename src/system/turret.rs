@@ -4,19 +4,13 @@ use crate::{colour, component::*, resource::Fonts};
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 
-pub fn turret_system(
-    mut commands: Commands,
-    fonts: Res<Fonts>,
-    time: Res<Time>,
-    mut query: Query<(&mut FireRate, &TurretClass, &mut Targets, &Parent), (With<TurretClass>, With<FireRate>, With<Targets>)>,
+pub fn turret_targetting_system(
+    mut query: Query<(&mut Targets, &Parent), With<Targets>>,
     target_query: Query<(Entity, &Transform, &Targettable), (With<Targettable>, With<Transform>)>,
     parent_query: Query<(&Transform, Entity, &WillTarget), (With<Transform>, With<WillTarget>)>,
-    mut existing_query: Query<(&Transform, Option<&mut Health>), With<Transform>>,
 ) {
     let potential_targets: Vec<(Entity, &Transform, &Targettable)> = target_query.iter().collect();
-    for (mut fire_rate, class, mut targets, parent) in &mut query {
-        
-        
+    for (mut targets, parent) in &mut query {
         // Get parent (ship)
         if let Ok((parent_transform, parent_entity, parent_will_target)) = parent_query.get(parent.get()) {
             if targets.target == None {
@@ -34,10 +28,22 @@ pub fn turret_system(
                 targets.target = potentials_without_parent
                     .first()
                     .map(|potential| potential.0);
-                // Switching targets resets turret timer
-                fire_rate.timer.reset();
             }
+        }
+    }
+}
 
+pub fn turret_system(
+    mut commands: Commands,
+    fonts: Res<Fonts>,
+    time: Res<Time>,
+    mut query: Query<(&mut FireRate, &TurretClass, &mut Targets, &Parent), (With<TurretClass>, With<FireRate>, With<Targets>)>,
+    parent_query: Query<(&Transform, Entity), With<Transform>>,
+    mut existing_query: Query<(&Transform, Option<&mut Health>), With<Transform>>,
+) {
+    for (mut fire_rate, class, mut targets, parent) in &mut query {
+        // Get parent (ship)
+        if let Ok((parent_transform, parent_entity)) = parent_query.get(parent.get()) {
             if let Some(target) = targets.target {
                 // Check target still exists and if not clear it
                 match commands.get_entity(target) {
