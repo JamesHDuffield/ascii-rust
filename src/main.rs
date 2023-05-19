@@ -82,6 +82,7 @@ fn main() {
         .add_systems(
             (
                 turret_targetting_system,
+                level_up_system,
             )
                 .distributive_run_if(game_not_paused)
                 .in_set(OnUpdate(AppState::InGame)),
@@ -112,6 +113,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, time: Res<Time>
 
     // Create point count
     commands.insert_resource(Points { value: 0 });
+
+    // Start player at level 1
+    commands.insert_resource(PlayerLevel { value: 1 });
 
     // Set spawn limit
     let seconds = 30.0;
@@ -231,19 +235,19 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                 },
             ));
             parent.spawn(TextBundle::from_section(
+                "Level",
+                TextStyle {
+                    font: fonts.primary.clone(),
+                    font_size: 12.0,
+                    color: colour::RED,
+                },
+            ));
+            parent.spawn(TextBundle::from_section(
                 "Engine",
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
                     color: colour::INACTIVE,
-                },
-            ));
-            parent.spawn(TextBundle::from_section(
-                "Cargo",
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 12.0,
-                    color: colour::RED,
                 },
             ));
         });

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::{component::*, GameState};
+use crate::{component::*, GameState, resource::PlayerLevel};
 
 pub fn player_control(
   mouse_button_input: Res<Input<MouseButton>>,
@@ -32,6 +32,18 @@ pub fn pause_control(
       GameState::Running => change_game_state.set(GameState::Paused),
       GameState::Paused => change_game_state.set(GameState::Running),
       _ => ()
+    }
+  }
+}
+
+pub fn level_up_system(
+  mut level: ResMut<PlayerLevel>,
+  mut query: Query<&mut Cargo, With<IsPlayer>>,
+) {
+  for mut cargo in &mut query {
+    if cargo.0 >= level.required_cargo_to_level() {
+      cargo.0 -= level.required_cargo_to_level();
+      level.value += 1;
     }
   }
 }

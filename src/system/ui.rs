@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::component::*;
+use crate::{component::*, resource::PlayerLevel};
 
 fn bar(current: i32, max: i32, width: i32) -> String {
   let bars: usize = match (current.clamp(0, max) * width / max).try_into() {
@@ -14,6 +14,7 @@ pub fn ui_system(
     turret_query: Query<(&FireRate, &DisplayName)>,
     mut query: Query<(&Children, &UINode)>,
     mut q_child: Query<&mut Text>,
+    level: Res<PlayerLevel>,
 ) {
     if let Ok((engine, health, cargo, turrets)) = player_query.get_single() {
         // Loop over children and update display values
@@ -23,8 +24,8 @@ pub fn ui_system(
                 UINode::Status => vec![
                     format!("{:<8} {} {}", "Armor", bar(health.health, health.max_health, 10), health.health),
                     format!("{:<8} {} {}", "Shield", bar(health.shield, health.max_shield, 10), health.shield),
+                    format!("{:<8} {} {:0>2}", "Level", bar(cargo.0 as i32, level.required_cargo_to_level() as i32, 10), level.value),
                     format!("{:<8} {} m/s", "Speed", engine.speed.round()),
-                    format!("{:<8} {} scrap", "Cargo", cargo.0),
                 ],
                 UINode::Equipment => { 
                     let mut display = turrets

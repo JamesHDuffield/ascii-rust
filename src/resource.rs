@@ -27,3 +27,14 @@ pub struct Spawning {
 pub struct GameTime {
     pub start_time: Duration,
 }
+
+#[derive(Resource)]
+pub struct PlayerLevel {
+    pub value: u32,
+}
+
+impl PlayerLevel {
+    pub fn required_cargo_to_level(&self) -> u32 {
+        self.value * 10 // TODO make exponential?
+    }
+}
