@@ -43,7 +43,7 @@ fn spawn_enemy(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
             WorthPoints { value: 10 },
         ))
         .with_children(|parent| {
-            parent.spawn(Turret::auto_cannon());
+            parent.spawn(TurretBundle::auto_cannon());
         });
 }
 

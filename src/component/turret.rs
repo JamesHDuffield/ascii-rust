@@ -1,41 +1,85 @@
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub struct Turret {
-    pub rate_of_fire: f32,
+pub struct Range {
+    pub max: f32,
+}
+
+#[derive(Component)]
+pub struct FireRate {
+    pub rate: f32,
     pub timer: Timer,
-    pub range: f32,
+}
+
+impl FireRate {
+    fn from_rate_in_seconds(rate: f32) -> FireRate {
+        FireRate { rate, timer: Timer::from_seconds(1.0 / rate, TimerMode::Repeating) }
+    }
+}
+
+#[derive(Component)]
+pub struct Targets {
     pub target: Option<Entity>,
-    pub class: TurretClass,
 }
 
-impl Turret {
-
-    pub fn auto_cannon() -> Turret {
-        let rate_of_fire = 1.0;
-        Turret { target: None, rate_of_fire, range: 200.0, timer: Timer::from_seconds(1.0 / rate_of_fire, TimerMode::Repeating), class: TurretClass::AutoCannon }
+impl Targets {
+    fn default() -> Targets {
+        Targets { target: None }
     }
-
-    pub fn blast_laser() -> Turret {
-        let rate_of_fire = 2.0;
-        Turret { target: None, rate_of_fire, range: 200.0, timer: Timer::from_seconds(1.0 / rate_of_fire, TimerMode::Repeating), class: TurretClass::BlastLaser }
-    }
-
-    pub fn rocket_launcher() -> Turret {
-        let rate_of_fire = 0.5;
-        Turret { target: None, rate_of_fire, range: 800.0, timer: Timer::from_seconds(1.0 / rate_of_fire, TimerMode::Repeating), class: TurretClass::RocketLauncher }
-    }
-
-    pub fn mine_launcher() -> Turret {
-        let rate_of_fire = 0.9;
-        Turret { target: None, rate_of_fire, range: 800.0, timer: Timer::from_seconds(1.0 / rate_of_fire, TimerMode::Repeating), class: TurretClass::MineLauncher }
-    }
-
 }
 
+#[derive(Component)]
 pub enum TurretClass {
     AutoCannon,
     BlastLaser,
     RocketLauncher,
     MineLauncher,
+}
+
+#[derive(Bundle)]
+pub struct TurretBundle {
+    range: Range,
+    fire_rate: FireRate,
+    target: Targets,
+    class: TurretClass,
+}
+
+impl TurretBundle {
+
+    pub fn auto_cannon() -> TurretBundle {
+        TurretBundle {
+            class: TurretClass::AutoCannon,
+            range: Range { max: 200.0 },
+            target: Targets::default(),
+            fire_rate: FireRate::from_rate_in_seconds(1.0),
+        }
+    }
+
+    pub fn blast_laser() -> TurretBundle {
+        TurretBundle {
+            class: TurretClass::BlastLaser,
+            range: Range { max: 200.0 },
+            target: Targets::default(),
+            fire_rate: FireRate::from_rate_in_seconds(2.0),
+        }
+    }
+
+    pub fn rocket_launcher() -> TurretBundle {
+        TurretBundle {
+            class: TurretClass::RocketLauncher,
+            range: Range { max: 800.0 },
+            target: Targets::default(),
+            fire_rate: FireRate::from_rate_in_seconds(0.5),
+        }
+    }
+
+    pub fn mine_launcher() -> TurretBundle {
+        TurretBundle {
+            class: TurretClass::MineLauncher,
+            range: Range { max: 800.0 },
+            target: Targets::default(),
+            fire_rate: FireRate::from_rate_in_seconds(0.9),
+        }
+    }
+
 }
