@@ -4,6 +4,7 @@ mod colour;
 mod component;
 mod math;
 mod menu;
+mod selection;
 mod resource;
 mod system;
 
@@ -12,6 +13,7 @@ use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_prototype_lyon::prelude::*;
 use component::*;
 use menu::MainMenuPlugin;
+use selection::SelectionPlugin;
 use resource::*;
 use std::{f32::consts::PI, time::Duration};
 use system::*;
@@ -27,6 +29,7 @@ enum AppState {
 pub enum GameState {
     #[default]
     Running,
+    Selection,
     Paused,
     GameOver,
 }
@@ -51,6 +54,7 @@ fn main() {
         .add_state::<GameState>()
         .add_startup_system(setup)
         .add_plugin(MainMenuPlugin)
+        .add_plugin(SelectionPlugin)
         // InGame
         .add_systems(
             (setup_player, setup_hud).in_schedule(OnEnter(AppState::InGame)),
@@ -99,7 +103,7 @@ fn main() {
 }
 
 fn game_not_paused(game_state: Res<State<GameState>>) -> bool {
-    game_state.0 != GameState::Paused
+    game_state.0 != GameState::Paused && game_state.0 != GameState::Selection
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>, time: Res<Time>) {
