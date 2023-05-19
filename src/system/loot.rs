@@ -7,10 +7,10 @@ pub fn loot_magnet_system(
 ) {
   for (magnet, transform) in &query {
     for (mut physics, loot_transform) in &mut loot_query {
-      if loot_transform.translation.distance(transform.translation) > magnet.range {
+      if loot_transform.translation.truncate().distance(transform.translation.truncate()) > magnet.range {
         continue;
       }
-      let direction = (transform.translation - loot_transform.translation).normalize_or_zero().truncate();
+      let direction = (transform.translation.truncate() - loot_transform.translation.truncate()).normalize_or_zero();
       physics.add_force(direction * magnet.strength);
     }
   }
@@ -25,7 +25,7 @@ pub fn loot_cargo_collision(
   
   for (mut cargo, transform, collider) in &mut query {
     for (loot_transform, loot_entity, loot_collider, worth_points) in &loot_query {
-      if loot_transform.translation.distance(transform.translation) <= loot_collider.radius + collider.radius {
+      if loot_transform.translation.truncate().distance(transform.translation.truncate()) <= loot_collider.radius + collider.radius {
         cargo.0 += 1;
         if let Some(mut subcommand) = commands.get_entity(loot_entity) {
           subcommand.despawn(); // Direct despawn because adding ShouldDespawn has issues

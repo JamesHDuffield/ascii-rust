@@ -48,7 +48,7 @@ pub fn bullet_collision_system(
 
         // Sort by distance to bullet
         let hit = potentials.iter().find(|potential| {
-            transform.translation.distance(potential.1.translation)
+            transform.translation.truncate().distance(potential.1.translation.truncate())
                 <= collider.radius + potential.0.radius
         });
 
@@ -61,7 +61,7 @@ pub fn bullet_collision_system(
             }
             if let Some(aoe_damage) = aoe_damage {
                 let all_hits = potentials.iter().filter(|potential| {
-                  transform.translation.distance(potential.1.translation) <= aoe_damage.range
+                  transform.translation.truncate().distance(potential.1.translation.truncate()) <= aoe_damage.range
                 });
                 for h in all_hits {
                   if let Ok(mut health) = effected_query.get_mut(h.2) {

@@ -2,6 +2,7 @@
 
 mod colour;
 mod component;
+mod layer;
 mod math;
 mod menu;
 mod resource;
@@ -12,6 +13,7 @@ use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_parallax::{LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin, ParallaxResource, ParallaxSystems};
 use bevy_prototype_lyon::prelude::*;
 use component::*;
+use layer::RenderLayer;
 use menu::MainMenuPlugin;
 use resource::*;
 use std::{f32::consts::PI, time::Duration};
@@ -92,23 +94,19 @@ fn main() {
         .insert_resource(ParallaxResource {
             layer_data: vec![
                 LayerData {
-                    speed: LayerSpeed::Bidirectional(0.7, 0.7),
+                    speed: LayerSpeed::Bidirectional(0.95, 0.95),
                     path: "nebula-tile.png".to_string(),
                     tile_size: Vec2::new(1024.0, 1024.0),
-                    cols: 1,
-                    rows: 1,
-                    scale: 10.0,
-                    z: 0.0,
+                    scale: 5.0,
+                    z: RenderLayer::Background.with_offset(-10.),
                     ..default()
                 },
                 LayerData {
-                    speed: LayerSpeed::Bidirectional(0.0, 0.0),
+                    speed: LayerSpeed::Bidirectional(0.9, 0.9),
                     path: "stars-tile.png".to_string(),
                     tile_size: Vec2::new(1024.0, 1024.0),
-                    cols: 1,
-                    rows: 1,
                     scale: 1.0,
-                    z: 0.1,
+                    z: RenderLayer::Background.with_offset(0.),
                     ..default()
                 },
             ],
@@ -178,7 +176,7 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
                     translation: Vec3 {
                         x: 100.0,
                         y: 100.0,
-                        z: 1.0,
+                        z: RenderLayer::Player.with_offset(0.),
                     },
                     scale: Vec3 {
                         x: 0.5,
