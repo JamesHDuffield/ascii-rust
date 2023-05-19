@@ -10,20 +10,34 @@ fn bar(current: i32, max: i32, width: i32) -> String {
 }
 
 pub fn ui_system(
-    player_query: Query<(&Engine, &Health, &Cargo), (With<IsPlayer>, With<Engine>, With<Health>, With<Cargo>)>,
-    mut query: Query<&Children, With<UINode>>,
+    player_query: Query<(&Engine, &Health, &Cargo, &Children), (With<IsPlayer>, With<Engine>, With<Health>, With<Cargo>)>,
+    turret_query: Query<(&FireRate, &DisplayName)>,
+    mut query: Query<(&Children, &UINode)>,
     mut q_child: Query<&mut Text>,
 ) {
-    if let Ok((engine, health, cargo)) = player_query.get_single() {
-        let displays = vec![
-            format!("Armor  {} {}", bar(health.health, health.max_health, 10), health.health),
-            format!("Shield {} {}", bar(health.shield, health.max_shield, 10), health.shield),
-            format!("Speed  {} m/s", engine.speed.round()),
-            format!("Cargo  {} scrap", cargo.0),
-        ];
-
+    if let Ok((engine, health, cargo, turrets)) = player_query.get_single() {
         // Loop over children and update display values
-        for children in &mut query {
+        for (children, ui_node) in &mut query {
+
+            let displays = match ui_node {
+                UINode::Status => vec![
+                    format!("{:<8} {} {}", "Armor", bar(health.health, health.max_health, 10), health.health),
+                    format!("{:<8} {} {}", "Shield", bar(health.shield, health.max_shield, 10), health.shield),
+                    format!("{:<8} {} m/s", "Speed", engine.speed.round()),
+                    format!("{:<8} {} scrap", "Cargo", cargo.0),
+                ],
+                UINode::Equipment => { 
+                    let mut display = turrets
+                        .iter()
+                        .map(|e| turret_query.get(*e))
+                        .filter_map(|result| result.ok())
+                        .map(|(fire_rate, name)| format!("{} {:>16}", bar((fire_rate.timer.percent() * 10.0).round() as i32, 10, 10), name.0))
+                        .collect::<Vec<String>>();
+                    display.resize_with(5, Default::default);
+                    display
+                }
+            };
+
             for (i, display) in displays.iter().enumerate() {
                 if let Some(&child) = children.get(i) {
                     if let Ok(mut text) = q_child.get_mut(child) {

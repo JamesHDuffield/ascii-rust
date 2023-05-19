@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use super::DisplayName;
+
 #[derive(Component)]
 pub struct Range {
     pub max: f32,
@@ -38,6 +40,7 @@ pub enum TurretClass {
 
 #[derive(Bundle)]
 pub struct TurretBundle {
+    name: DisplayName,
     range: Range,
     fire_rate: FireRate,
     target: Targets,
@@ -48,6 +51,7 @@ impl TurretBundle {
 
     pub fn auto_cannon() -> TurretBundle {
         TurretBundle {
+            name: DisplayName(String::from("Auto Cannon")),
             class: TurretClass::AutoCannon,
             range: Range { max: 200.0 },
             target: Targets::default(),
@@ -57,6 +61,7 @@ impl TurretBundle {
 
     pub fn blast_laser() -> TurretBundle {
         TurretBundle {
+            name: DisplayName(String::from("Blast Laser")),
             class: TurretClass::BlastLaser,
             range: Range { max: 200.0 },
             target: Targets::default(),
@@ -66,6 +71,7 @@ impl TurretBundle {
 
     pub fn rocket_launcher() -> TurretBundle {
         TurretBundle {
+            name: DisplayName(String::from("Rocket Launcher")),
             class: TurretClass::RocketLauncher,
             range: Range { max: 800.0 },
             target: Targets::default(),
@@ -75,6 +81,7 @@ impl TurretBundle {
 
     pub fn mine_launcher() -> TurretBundle {
         TurretBundle {
+            name: DisplayName(String::from("Mine Launcher")),
             class: TurretClass::MineLauncher,
             range: Range { max: 800.0 },
             target: Targets::default(),

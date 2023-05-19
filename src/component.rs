@@ -21,6 +21,9 @@ use crate::colour;
 
 // Simple components
 #[derive(Component)]
+pub struct DisplayName(pub String);
+
+#[derive(Component)]
 pub struct IsPlayer;
 
 #[derive(Component)]
@@ -35,7 +38,10 @@ pub struct BaseGlyphRotation {
 }
 
 #[derive(Component)]
-pub struct UINode;
+pub enum UINode {
+    Status,
+    Equipment,
+}
 
 #[derive(Component)]
 pub struct Collider {
