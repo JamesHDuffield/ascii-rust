@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{resource::*, GameState};
+use crate::{resource::*, GameState, component::{TurretBundle, TurretClass}};
 
 #[derive(Resource)]
 struct SelectionData(pub Vec<Entity>);
@@ -25,6 +25,10 @@ impl Plugin for SelectionPlugin {
 }
 
 fn setup_selection(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<SelectionData>) {
+
+    // Roll for options
+
+
     let root_entity = commands
         .spawn(NodeBundle {
             style: Style {

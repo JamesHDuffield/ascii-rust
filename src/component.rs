@@ -7,6 +7,7 @@ mod turret;
 mod bullet;
 mod loot;
 mod worth_points;
+mod upgrades;
 
 // Complex components
 pub use physics::*;
@@ -16,6 +17,7 @@ pub use turret::*;
 pub use bullet::*;
 pub use loot::*;
 pub use worth_points::*;
+pub use upgrades::*;
 
 use crate::colour;
 
@@ -101,22 +103,4 @@ impl ExplodesOnDespawn {
             spread: 10.0,
         }
     }
-}
-
-// Turret components
-
-// Bullet Components
-#[derive(Component)]
-pub struct LaserRender;
-
-#[derive(Component)]
-pub struct Seeker(pub Entity);
-
-#[derive(Component)]
-pub struct DirectDamage(pub i32);
-
-#[derive(Component)]
-pub struct AoeDamage {
-    pub damage: i32,
-    pub range: f32,
 }

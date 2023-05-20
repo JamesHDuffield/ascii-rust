@@ -2,17 +2,23 @@ use bevy::prelude::*;
 use crate::{component::*, resource::Points};
 
 pub fn loot_magnet_system(
-  query: Query<(&Magnet, &Transform), (With<Magnet>, With<Transform>)>,
+  query: Query<(&Magnet, &Transform, Option<&Upgrades>), (With<Magnet>, With<Transform>)>,
   mut loot_query: Query<(&mut Physics, &Transform), (With<IsLoot>, With<Physics>, With<Transform>, Without<Magnet>)>
 ) {
-  for (magnet, transform) in &query {
+  for (magnet, transform, upgrades) in &query {
+
+    let magnet_level = upgrades.map_or(0, |up| up.magnet);
+    let magnet_range = magnet.range + (magnet_level as f32) * 200.0;
+    let magnet_strength = magnet.strength + (magnet_level as f32) * 2.0;
+
     for (mut physics, loot_transform) in &mut loot_query {
-      if loot_transform.translation.truncate().distance(transform.translation.truncate()) > magnet.range {
+      if loot_transform.translation.truncate().distance(transform.translation.truncate()) > magnet_range {
         continue;
       }
       let direction = (transform.translation.truncate() - loot_transform.translation.truncate()).normalize_or_zero();
-      physics.add_force(direction * magnet.strength);
+      physics.add_force(direction * magnet_strength);
     }
+  
   }
 }
 

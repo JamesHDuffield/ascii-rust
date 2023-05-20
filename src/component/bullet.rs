@@ -12,3 +12,18 @@ impl Bullet {
     }
 
 }
+
+#[derive(Component)]
+pub struct LaserRender;
+
+#[derive(Component)]
+pub struct Seeker(pub Entity);
+
+#[derive(Component)]
+pub struct DirectDamage(pub i32);
+
+#[derive(Component)]
+pub struct AoeDamage {
+    pub damage: i32,
+    pub range: f32,
+}

@@ -217,6 +217,7 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
                 range: 500.0,
                 strength: 5.0,
             },
+            Upgrades::new(),
             ExplodesOnDespawn::default(),
             DespawnWithScene,
         ))
