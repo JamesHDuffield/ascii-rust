@@ -25,7 +25,7 @@ No automated build of the windows standalone are available yet, but you can comp
 To generate the web build a new target must be installed and bundled.
 
 - `rustup target install wasm32-unknown-unknown`
-- `cargo install wasm-bindgen-cli`
+- `cargo install wasm-bindgen-cli --version 0.2.84`
 - `cargo build --profile release-web --target wasm32-unknown-unknown`
 - `wasm-bindgen --out-dir ./out/ --target web ./target/wasm32-unknown-unknown/release-web/ascii.wasm`
 

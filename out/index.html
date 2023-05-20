@@ -12,10 +12,45 @@
         margin-right: auto;
         display: block;
       }
+
+      /* SpinKit by tobiasahlin https://github.com/tobiasahlin/SpinKit */
+      #spinner {
+        width: 80px;
+        height: 80px;
+        margin: calc(50vh - 40px) auto;
+        background-color: rgba(238, 236, 222, 1);
+
+        border-radius: 100%;  
+        -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
+        animation: sk-scaleout 1.0s infinite ease-in-out;
+      }
+
+      @-webkit-keyframes sk-scaleout {
+        0% { -webkit-transform: scale(0) }
+        100% {
+          -webkit-transform: scale(1.0);
+          opacity: 0;
+        }
+      }
+
+      @keyframes sk-scaleout {
+        0% { 
+          -webkit-transform: scale(0);
+          transform: scale(0);
+        } 100% {
+          -webkit-transform: scale(1.0);
+          transform: scale(1.0);
+          opacity: 0;
+        }
+      }
     </style>
   </head>
   <script type="module">
     import init from './ascii.js'
     init()
+      .finally(() => document.getElementById("spinner").remove());
   </script>
+  <body>
+    <div id="spinner"></div>
+  </body>
 </html>
