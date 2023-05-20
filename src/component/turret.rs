@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use rand::seq::SliceRandom;
 
 use super::DisplayName;
 
@@ -87,6 +88,11 @@ impl TurretBundle {
             target: Targets::default(),
             fire_rate: FireRate::from_rate_in_seconds(0.9),
         }
+    }
+
+    pub fn random_starting_weapon() -> TurretBundle {
+        let starting_weapons = vec![|| TurretBundle::auto_cannon(), || TurretBundle::blast_laser(), || TurretBundle::rocket_launcher(), || TurretBundle::mine_launcher()];
+        starting_weapons.choose(&mut rand::thread_rng()).unwrap()()
     }
 
 }
