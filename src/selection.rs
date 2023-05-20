@@ -1,12 +1,17 @@
 use bevy::prelude::*;
 
-use crate::{resource::*, GameState, component::{TurretBundle, TurretClass}};
+use crate::{resource::*, GameState, component::{TurretClass, UpgradeOption}};
 
 #[derive(Resource)]
 struct SelectionData(pub Vec<Entity>);
 
 #[derive(Component)]
 struct SelectionButton(pub u8);
+
+enum SelectionOption {
+    NewWeapon(TurretClass),
+    Upgrade(UpgradeOption),
+}
 
 const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
 const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
@@ -27,7 +32,7 @@ impl Plugin for SelectionPlugin {
 fn setup_selection(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<SelectionData>) {
 
     // Roll for options
-
+    let options: Vec<SelectionOption> = vec![SelectionOption::NewWeapon(TurretClass::AutoCannon), SelectionOption::Upgrade(UpgradeOption::Speed), SelectionOption::Upgrade(UpgradeOption::Magnet)];
 
     let root_entity = commands
         .spawn(NodeBundle {
@@ -43,9 +48,13 @@ fn setup_selection(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: Res
             ..default()
         })
         .with_children(|parent| {
-            button(parent, &fonts, "Option A", 0);
-            button(parent, &fonts, "Option B", 1);
-            button(parent, &fonts, "Option C", 2);
+            for option in options {
+                let text = match option {
+                    SelectionOption::NewWeapon(_) => format!("New Weapon: {}", "TODO"),
+                    SelectionOption::Upgrade(_) => format!("Upgrade: {}", "TODO"),
+                };
+                button(parent, &fonts, &text, 0);
+            }
         })
         .id();
     menu_data.0.push(root_entity);

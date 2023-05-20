@@ -10,13 +10,13 @@ fn bar(current: i32, max: i32, width: i32) -> String {
 }
 
 pub fn ui_system(
-    player_query: Query<(&Engine, &Health, &Cargo, &Children), (With<IsPlayer>, With<Engine>, With<Health>, With<Cargo>)>,
+    player_query: Query<(&Engine, &Health, &Cargo, &Upgrades, &Children), With<IsPlayer>>,
     turret_query: Query<(&FireRate, &DisplayName)>,
     mut query: Query<(&Children, &UINode)>,
     mut q_child: Query<&mut Text>,
     level: Res<PlayerLevel>,
 ) {
-    if let Ok((engine, health, cargo, turrets)) = player_query.get_single() {
+    if let Ok((engine, health, cargo, upgrades, turrets)) = player_query.get_single() {
         // Loop over children and update display values
         for (children, ui_node) in &mut query {
 
@@ -34,6 +34,11 @@ pub fn ui_system(
                         .filter_map(|result| result.ok())
                         .map(|(fire_rate, name)| format!("{} {:>16}", bar((fire_rate.timer.percent() * 10.0).round() as i32, 10, 10), name.0))
                         .collect::<Vec<String>>();
+                    display.resize_with(5, Default::default);
+                    display
+                },
+                UINode::Upgrades => {
+                    let mut display = upgrades.display_for_ui();
                     display.resize_with(5, Default::default);
                     display
                 }

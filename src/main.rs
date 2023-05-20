@@ -320,6 +320,43 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                 ));
             }
         });
+    
+    commands
+        .spawn((
+            NodeBundle {
+                style: Style {
+                    position_type: PositionType::Absolute,
+                    position: UiRect { right: Val::Px(0.0), bottom: Val::Px(0.0), ..Default::default() },
+                    size: Size {
+                        width: Val::Percent(20.0),
+                        height: Val::Percent(20.0),
+                    },
+                    margin: UiRect::all(Val::Px(5.0)),
+                    gap: Size {
+                        height: Val::Px(2.0),
+                        ..Default::default()
+                    },
+                    flex_direction: FlexDirection::ColumnReverse,
+                    align_items: AlignItems::End,
+                    ..default()
+                },
+                ..default()
+            },
+            UINode::Upgrades,
+            DespawnWithScene,
+        ))
+        .with_children(|parent| {
+            for _ in 0..5 {
+                parent.spawn(TextBundle::from_section(
+                    "Upgrade",
+                    TextStyle {
+                        font: fonts.primary.clone(),
+                        font_size: 12.0,
+                        color: colour::WHITE,
+                    },
+                ));
+            }
+        });
 }
 
 fn reset_game(

@@ -43,6 +43,7 @@ pub struct BaseGlyphRotation {
 pub enum UINode {
     Status,
     Equipment,
+    Upgrades,
 }
 
 #[derive(Component)]
