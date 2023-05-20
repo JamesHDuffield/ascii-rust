@@ -3,6 +3,7 @@ use std::f32::consts::PI;
 use crate::{colour, component::*, resource::Fonts, layer::RenderLayer};
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
+use rand::Rng;
 
 pub fn turret_targetting_system(
     mut query: Query<(&mut Targets, &Parent), With<Targets>>,
@@ -86,6 +87,13 @@ pub fn turret_system(
                                 parent_entity,
                                 origin,
                             ),
+                            TurretClass::ShrapnelCannon => spawn_shrapnel(
+                                &mut commands,
+                                &fonts,
+                                parent_entity,
+                                origin,
+                                target_transform.translation.truncate(),
+                            )
                         }
                     }
                 }
@@ -234,4 +242,24 @@ fn spawn_mine(
         AoeDamage { damage: 5, range: 40.0 },
         DespawnWithScene,
     ));
+}
+
+
+fn spawn_shrapnel(
+    commands: &mut Commands,
+    fonts: &Res<Fonts>,
+    entity: Entity,
+    origin: Vec2,
+    target: Vec2,
+) {
+    const NUM_BULLETS: u8 = 16;
+    const SPREAD: f32 = PI / 4.0;
+
+    let mut rng = rand::thread_rng();
+    let direction = (target - origin).normalize();
+    for _ in 0..NUM_BULLETS {
+        let random_angle = rng.gen_range(-SPREAD / 2.0..SPREAD / 2.0);
+        let spread_direction = Vec2::from_angle(random_angle).rotate(direction);
+        spawn_bullet(commands, fonts, entity, origin, origin + spread_direction);
+    }
 }

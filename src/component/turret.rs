@@ -37,6 +37,7 @@ pub enum TurretClass {
     BlastLaser,
     RocketLauncher,
     MineLauncher,
+    ShrapnelCannon,
 }
 
 #[derive(Bundle)]
@@ -87,6 +88,16 @@ impl TurretBundle {
             range: Range { max: 800.0 },
             target: Targets::default(),
             fire_rate: FireRate::from_rate_in_seconds(0.9),
+        }
+    }
+
+    pub fn shrapnel_cannon() -> TurretBundle {
+        TurretBundle {
+            name: DisplayName(String::from("Shrapnel Cannon")),
+            class: TurretClass::ShrapnelCannon,
+            range: Range { max: 400.0 },
+            target: Targets::default(),
+            fire_rate: FireRate::from_rate_in_seconds(0.25),
         }
     }
 
