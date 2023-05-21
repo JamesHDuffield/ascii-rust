@@ -127,15 +127,9 @@ fn upgrade_weapon_event(
                     match existing {
                         Some(entity) => println!("TODO Existing Weapon Upgrades"),
                         None => {
-                            let new_turret = match weapon {
-                                TurretClass::AutoCannon => TurretBundle::auto_cannon(),
-                                TurretClass::BlastLaser => TurretBundle::blast_laser(),
-                                TurretClass::RocketLauncher => TurretBundle::rocket_launcher(),
-                                TurretClass::MineLauncher => TurretBundle::mine_launcher(),
-                            };
                             commands
                                 .entity(player_entity)
-                                .with_children(|parent| { parent.spawn(new_turret); });
+                                .with_children(|parent| { parent.spawn(TurretBundle::from_class(weapon)); });
                         },
                     }
                 }

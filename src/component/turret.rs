@@ -50,16 +50,18 @@ impl Display for TurretClass {
             TurretClass::BlastLaser => write!(f, "Blast Laser"),
             TurretClass::RocketLauncher => write!(f, "Rocket Launcher"),
             TurretClass::MineLauncher => write!(f, "Mine Launcher"),
+            TurretClass::ShrapnelCannon => write!(f, "Shrapnel Cannon"),
         }
     }
 }
 
 impl Distribution<TurretClass> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> TurretClass {
-        match rng.gen_range(0..4) {
+        match rng.gen_range(0..5) {
             0 => TurretClass::BlastLaser,
             1 => TurretClass::RocketLauncher,
             2 => TurretClass::MineLauncher,
+            3 => TurretClass::ShrapnelCannon,
             _ => TurretClass::AutoCannon,
         }
     }
@@ -113,7 +115,6 @@ impl TurretBundle {
 
     pub fn shrapnel_cannon() -> TurretBundle {
         TurretBundle {
-            name: DisplayName(String::from("Shrapnel Cannon")),
             class: TurretClass::ShrapnelCannon,
             range: Range { max: 400.0 },
             target: Targets::default(),
@@ -122,8 +123,19 @@ impl TurretBundle {
     }
 
     pub fn random_starting_weapon() -> TurretBundle {
-        let starting_weapons = vec![|| TurretBundle::auto_cannon(), || TurretBundle::blast_laser(), || TurretBundle::rocket_launcher(), || TurretBundle::mine_launcher()];
-        starting_weapons.choose(&mut rand::thread_rng()).unwrap()()
+        let weapons = vec![TurretClass::AutoCannon, TurretClass::BlastLaser, TurretClass::RocketLauncher, TurretClass::MineLauncher];
+        let weapon = weapons.choose(&mut rand::thread_rng()).unwrap();
+        TurretBundle::from_class(weapon)
+    }
+
+    pub fn from_class(class: &TurretClass) -> TurretBundle {
+        match class {
+            TurretClass::AutoCannon => TurretBundle::auto_cannon(),
+            TurretClass::BlastLaser => TurretBundle::blast_laser(),
+            TurretClass::RocketLauncher => TurretBundle::rocket_launcher(),
+            TurretClass::MineLauncher => TurretBundle::mine_launcher(),
+            TurretClass::ShrapnelCannon => TurretBundle::shrapnel_cannon(),
+        }
     }
 
 }
