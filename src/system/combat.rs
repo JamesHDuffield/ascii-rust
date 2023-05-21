@@ -11,6 +11,7 @@ pub fn combat_system(
             commands.entity(entity).insert(ShouldDespawn);
             continue;
         }
+
         // Recharge shield
         health.shield_recharge_cooldown.tick(time.delta());
         if health.shield_recharge_cooldown.finished() {

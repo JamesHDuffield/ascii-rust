@@ -5,18 +5,14 @@ use crate::component::*;
 
 pub fn engine_system(
   time: Res<Time>,
-  mut query: Query<(&Transform, &mut Physics, &mut Engine, Option<&Upgrades>), (With<Transform>, With<Physics>, With<Engine>)>,
+  mut query: Query<(&Transform, &mut Physics, &mut Engine), (With<Transform>, With<Physics>, With<Engine>)>,
 ) {
-  for (transform, mut physics, mut engine, upgrades) in &mut query {
+  for (transform, mut physics, mut engine) in &mut query {
       
-      let speed_level = upgrades.map_or(0, |up| up.speed);
-      let engine_power = engine.power + speed_level as f32 * 2.0;
-      let max_speed = engine.max_speed + speed_level as f32 * 4.0;
-
       let current = transform.translation.truncate();
       if let Some(target) = engine.target {
-          engine.speed += engine_power * time.delta_seconds();
-          if engine.speed > max_speed { engine.speed = max_speed; }
+          engine.speed += engine.power * time.delta_seconds();
+          if engine.speed > engine.max_speed { engine.speed = engine.max_speed; }
           let to_target = match engine.method {
             EngineMethod::Approach => approach(current, target),
             EngineMethod::Keep(distance) => keep_at_distance(current, target, distance),
@@ -33,7 +29,7 @@ pub fn engine_system(
 
           physics.add_force(to_target.normalize() * engine.speed);
       } else {
-          engine.speed -= engine_power * time.delta_seconds() * engine.depower_factor;
+          engine.speed -= engine.power * time.delta_seconds() * engine.depower_factor;
           if engine.speed < 0.0 { engine.speed = 0.0 }
       }
   }

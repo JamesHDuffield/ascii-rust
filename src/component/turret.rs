@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 use rand::seq::SliceRandom;
-
-use super::DisplayName;
+use std::fmt::Display;
+use rand::{
+    distributions::{Distribution, Standard},
+    Rng,
+};
 
 #[derive(Component)]
 pub struct Range {
@@ -31,7 +34,7 @@ impl Targets {
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Copy, Clone, Eq, Hash, PartialEq)]
 pub enum TurretClass {
     AutoCannon,
     BlastLaser,
@@ -40,9 +43,30 @@ pub enum TurretClass {
     ShrapnelCannon,
 }
 
+impl Display for TurretClass {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TurretClass::AutoCannon => write!(f, "Auto Cannon"),
+            TurretClass::BlastLaser => write!(f, "Blast Laser"),
+            TurretClass::RocketLauncher => write!(f, "Rocket Launcher"),
+            TurretClass::MineLauncher => write!(f, "Mine Launcher"),
+        }
+    }
+}
+
+impl Distribution<TurretClass> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> TurretClass {
+        match rng.gen_range(0..4) {
+            0 => TurretClass::BlastLaser,
+            1 => TurretClass::RocketLauncher,
+            2 => TurretClass::MineLauncher,
+            _ => TurretClass::AutoCannon,
+        }
+    }
+}
+
 #[derive(Bundle)]
 pub struct TurretBundle {
-    name: DisplayName,
     range: Range,
     fire_rate: FireRate,
     target: Targets,
@@ -53,7 +77,6 @@ impl TurretBundle {
 
     pub fn auto_cannon() -> TurretBundle {
         TurretBundle {
-            name: DisplayName(String::from("Auto Cannon")),
             class: TurretClass::AutoCannon,
             range: Range { max: 200.0 },
             target: Targets::default(),
@@ -63,7 +86,6 @@ impl TurretBundle {
 
     pub fn blast_laser() -> TurretBundle {
         TurretBundle {
-            name: DisplayName(String::from("Blast Laser")),
             class: TurretClass::BlastLaser,
             range: Range { max: 200.0 },
             target: Targets::default(),
@@ -73,7 +95,6 @@ impl TurretBundle {
 
     pub fn rocket_launcher() -> TurretBundle {
         TurretBundle {
-            name: DisplayName(String::from("Rocket Launcher")),
             class: TurretClass::RocketLauncher,
             range: Range { max: 800.0 },
             target: Targets::default(),
@@ -83,7 +104,6 @@ impl TurretBundle {
 
     pub fn mine_launcher() -> TurretBundle {
         TurretBundle {
-            name: DisplayName(String::from("Mine Launcher")),
             class: TurretClass::MineLauncher,
             range: Range { max: 800.0 },
             target: Targets::default(),

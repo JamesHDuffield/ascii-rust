@@ -7,7 +7,6 @@ mod turret;
 mod bullet;
 mod loot;
 mod worth_points;
-mod upgrades;
 
 // Complex components
 pub use physics::*;
@@ -17,14 +16,10 @@ pub use turret::*;
 pub use bullet::*;
 pub use loot::*;
 pub use worth_points::*;
-pub use upgrades::*;
 
 use crate::colour;
 
 // Simple components
-#[derive(Component)]
-pub struct DisplayName(pub String);
-
 #[derive(Component)]
 pub struct IsPlayer;
 
@@ -43,6 +38,7 @@ pub struct BaseGlyphRotation {
 pub enum UINode {
     Status,
     Equipment,
+    Upgrades,
 }
 
 #[derive(Component)]
