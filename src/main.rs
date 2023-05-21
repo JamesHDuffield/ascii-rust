@@ -8,12 +8,14 @@ mod menu;
 mod selection;
 mod resource;
 mod system;
+mod upgrade;
 
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
 use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_parallax::{LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin, ParallaxResource, ParallaxSystems};
 use bevy_prototype_lyon::prelude::*;
 use component::*;
+use upgrade::UpgradePlugin;
 use layer::RenderLayer;
 use menu::MainMenuPlugin;
 use selection::SelectionPlugin;
@@ -59,6 +61,7 @@ fn main() {
         .add_startup_system(setup)
         .add_plugin(MainMenuPlugin)
         .add_plugin(SelectionPlugin)
+        .add_plugin(UpgradePlugin)
         // InGame
         .add_systems(
             (setup_player, setup_hud).in_schedule(OnEnter(AppState::InGame)),
@@ -212,12 +215,8 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
             Collider { radius: 5.0 },
             Targettable(Allegiance::PLAYER),
             WillTarget(vec![Allegiance::ENEMY]),
-            Cargo::new(),
-            Magnet {
-                range: 500.0,
-                strength: 5.0,
-            },
-            Upgrades::new(),
+            Cargo::default(),
+            Magnet::default(),
             ExplodesOnDespawn::default(),
             DespawnWithScene,
         ))

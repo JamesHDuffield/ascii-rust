@@ -9,7 +9,7 @@ pub struct DropsLoot;
 pub struct Cargo(pub u32);
 
 impl Cargo {
-    pub fn new() -> Cargo {
+    pub fn default() -> Cargo {
         Cargo(0)
     }
 }
@@ -18,4 +18,10 @@ impl Cargo {
 pub struct Magnet {
   pub range: f32,
   pub strength: f32,
+}
+
+impl Magnet {
+  pub fn default() -> Magnet {
+    Magnet { range: 500.0, strength: 5.0 }
+  }
 }

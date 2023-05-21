@@ -1,17 +1,13 @@
 use bevy::prelude::*;
 
-use crate::{resource::*, GameState, component::{TurretClass, UpgradeOption}};
+use crate::{resource::*, GameState, upgrade::UpgradeEvent, colour};
+
 
 #[derive(Resource)]
 struct SelectionData(pub Vec<Entity>);
 
 #[derive(Component)]
-struct SelectionButton(pub u8);
-
-enum SelectionOption {
-    NewWeapon(TurretClass),
-    Upgrade(UpgradeOption),
-}
+struct SelectionButton(UpgradeEvent);
 
 const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
 const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
@@ -22,7 +18,6 @@ impl Plugin for SelectionPlugin {
     fn build(&self, app: &mut App) {
         app
             .insert_resource(SelectionData(vec![]))
-
             .add_system(setup_selection.in_schedule(OnEnter(GameState::Selection)))
             .add_system(menu.in_set(OnUpdate(GameState::Selection)))
             .add_system(cleanup.in_schedule(OnExit(GameState::Selection)));
@@ -32,7 +27,7 @@ impl Plugin for SelectionPlugin {
 fn setup_selection(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<SelectionData>) {
 
     // Roll for options
-    let options: Vec<SelectionOption> = vec![SelectionOption::NewWeapon(TurretClass::AutoCannon), SelectionOption::Upgrade(UpgradeOption::Speed), SelectionOption::Upgrade(UpgradeOption::Magnet)];
+    let options: Vec<UpgradeEvent> = (0..3).map(|_| rand::random()).collect();
 
     let root_entity = commands
         .spawn(NodeBundle {
@@ -49,11 +44,7 @@ fn setup_selection(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: Res
         })
         .with_children(|parent| {
             for option in options {
-                let text = match option {
-                    SelectionOption::NewWeapon(_) => format!("New Weapon: {}", "TODO"),
-                    SelectionOption::Upgrade(_) => format!("Upgrade: {}", "TODO"),
-                };
-                button(parent, &fonts, &text, 0);
+                button(parent, &fonts, option);
             }
         })
         .id();
@@ -66,16 +57,12 @@ fn menu(
         (&Interaction, &mut BackgroundColor, &SelectionButton),
         (Changed<Interaction>, With<Button>, With<SelectionButton>),
     >,
+    mut upgrade_event: EventWriter<UpgradeEvent>,
 ) {
     for (interaction, mut color, button) in &mut interaction_query {
         match *interaction {
             Interaction::Clicked => {
-                match button.0 {
-                    0 => (),
-                    1 => (),
-                    2 => (),
-                    _ => (),
-                }
+                upgrade_event.send(button.0);
                 next_state.set(GameState::Running);
             }
             Interaction::Hovered => {
@@ -97,7 +84,15 @@ fn cleanup(mut commands: Commands, mut menu_data: ResMut<SelectionData>) {
     menu_data.0.clear();
 }
 
-fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, text: &str, index: u8) {
+fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) {
+    let type_text = match upgrade {
+        UpgradeEvent::Weapon(_) => format!("Weapon"),
+        UpgradeEvent::Passive(_) => format!("Passive"),
+    };
+    let type_color = match upgrade {
+        UpgradeEvent::Weapon(_) => colour::RED,
+        UpgradeEvent::Passive(_) => colour::SHIELD,
+    };
     parent
         .spawn((
             ButtonBundle {
@@ -105,20 +100,29 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, text: &str, index: u8) 
                     min_size: Size::width(Val::Px(200.0)),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
+                    flex_direction: FlexDirection::Column,
                     padding: UiRect::all(Val::Px(10.0)),
                     ..default()
                 },
                 background_color: NORMAL_BUTTON.into(),
                 ..default()
             },
-            SelectionButton(index),
+            SelectionButton(upgrade),
         ))
         .with_children(|parent| {
             parent.spawn(TextBundle::from_section(
-                text,
+                type_text,
                 TextStyle {
                     font: fonts.primary.clone(),
-                    font_size: 40.0,
+                    font_size: 14.0,
+                    color: type_color,
+                },
+            ));
+            parent.spawn(TextBundle::from_section(
+                format!("{}", upgrade),
+                TextStyle {
+                    font: fonts.primary.clone(),
+                    font_size: 24.0,
                     color: Color::rgb(0.9, 0.9, 0.9),
                 },
             ));
