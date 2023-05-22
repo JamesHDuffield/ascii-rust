@@ -35,13 +35,6 @@ pub struct BaseGlyphRotation {
 }
 
 #[derive(Component)]
-pub enum UINode {
-    Status,
-    Equipment,
-    Upgrades,
-}
-
-#[derive(Component)]
 pub struct Collider {
     pub radius: f32,
 }

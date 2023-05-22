@@ -11,6 +11,7 @@ use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_parallax::{LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin, ParallaxResource, ParallaxSystems};
 use bevy_prototype_lyon::prelude::*;
 use component::*;
+use plugin::HudPlugin;
 use plugin::TurretPlugin;
 use plugin::UpgradePlugin;
 use plugin::MainMenuPlugin;
@@ -61,12 +62,13 @@ fn main() {
         .add_plugin(SelectionPlugin)
         .add_plugin(UpgradePlugin)
         .add_plugin(TurretPlugin)
+        .add_plugin(HudPlugin)
         // InGame
-        .add_systems(
-            (setup_player, setup_hud).in_schedule(OnEnter(AppState::InGame)),
+        .add_system(
+            setup_player.in_schedule(OnEnter(AppState::InGame)),
         )
         // Always run while game is running
-        .add_systems((ui_system, pause_control).in_set(OnUpdate(AppState::InGame)))
+        .add_system(pause_control.in_set(OnUpdate(AppState::InGame)))
         // Only run when unpaused
         .add_systems(
             (
@@ -213,139 +215,6 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
         ))
         .with_children(|parent| {
             parent.spawn(TurretBundle::random_starting_weapon());
-        });
-}
-
-// Spawn the hud
-fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
-    commands
-        .spawn((
-            NodeBundle {
-                style: Style {
-                    size: Size {
-                        width: Val::Percent(20.0),
-                        height: Val::Percent(20.0),
-                    },
-                    margin: UiRect::all(Val::Px(5.0)),
-                    gap: Size {
-                        height: Val::Px(2.0),
-                        ..Default::default()
-                    },
-                    flex_direction: FlexDirection::Column,
-                    ..default()
-                },
-                ..default()
-            },
-            UINode::Status,
-            DespawnWithScene,
-        ))
-        .with_children(|parent| {
-            parent.spawn(TextBundle::from_section(
-                "Health",
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 12.0,
-                    color: Colour::WHITE,
-                },
-            ));
-            parent.spawn(TextBundle::from_section(
-                "Shield",
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 12.0,
-                    color: Colour::SHIELD,
-                },
-            ));
-            parent.spawn(TextBundle::from_section(
-                "Level",
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 12.0,
-                    color: Colour::RED,
-                },
-            ));
-            parent.spawn(TextBundle::from_section(
-                "Engine",
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 12.0,
-                    color: Colour::INACTIVE,
-                },
-            ));
-        });
-    
-    commands
-        .spawn((
-            NodeBundle {
-                style: Style {
-                    position_type: PositionType::Absolute,
-                    position: UiRect { right: Val::Px(0.0), ..Default::default() },
-                    size: Size {
-                        width: Val::Percent(20.0),
-                        height: Val::Percent(20.0),
-                    },
-                    margin: UiRect::all(Val::Px(5.0)),
-                    gap: Size {
-                        height: Val::Px(2.0),
-                        ..Default::default()
-                    },
-                    flex_direction: FlexDirection::Column,
-                    align_items: AlignItems::End,
-                    ..default()
-                },
-                ..default()
-            },
-            UINode::Equipment,
-            DespawnWithScene,
-        ))
-        .with_children(|parent| {
-            for _ in 0..10 {
-                parent.spawn(TextBundle::from_section(
-                    "",
-                    TextStyle {
-                        font: fonts.primary.clone(),
-                        font_size: 12.0,
-                        color: Colour::WHITE,
-                    },
-                ));
-            }
-        });
-    
-    commands
-        .spawn((
-            NodeBundle {
-                style: Style {
-                    position_type: PositionType::Absolute,
-                    position: UiRect { right: Val::Px(0.0), bottom: Val::Px(0.0), ..Default::default() },
-                    size: Size {
-                        width: Val::Percent(20.0),
-                        height: Val::Percent(20.0),
-                    },
-                    margin: UiRect::all(Val::Px(5.0)),
-                    gap: Size {
-                        height: Val::Px(2.0),
-                        ..Default::default()
-                    },
-                    flex_direction: FlexDirection::ColumnReverse,
-                    align_items: AlignItems::End,
-                    ..default()
-                },
-                ..default()
-            },
-            UINode::Upgrades,
-            DespawnWithScene,
-        ))
-        .with_children(|parent| {
-            for _ in 0..10 {
-                parent.spawn(TextBundle::from_section(
-                    "Upgrade",
-                    TextStyle {
-                        font: fonts.primary.clone(),
-                        font_size: 12.0,
-                        color: Colour::WHITE,
-                    },
-                ));
-            }
         });
 }
 
