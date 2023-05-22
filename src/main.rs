@@ -99,6 +99,7 @@ fn main() {
         )
         // Cleanup
         .add_system(reset_game.in_schedule(OnExit(AppState::InGame)))
+        // Resources required on boot
         .insert_resource(ParallaxResource {
             layer_data: vec![
                 LayerData {

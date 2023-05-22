@@ -10,7 +10,7 @@ use super::TurretFireEvent;
 pub fn fire_shrapnel_cannon(
     mut commands: Commands,
     mut fire_event: EventReader<TurretFireEvent>,
-    turret_query: Query<(&Parent, &Targets, &DoesDamage)>,
+    turret_query: Query<(&Parent, &Targets, &DoesDamage, &MultiShot)>,
     parent_query: Query<&Transform>,
     target_query: Query<&Transform>,
     fonts: Res<Fonts>,
@@ -20,7 +20,7 @@ pub fn fire_shrapnel_cannon(
             TurretClass::ShrapnelCannon => {
 
                 // Get Turret Info
-                let Ok((parent, targets, damage)) = turret_query.get(ev.turret) else { continue; };
+                let Ok((parent, targets, damage, shots)) = turret_query.get(ev.turret) else { continue; };
 
                 // Get Target
                 let Some(target) = targets.target else { continue; };
@@ -32,7 +32,6 @@ pub fn fire_shrapnel_cannon(
                 let Ok(parent_transform) = parent_query.get(parent.get()) else { continue; };
 
                 // Spawn bullets
-                const NUM_BULLETS: u8 = 16;
                 const SPREAD: f32 = PI / 4.0;
                 const SPEED_VARIANCE: f32 = 400.0;
 
@@ -42,7 +41,7 @@ pub fn fire_shrapnel_cannon(
                 let direction = (destination - origin).normalize();
 
                 let mut rng: rand::rngs::ThreadRng = rand::thread_rng();
-                for _ in 0..NUM_BULLETS {
+                for _ in 0..shots.amount {
                     let random_angle = rng.gen_range(-SPREAD / 2.0..SPREAD / 2.0);
                     let spread_direction = Vec2::from_angle(random_angle).rotate(direction);
                     let random_speed = rng.gen_range(-SPEED_VARIANCE / 2.0..SPEED_VARIANCE / 2.0) + bullet_speed;

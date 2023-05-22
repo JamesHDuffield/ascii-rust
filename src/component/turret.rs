@@ -6,12 +6,12 @@ use rand::{
     Rng,
 };
 
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct Range {
     pub max: f32,
 }
 
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct FireRate {
     pub rate: f32,
     pub timer: Timer,
@@ -23,19 +23,14 @@ impl FireRate {
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct Targets {
     pub target: Option<Entity>,
 }
 
-impl Targets {
-    fn default() -> Targets {
-        Targets { target: None }
-    }
-}
-
-#[derive(Component, Copy, Clone, Eq, Hash, PartialEq)]
+#[derive(Component, Copy, Clone, Eq, Hash, PartialEq, Default)]
 pub enum TurretClass {
+    #[default]
     AutoCannon,
     BlastLaser,
     RocketLauncher,
@@ -67,18 +62,24 @@ impl Distribution<TurretClass> for Standard {
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct DoesDamage {
     pub amount: i32,
 }
 
-#[derive(Bundle)]
+#[derive(Component, Default)]
+pub struct MultiShot {
+    pub amount: u8,
+}
+
+#[derive(Bundle, Default)]
 pub struct TurretBundle {
     range: Range,
     fire_rate: FireRate,
     target: Targets,
     class: TurretClass,
     damage: DoesDamage,
+    shots: MultiShot,
 }
 
 impl TurretBundle {
@@ -87,9 +88,9 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::AutoCannon,
             range: Range { max: 200.0 },
-            target: Targets::default(),
             fire_rate: FireRate::from_rate_in_seconds(1.0),
-            damage: DoesDamage { amount: 2 }
+            damage: DoesDamage { amount: 2 },
+            ..Default::default()
         }
     }
 
@@ -97,9 +98,9 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::BlastLaser,
             range: Range { max: 200.0 },
-            target: Targets::default(),
             fire_rate: FireRate::from_rate_in_seconds(2.0),
-            damage: DoesDamage { amount: 1 }
+            damage: DoesDamage { amount: 1 },
+            ..Default::default()
         }
     }
 
@@ -107,9 +108,9 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::RocketLauncher,
             range: Range { max: 800.0 },
-            target: Targets::default(),
             fire_rate: FireRate::from_rate_in_seconds(0.5),
-            damage: DoesDamage { amount: 5 }
+            damage: DoesDamage { amount: 5 },
+            ..Default::default()
         }
     }
 
@@ -117,9 +118,9 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::MineLauncher,
             range: Range { max: 800.0 },
-            target: Targets::default(),
             fire_rate: FireRate::from_rate_in_seconds(0.9),
-            damage: DoesDamage { amount: 5 }
+            damage: DoesDamage { amount: 5 },
+            ..Default::default()
         }
     }
 
@@ -127,9 +128,10 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::ShrapnelCannon,
             range: Range { max: 400.0 },
-            target: Targets::default(),
             fire_rate: FireRate::from_rate_in_seconds(0.25),
-            damage: DoesDamage { amount: 2 }
+            damage: DoesDamage { amount: 2 },
+            shots: MultiShot { amount: 16 },
+            ..Default::default()
         }
     }
 
