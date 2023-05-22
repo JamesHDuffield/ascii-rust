@@ -11,6 +11,7 @@ use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_parallax::{LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin, ParallaxResource, ParallaxSystems};
 use bevy_prototype_lyon::prelude::*;
 use component::*;
+use plugin::TurretPlugin;
 use plugin::UpgradePlugin;
 use plugin::MainMenuPlugin;
 use plugin::SelectionPlugin;
@@ -59,6 +60,7 @@ fn main() {
         .add_plugin(MainMenuPlugin)
         .add_plugin(SelectionPlugin)
         .add_plugin(UpgradePlugin)
+        .add_plugin(TurretPlugin)
         // InGame
         .add_systems(
             (setup_player, setup_hud).in_schedule(OnEnter(AppState::InGame)),
@@ -72,7 +74,6 @@ fn main() {
                 engine_system,
                 player_control,
                 camera_follow.before(ParallaxSystems),
-                turret_system,
                 bullet_system,
                 bullet_collision_system,
                 combat_system,
@@ -83,13 +84,6 @@ fn main() {
                 loot_magnet_system,
                 loot_cargo_collision,
                 seeker_system,
-            )
-                .distributive_run_if(game_not_paused)
-                .in_set(OnUpdate(AppState::InGame)),
-        )
-        .add_systems(
-            (
-                turret_targetting_system,
                 level_up_system,
             )
                 .distributive_run_if(game_not_paused)
