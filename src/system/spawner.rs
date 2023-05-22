@@ -1,6 +1,6 @@
 use std::{f32::consts::PI, cmp::min};
 
-use crate::{colour, component::*, resource::{Fonts, Spawning, GameTime}, math::random_2d_unit_vector, layer::RenderLayer};
+use crate::{component::*, resource::{Fonts, Spawning, GameTime}, util::{Colour, Math, RenderLayer}};
 use bevy::prelude::*;
 
 fn spawn_enemy(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
@@ -12,7 +12,7 @@ fn spawn_enemy(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
                     TextStyle {
                         font: fonts.primary.clone(),
                         font_size: 32.0,
-                        color: colour::ENEMY,
+                        color: Colour::ENEMY,
                     },
                 )
                 .with_alignment(TextAlignment::Center),
@@ -67,7 +67,7 @@ pub fn spawner_system(
         if let Ok(player_transformation) = player_query.get_single() {
             // pick a random location off screen from player
             const DISTANCE_OFFSCREEN: f32 = 1000.0;
-            let spawn_point = player_transformation.translation.truncate() + random_2d_unit_vector() * DISTANCE_OFFSCREEN;
+            let spawn_point = player_transformation.translation.truncate() + Math::random_2d_unit_vector() * DISTANCE_OFFSCREEN;
 
             // Get current total amount of enemies
             let num_enemies: u32 = enemies_query.iter().len().try_into().unwrap_or(spawning.max);
@@ -76,7 +76,7 @@ pub fn spawner_system(
 
             for _ in 0..max_num_enemies_to_spawn {
                 // Ensure they spawn in a pack not on top of eachother
-                let jiggled_spawn = spawn_point + random_2d_unit_vector() * 10.0;
+                let jiggled_spawn = spawn_point + Math::random_2d_unit_vector() * 10.0;
                 spawn_enemy(&mut commands, &fonts, jiggled_spawn.extend(RenderLayer::Enemy.as_z()));
             }
         }

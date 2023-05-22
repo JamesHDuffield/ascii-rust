@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 
-use crate::{resource::*, GameState, upgrade::UpgradeEvent, colour};
+use crate::{resource::*, GameState, util::Colour};
+
+use super::UpgradeEvent;
 
 
 #[derive(Resource)]
@@ -90,8 +92,8 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
         UpgradeEvent::Passive(_) => format!("Passive"),
     };
     let type_color = match upgrade {
-        UpgradeEvent::Weapon(_) => colour::RED,
-        UpgradeEvent::Passive(_) => colour::SHIELD,
+        UpgradeEvent::Weapon(_) => Colour::RED,
+        UpgradeEvent::Passive(_) => Colour::SHIELD,
     };
     parent
         .spawn((

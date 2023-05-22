@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::{component::*, resource::PlayerLevel, upgrade::PlayerUpgrades};
+use crate::{component::*, resource::PlayerLevel, plugin::PlayerUpgrades};
 
 fn bar(current: i32, max: i32, width: i32) -> String {
   let bars: usize = match (current.clamp(0, max) * width / max).try_into() {

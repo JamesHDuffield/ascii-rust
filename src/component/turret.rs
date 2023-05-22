@@ -67,12 +67,18 @@ impl Distribution<TurretClass> for Standard {
     }
 }
 
+#[derive(Component)]
+pub struct DoesDamage {
+    pub amount: i32,
+}
+
 #[derive(Bundle)]
 pub struct TurretBundle {
     range: Range,
     fire_rate: FireRate,
     target: Targets,
     class: TurretClass,
+    damage: DoesDamage,
 }
 
 impl TurretBundle {
@@ -83,6 +89,7 @@ impl TurretBundle {
             range: Range { max: 200.0 },
             target: Targets::default(),
             fire_rate: FireRate::from_rate_in_seconds(1.0),
+            damage: DoesDamage { amount: 2 }
         }
     }
 
@@ -92,6 +99,7 @@ impl TurretBundle {
             range: Range { max: 200.0 },
             target: Targets::default(),
             fire_rate: FireRate::from_rate_in_seconds(2.0),
+            damage: DoesDamage { amount: 1 }
         }
     }
 
@@ -101,6 +109,7 @@ impl TurretBundle {
             range: Range { max: 800.0 },
             target: Targets::default(),
             fire_rate: FireRate::from_rate_in_seconds(0.5),
+            damage: DoesDamage { amount: 5 }
         }
     }
 
@@ -110,6 +119,7 @@ impl TurretBundle {
             range: Range { max: 800.0 },
             target: Targets::default(),
             fire_rate: FireRate::from_rate_in_seconds(0.9),
+            damage: DoesDamage { amount: 5 }
         }
     }
 
@@ -119,6 +129,7 @@ impl TurretBundle {
             range: Range { max: 400.0 },
             target: Targets::default(),
             fire_rate: FireRate::from_rate_in_seconds(0.25),
+            damage: DoesDamage { amount: 2 }
         }
     }
 

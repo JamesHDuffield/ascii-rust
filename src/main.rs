@@ -1,24 +1,21 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-mod colour;
+mod util;
 mod component;
-mod layer;
-mod math;
-mod menu;
-mod selection;
+mod plugin;
 mod resource;
 mod system;
-mod upgrade;
 
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
 use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_parallax::{LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin, ParallaxResource, ParallaxSystems};
 use bevy_prototype_lyon::prelude::*;
 use component::*;
-use upgrade::UpgradePlugin;
-use layer::RenderLayer;
-use menu::MainMenuPlugin;
-use selection::SelectionPlugin;
+use plugin::UpgradePlugin;
+use plugin::MainMenuPlugin;
+use plugin::SelectionPlugin;
+use util::RenderLayer;
+use util::Colour;
 use resource::*;
 use std::{f32::consts::PI, time::Duration};
 use system::*;
@@ -160,7 +157,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, time: Res<Time>
         .spawn((
             Camera2dBundle {
                 camera_2d: Camera2d {
-                    clear_color: ClearColorConfig::Custom(colour::BLACK),
+                    clear_color: ClearColorConfig::Custom(Colour::BLACK),
                 },
                 ..Default::default()
             },
@@ -186,7 +183,7 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
                     TextStyle {
                         font: fonts.primary.clone(),
                         font_size: 40.0,
-                        color: colour::PLAYER,
+                        color: Colour::PLAYER,
                     },
                 )
                 .with_alignment(TextAlignment::Center),
@@ -254,7 +251,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
-                    color: colour::WHITE,
+                    color: Colour::WHITE,
                 },
             ));
             parent.spawn(TextBundle::from_section(
@@ -262,7 +259,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
-                    color: colour::SHIELD,
+                    color: Colour::SHIELD,
                 },
             ));
             parent.spawn(TextBundle::from_section(
@@ -270,7 +267,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
-                    color: colour::RED,
+                    color: Colour::RED,
                 },
             ));
             parent.spawn(TextBundle::from_section(
@@ -278,7 +275,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
-                    color: colour::INACTIVE,
+                    color: Colour::INACTIVE,
                 },
             ));
         });
@@ -314,7 +311,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                     TextStyle {
                         font: fonts.primary.clone(),
                         font_size: 12.0,
-                        color: colour::WHITE,
+                        color: Colour::WHITE,
                     },
                 ));
             }
@@ -351,7 +348,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                     TextStyle {
                         font: fonts.primary.clone(),
                         font_size: 12.0,
-                        color: colour::WHITE,
+                        color: Colour::WHITE,
                     },
                 ));
             }

@@ -1,4 +1,4 @@
-use crate::{colour, component::*, resource::{Fonts, Points}, GameState, layer::RenderLayer};
+use crate::{component::*, resource::{Fonts, Points}, GameState, util::{Colour, RenderLayer}};
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use rand::prelude::*;
@@ -54,7 +54,7 @@ fn spawn_loot(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
                         TextStyle {
                             font: fonts.primary.clone(),
                             font_size: 12.0,
-                            color: colour::INACTIVE,
+                            color: Colour::INACTIVE,
                         },
                     )
                     .with_alignment(TextAlignment::Center),

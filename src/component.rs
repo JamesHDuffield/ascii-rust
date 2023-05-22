@@ -17,7 +17,7 @@ pub use bullet::*;
 pub use loot::*;
 pub use worth_points::*;
 
-use crate::colour;
+use crate::util::Colour;
 
 // Simple components
 #[derive(Component)]
@@ -91,7 +91,7 @@ impl ExplodesOnDespawn {
         ExplodesOnDespawn {
             amount_min: 1,
             amount_max: 1,
-            colour: colour::RED,
+            colour: Colour::RED,
             duration_min: 0.3,
             duration_max: 0.4,
             size_min: 40.0,

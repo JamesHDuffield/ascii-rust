@@ -1,6 +1,6 @@
 use std::f32::consts::PI;
 
-use crate::{colour, component::*, resource::Fonts, layer::RenderLayer};
+use crate::{component::*, resource::Fonts, util::{Colour, RenderLayer}};
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use rand::Rng;
@@ -38,11 +38,11 @@ pub fn turret_system(
     mut commands: Commands,
     fonts: Res<Fonts>,
     time: Res<Time>,
-    mut query: Query<(&mut FireRate, &TurretClass, &mut Targets, &Parent), (With<TurretClass>, With<FireRate>, With<Targets>)>,
+    mut query: Query<(&mut FireRate, &TurretClass, &mut Targets, &DoesDamage, &Parent)>,
     parent_query: Query<(&Transform, Entity), With<Transform>>,
     mut existing_query: Query<(&Transform, Option<&mut Health>), With<Transform>>,
 ) {
-    for (mut fire_rate, class, mut targets, parent) in &mut query {
+    for (mut fire_rate, class, mut targets, damage, parent) in &mut query {
         // Get parent (ship)
         if let Ok((parent_transform, parent_entity)) = parent_query.get(parent.get()) {
             if let Some(target) = targets.target {
@@ -57,6 +57,7 @@ pub fn turret_system(
                 fire_rate.timer.tick(time.delta());
                 if fire_rate.timer.just_finished() {
                     // Fire!
+                    // Send FireEvent?
                     if let Ok((target_transform, target_health)) = existing_query.get_mut(target) {
                         let origin = parent_transform.translation.truncate();
                         match class {
@@ -121,7 +122,7 @@ fn spawn_bullet(
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
-                    color: colour::RED,
+                    color: Colour::RED,
                 },
             )
             .with_alignment(TextAlignment::Center),
@@ -158,7 +159,7 @@ fn spawn_laser(
             transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
             ..default()
         },
-        Stroke::new(colour::RED, 1.0),
+        Stroke::new(Colour::RED, 1.0),
         Owner(entity),
         DespawnWithScene,
     ));
@@ -183,7 +184,7 @@ fn spawn_rocket(
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
-                    color: colour::WHITE,
+                    color: Colour::WHITE,
                 },
             )
             .with_alignment(TextAlignment::Center),
@@ -225,7 +226,7 @@ fn spawn_mine(
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
-                    color: colour::WHITE,
+                    color: Colour::WHITE,
                 },
             )
             .with_alignment(TextAlignment::Center),

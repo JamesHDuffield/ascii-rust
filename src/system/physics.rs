@@ -1,6 +1,5 @@
 use bevy::prelude::*;
-use crate::component::*;
-use crate::math;
+use crate::{component::*, util::Math};
 
 pub fn physics_system(
   time: Res<Time>,
@@ -17,7 +16,7 @@ pub fn physics_system(
       physics.velocity *= 1.0 - (drag * time.delta_seconds());
 
       // Face velocity
-      transform.rotation = math::quaternion_from_2d_vector(physics.velocity);
+      transform.rotation = Math::quaternion_from_2d_vector(physics.velocity);
 
       if let Some(base_rotation) = base_rotation {
           transform.rotation *= base_rotation.rotation; // Multiplication is like combining rotations together
