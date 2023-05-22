@@ -35,12 +35,12 @@ pub fn ui_system(
                         .filter_map(|result| result.ok())
                         .map(|(fire_rate, class)| format!("{} {:>16}", bar((fire_rate.timer.percent() * 10.0).round() as i32, 10, 10), class))
                         .collect::<Vec<String>>();
-                    display.resize_with(5, Default::default);
+                    display.resize_with(10, Default::default);
                     display
                 },
                 UINode::Upgrades => {
                     let mut display = upgrades.display_for_ui();
-                    display.resize_with(5, Default::default);
+                    display.resize_with(10, Default::default);
                     display
                 }
             };

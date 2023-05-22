@@ -299,7 +299,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
             DespawnWithScene,
         ))
         .with_children(|parent| {
-            for _ in 0..5 {
+            for _ in 0..10 {
                 parent.spawn(TextBundle::from_section(
                     "",
                     TextStyle {
@@ -336,7 +336,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
             DespawnWithScene,
         ))
         .with_children(|parent| {
-            for _ in 0..5 {
+            for _ in 0..10 {
                 parent.spawn(TextBundle::from_section(
                     "Upgrade",
                     TextStyle {
