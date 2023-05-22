@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use rand::seq::SliceRandom;
-use std::fmt::Display;
+use std::{fmt::Display, time::Duration};
 use rand::{
     distributions::{Distribution, Standard},
     Rng,
@@ -20,6 +20,11 @@ pub struct FireRate {
 impl FireRate {
     fn from_rate_in_seconds(rate: f32) -> FireRate {
         FireRate { rate, timer: Timer::from_seconds(1.0 / rate, TimerMode::Repeating) }
+    }
+
+    pub fn set_rate_in_seconds(&mut self, rate: f32) {
+        self.rate = rate;
+        self.timer.set_duration(Duration::from_secs_f32(1.0 / rate));
     }
 }
 
@@ -67,9 +72,16 @@ pub struct DoesDamage {
     pub amount: i32,
 }
 
-#[derive(Component, Default)]
+#[derive(Component)]
 pub struct MultiShot {
     pub amount: u8,
+}
+
+#[derive(Component, Default)]
+pub struct EffectSize(pub f32);
+
+impl Default for MultiShot {
+    fn default() -> Self { MultiShot { amount: 1 } }
 }
 
 #[derive(Bundle, Default)]
@@ -80,6 +92,7 @@ pub struct TurretBundle {
     class: TurretClass,
     damage: DoesDamage,
     shots: MultiShot,
+    size: EffectSize,
 }
 
 impl TurretBundle {
@@ -120,6 +133,7 @@ impl TurretBundle {
             range: Range { max: 800.0 },
             fire_rate: FireRate::from_rate_in_seconds(0.9),
             damage: DoesDamage { amount: 5 },
+            size: EffectSize(40.0),
             ..Default::default()
         }
     }

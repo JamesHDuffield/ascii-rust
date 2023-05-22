@@ -1,7 +1,7 @@
 use bevy::{prelude::*, utils::HashMap};
 use std::{fmt::Display, time::Duration};
 
-use crate::{component::{TurretClass, IsPlayer, Magnet, Engine, Health, TurretBundle}, AppState};
+use crate::{component::{TurretClass, IsPlayer, Magnet, Engine, Health, TurretBundle, FireRate, MultiShot, DoesDamage, Range, EffectSize}, AppState};
 use rand::{
     distributions::{Distribution, Standard},
     Rng,
@@ -109,6 +109,10 @@ fn upgrade_weapon_event(
     mut commands: Commands,
     player_query: Query<(Entity, &Children), With<IsPlayer>>,
     turret_query: Query<&TurretClass>,
+    mut existing_auto_cannon: Query<&mut FireRate>,
+    mut existing_rocket_launcher: Query<&mut MultiShot>,
+    mut existing_shrapnel_cannon: Query<&mut DoesDamage>,
+    mut existing_mine_launcher: Query<&mut EffectSize>,
 ) {
     for ev in upgrade_event.iter() {
         match ev {
@@ -125,7 +129,32 @@ fn upgrade_weapon_event(
                             return false;
                         });
                     match existing {
-                        Some(entity) => println!("TODO Existing Weapon Upgrades"),
+                        Some(entity) => {  // TODO split up logic into systems
+                            match weapon {
+                                TurretClass::AutoCannon => {
+                                    let mut fire_rate = existing_auto_cannon.get_mut(*entity).unwrap();
+                                    let new_rate = fire_rate.rate * 2.0;
+                                    fire_rate.set_rate_in_seconds(new_rate);
+                                },
+                                TurretClass::BlastLaser => {
+                                    let mut fire_rate = existing_auto_cannon.get_mut(*entity).unwrap();
+                                    let new_rate = fire_rate.rate * 2.0;
+                                    fire_rate.set_rate_in_seconds(new_rate);
+                                },
+                                TurretClass::RocketLauncher => {
+                                    let mut shots = existing_rocket_launcher.get_mut(*entity).unwrap();
+                                    shots.amount += 1;
+                                },
+                                TurretClass::ShrapnelCannon => {
+                                    let mut damage = existing_shrapnel_cannon.get_mut(*entity).unwrap();
+                                    damage.amount += 1;
+                                },
+                                TurretClass::MineLauncher => {
+                                    let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
+                                    size.0 *= 1.5;
+                                },
+                            }
+                        },
                         None => {
                             commands
                                 .entity(player_entity)

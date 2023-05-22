@@ -1,20 +1,20 @@
 use bevy::prelude::*;
 
-mod physics;
+mod bullet;
 mod engine;
 mod health;
-mod turret;
-mod bullet;
 mod loot;
+mod physics;
+mod turret;
 mod worth_points;
 
 // Complex components
-pub use physics::*;
+pub use bullet::*;
 pub use engine::*;
 pub use health::*;
-pub use turret::*;
-pub use bullet::*;
 pub use loot::*;
+pub use physics::*;
+pub use turret::*;
 pub use worth_points::*;
 
 use crate::util::Colour;
@@ -79,8 +79,8 @@ pub struct ExplodesOnDespawn {
     pub size_max: f32,
 }
 
-impl ExplodesOnDespawn {
-    pub fn default() -> ExplodesOnDespawn {
+impl Default for ExplodesOnDespawn {
+    fn default() -> Self {
         ExplodesOnDespawn {
             amount_min: 1,
             amount_max: 1,
