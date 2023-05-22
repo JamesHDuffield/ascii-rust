@@ -140,8 +140,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, time: Res<Time>
     // Create point count
     commands.insert_resource(Points { value: 0 });
 
-    // Start player at level 1
-    commands.insert_resource(PlayerLevel { value: 1 });
+    // Start player at level 0 so they get immediate selection
+    commands.insert_resource(PlayerLevel { value: 0 });
 
     // Set spawn limit
     let seconds = 30.0;
@@ -213,10 +213,7 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
             Magnet::default(),
             ExplodesOnDespawn::default(),
             DespawnWithScene,
-        ))
-        .with_children(|parent| {
-            parent.spawn(TurretBundle::random_starting_weapon());
-        });
+        ));
 }
 
 fn reset_game(

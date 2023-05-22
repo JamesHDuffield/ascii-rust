@@ -1,6 +1,7 @@
 use bevy::prelude::*;
+use rand::Rng;
 
-use crate::{resource::*, GameState, util::Colour};
+use crate::{resource::*, GameState, util::Colour, component::TurretClass};
 
 use super::UpgradeEvent;
 
@@ -26,12 +27,24 @@ impl Plugin for SelectionPlugin {
     }
 }
 
-fn setup_selection(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<SelectionData>) {
+fn random_starting_weapon() -> TurretClass {
+    match rand::thread_rng().gen_range(0..4) {
+        0 => TurretClass::AutoCannon,
+        1 => TurretClass::BlastLaser,
+        2 => TurretClass::RocketLauncher,
+        _ => TurretClass::MineLauncher,
+    }
+}
+
+fn setup_selection(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<SelectionData>, player_level: Res<PlayerLevel>) { 
 
     // Roll for options
     let mut options: Vec<UpgradeEvent> = vec![];
     while options.len() < 3 {
-        let potential: UpgradeEvent = rand::random();
+        let potential: UpgradeEvent = match player_level.value {
+            1 => UpgradeEvent::Weapon(random_starting_weapon()), // At start of game only offer starter weapons
+            _ => rand::random()
+        };
         if !options.contains(&potential) {
             options.push(potential);
         }

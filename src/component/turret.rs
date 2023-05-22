@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use rand::seq::SliceRandom;
 use std::{fmt::Display, time::Duration};
 use rand::{
     distributions::{Distribution, Standard},
@@ -147,12 +146,6 @@ impl TurretBundle {
             shots: MultiShot { amount: 16 },
             ..Default::default()
         }
-    }
-
-    pub fn random_starting_weapon() -> TurretBundle {
-        let weapons = vec![TurretClass::AutoCannon, TurretClass::BlastLaser, TurretClass::RocketLauncher, TurretClass::MineLauncher];
-        let weapon = weapons.choose(&mut rand::thread_rng()).unwrap();
-        TurretBundle::from_class(weapon)
     }
 
     pub fn from_class(class: &TurretClass) -> TurretBundle {

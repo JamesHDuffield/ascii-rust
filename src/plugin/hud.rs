@@ -49,7 +49,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
         ))
         .with_children(|parent| {
             parent.spawn(TextBundle::from_section(
-                "Health",
+                "",
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
@@ -57,7 +57,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                 },
             ));
             parent.spawn(TextBundle::from_section(
-                "Shield",
+                "",
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
@@ -65,7 +65,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                 },
             ));
             parent.spawn(TextBundle::from_section(
-                "Level",
+                "",
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
@@ -73,7 +73,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                 },
             ));
             parent.spawn(TextBundle::from_section(
-                "Engine",
+                "",
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
@@ -146,7 +146,7 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
         .with_children(|parent| {
             for _ in 0..10 {
                 parent.spawn(TextBundle::from_section(
-                    "Upgrade",
+                    "",
                     TextStyle {
                         font: fonts.primary.clone(),
                         font_size: 12.0,
@@ -158,6 +158,9 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
 }
 
 fn bar(current: i32, max: i32, width: i32) -> String {
+    if max == 0 {
+        return String::from(' ').repeat(width as usize);
+    }
     let bars: usize = match (current.clamp(0, max) * width / max).try_into() {
       Ok(val) => val,
       Err(_) => 0,

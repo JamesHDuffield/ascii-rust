@@ -107,7 +107,7 @@ fn record_upgrade(
 fn upgrade_weapon_event(
     mut upgrade_event: EventReader<UpgradeEvent>,
     mut commands: Commands,
-    player_query: Query<(Entity, &Children), With<IsPlayer>>,
+    player_query: Query<(Entity, Option<&Children>), With<IsPlayer>>,
     turret_query: Query<&TurretClass>,
     mut existing_auto_cannon: Query<&mut FireRate>,
     mut existing_rocket_launcher: Query<&mut MultiShot>,
@@ -120,14 +120,18 @@ fn upgrade_weapon_event(
                 // Get player
                 for (player_entity, children) in &player_query {
                     // Search for existing
-                    let existing = children
-                        .iter()
-                        .find(|child| {
-                            if let Ok(turret) = turret_query.get(**child) {
-                                return turret == weapon;
-                            }
-                            return false;
-                        });
+                    let existing = match children {
+                        Some(children) => children
+                            .iter()
+                            .find(|child| {
+                                if let Ok(turret) = turret_query.get(**child) {
+                                    return turret == weapon;
+                                }
+                                return false;
+                            }),
+                        None => None
+                    };
+                        
                     match existing {
                         Some(entity) => {  // TODO split up logic into systems
                             match weapon {
