@@ -29,7 +29,13 @@ impl Plugin for SelectionPlugin {
 fn setup_selection(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<SelectionData>) {
 
     // Roll for options
-    let options: Vec<UpgradeEvent> = (0..3).map(|_| rand::random()).collect();
+    let mut options: Vec<UpgradeEvent> = vec![];
+    while options.len() < 3 {
+        let potential: UpgradeEvent = rand::random();
+        if !options.contains(&potential) {
+            options.push(potential);
+        }
+    }
 
     let root_entity = commands
         .spawn(NodeBundle {
