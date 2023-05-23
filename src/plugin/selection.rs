@@ -1,9 +1,11 @@
+use core::panic;
+
 use bevy::prelude::*;
 use rand::Rng;
 
 use crate::{resource::*, GameState, util::Colour, component::TurretClass};
 
-use super::UpgradeEvent;
+use super::{UpgradeEvent, PlayerUpgrades};
 
 
 #[derive(Resource)]
@@ -36,19 +38,52 @@ fn random_starting_weapon() -> TurretClass {
     }
 }
 
-fn setup_selection(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<SelectionData>, player_level: Res<PlayerLevel>) { 
-
-    // Roll for options
+fn roll_starting() -> Vec<UpgradeEvent> {
     let mut options: Vec<UpgradeEvent> = vec![];
     while options.len() < 3 {
-        let potential: UpgradeEvent = match player_level.value {
-            1 => UpgradeEvent::Weapon(random_starting_weapon()), // At start of game only offer starter weapons
-            _ => rand::random()
-        };
+        let potential = UpgradeEvent::Weapon(random_starting_weapon());
         if !options.contains(&potential) {
             options.push(potential);
         }
     }
+    options
+}
+
+fn roll(upgrades: Res<PlayerUpgrades>) -> Vec<UpgradeEvent> {
+    let mut options: Vec<UpgradeEvent> = vec![];
+    let mut iterations = 0;
+    while options.len() < 3 {
+        iterations += 1;
+        if iterations > 100 {
+            panic!("Cannot roll any valid upgrades!");
+        }
+        let potential: UpgradeEvent = rand::random();
+        if options.contains(&potential) {
+            continue;
+        }
+        let current_level = upgrades.0.get(&potential).unwrap_or(&0);
+        if *current_level >= PlayerUpgrades::max_allowed_level() {
+            continue;
+        }
+        let cap_reached = match potential {
+            UpgradeEvent::Weapon(_) => upgrades.reached_max_weapons(),
+            UpgradeEvent::Passive(_) => upgrades.reached_max_passives(),
+        };
+        if cap_reached {
+            continue;
+        }
+        options.push(potential);
+    }
+    options
+}
+
+fn setup_selection(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<SelectionData>, player_level: Res<PlayerLevel>, upgrades: Res<PlayerUpgrades>) { 
+
+    // Roll for options
+    let options = match player_level.value {
+        1 => roll_starting(),
+        _ => roll(upgrades)
+    };
 
     let root_entity = commands
         .spawn(NodeBundle {

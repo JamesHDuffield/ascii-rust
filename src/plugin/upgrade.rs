@@ -1,7 +1,13 @@
 use bevy::{prelude::*, utils::HashMap};
 use std::{fmt::Display, time::Duration};
 
-use crate::{component::{TurretClass, IsPlayer, Magnet, Engine, Health, TurretBundle, FireRate, MultiShot, DoesDamage, Range, EffectSize}, AppState};
+use crate::{
+    component::{
+        DoesDamage, EffectSize, Engine, FireRate, Health, IsPlayer, Magnet, MultiShot,
+        TurretBundle, TurretClass,
+    },
+    AppState,
+};
 use rand::{
     distributions::{Distribution, Standard},
     Rng,
@@ -17,6 +23,32 @@ impl PlayerUpgrades {
             .filter(|(_, level)| **level > 0)
             .map(|(upgrade, level)| format!("{:0>2} {:>16}", level, upgrade))
             .collect()
+    }
+
+    pub fn max_allowed_level() -> u8 {
+        8
+    }
+
+    pub fn reached_max_passives(&self) -> bool {
+        self.0
+            .iter()
+            .filter(|(upgrade, _)| match upgrade {
+                UpgradeEvent::Passive(_) => true,
+                _ => false,
+            })
+            .count()
+            >= 6
+    }
+
+    pub fn reached_max_weapons(&self) -> bool {
+        self.0
+            .iter()
+            .filter(|(upgrade, _)| match upgrade {
+                UpgradeEvent::Weapon(_) => true,
+                _ => false,
+            })
+            .count()
+            >= 2
     }
 }
 
@@ -39,7 +71,7 @@ impl Display for UpgradeEvent {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             UpgradeEvent::Weapon(weapon) => write!(f, "{}", weapon),
-            UpgradeEvent::Passive(passive) => write!(f, "{}", passive)
+            UpgradeEvent::Passive(passive) => write!(f, "{}", passive),
         }
     }
 }
@@ -78,8 +110,7 @@ pub struct UpgradePlugin;
 
 impl Plugin for UpgradePlugin {
     fn build(&self, app: &mut App) {
-        app
-            .insert_resource(PlayerUpgrades(HashMap::new()))
+        app.insert_resource(PlayerUpgrades(HashMap::new()))
             .add_event::<UpgradeEvent>()
             .add_systems(
                 (
@@ -121,52 +152,55 @@ fn upgrade_weapon_event(
                 for (player_entity, children) in &player_query {
                     // Search for existing
                     let existing = match children {
-                        Some(children) => children
-                            .iter()
-                            .find(|child| {
-                                if let Ok(turret) = turret_query.get(**child) {
-                                    return turret == weapon;
-                                }
-                                return false;
-                            }),
-                        None => None
+                        Some(children) => children.iter().find(|child| {
+                            if let Ok(turret) = turret_query.get(**child) {
+                                return turret == weapon;
+                            }
+                            return false;
+                        }),
+                        None => None,
                     };
-                        
+
                     match existing {
-                        Some(entity) => {  // TODO split up logic into systems
+                        Some(entity) => {
+                            // TODO split up logic into systems
                             match weapon {
                                 TurretClass::AutoCannon => {
-                                    let mut fire_rate = existing_auto_cannon.get_mut(*entity).unwrap();
+                                    let mut fire_rate =
+                                        existing_auto_cannon.get_mut(*entity).unwrap();
                                     let new_rate = fire_rate.rate * 2.0;
                                     fire_rate.set_rate_in_seconds(new_rate);
-                                },
+                                }
                                 TurretClass::BlastLaser => {
-                                    let mut fire_rate = existing_auto_cannon.get_mut(*entity).unwrap();
+                                    let mut fire_rate =
+                                        existing_auto_cannon.get_mut(*entity).unwrap();
                                     let new_rate = fire_rate.rate * 2.0;
                                     fire_rate.set_rate_in_seconds(new_rate);
-                                },
+                                }
                                 TurretClass::RocketLauncher => {
-                                    let mut shots = existing_rocket_launcher.get_mut(*entity).unwrap();
+                                    let mut shots =
+                                        existing_rocket_launcher.get_mut(*entity).unwrap();
                                     shots.amount += 1;
-                                },
+                                }
                                 TurretClass::ShrapnelCannon => {
-                                    let mut damage = existing_shrapnel_cannon.get_mut(*entity).unwrap();
+                                    let mut damage =
+                                        existing_shrapnel_cannon.get_mut(*entity).unwrap();
                                     damage.amount += 1;
-                                },
+                                }
                                 TurretClass::MineLauncher => {
                                     let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
                                     size.0 *= 1.5;
-                                },
+                                }
                             }
-                        },
+                        }
                         None => {
-                            commands
-                                .entity(player_entity)
-                                .with_children(|parent| { parent.spawn(TurretBundle::from_class(weapon)); });
-                        },
+                            commands.entity(player_entity).with_children(|parent| {
+                                parent.spawn(TurretBundle::from_class(weapon));
+                            });
+                        }
                     }
                 }
-            },
+            }
             _ => (),
         }
     }
@@ -183,7 +217,7 @@ fn upgrade_magnet_event(
                     magnet.range += 200.0;
                     magnet.strength += 2.0;
                 }
-            },
+            }
             _ => (),
         }
     }
@@ -200,7 +234,7 @@ fn upgrade_speed_event(
                     engine.power += 2.0;
                     engine.max_speed += 4.0;
                 }
-            },
+            }
             _ => (),
         }
     }
@@ -218,20 +252,24 @@ fn upgrade_shield_events(
                     if new_timer < 0.1 {
                         new_timer = 0.1;
                     }
-                    health.shield_recharge_timer.set_duration(Duration::from_secs_f32(new_timer));
+                    health
+                        .shield_recharge_timer
+                        .set_duration(Duration::from_secs_f32(new_timer));
                 }
-            },
+            }
             UpgradeEvent::Passive(Passive::ShieldCooldown) => {
                 for mut health in &mut query {
-                    let mut new_timer = health.shield_recharge_cooldown.duration().as_secs_f32() - 1.0;
+                    let mut new_timer =
+                        health.shield_recharge_cooldown.duration().as_secs_f32() - 1.0;
                     if new_timer < 0.5 {
                         new_timer = 0.5;
                     }
-                    health.shield_recharge_cooldown.set_duration(Duration::from_secs_f32(new_timer));
+                    health
+                        .shield_recharge_cooldown
+                        .set_duration(Duration::from_secs_f32(new_timer));
                 }
-            },
+            }
             _ => (),
         }
     }
 }
-
