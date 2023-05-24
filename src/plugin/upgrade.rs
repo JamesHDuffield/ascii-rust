@@ -48,7 +48,7 @@ impl PlayerUpgrades {
                 _ => false,
             })
             .count()
-            >= 2
+            >= 4
     }
 }
 

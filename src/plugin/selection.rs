@@ -58,20 +58,28 @@ fn roll(upgrades: Res<PlayerUpgrades>) -> Vec<UpgradeEvent> {
             panic!("Cannot roll any valid upgrades!");
         }
         let potential: UpgradeEvent = rand::random();
+        // No duplicates
         if options.contains(&potential) {
             continue;
         }
+
         let current_level = upgrades.0.get(&potential).unwrap_or(&0);
+        
+        // Can't go above max level
         if *current_level >= PlayerUpgrades::max_allowed_level() {
             continue;
         }
+
+        // Cannot have too many passives or weapons
         let cap_reached = match potential {
             UpgradeEvent::Weapon(_) => upgrades.reached_max_weapons(),
             UpgradeEvent::Passive(_) => upgrades.reached_max_passives(),
         };
-        if cap_reached {
+        // If new check we haven't had too many of given type
+        if current_level == &0 && cap_reached {
             continue;
         }
+
         options.push(potential);
     }
     options
