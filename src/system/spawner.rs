@@ -33,7 +33,7 @@ fn spawn_enemy(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
             Physics::new(5.0),
             Engine::new(18.0, 18.0),
             Health::new(10, 0),
-            Collider { radius: 5.0 },
+            Collider { radius: 10.0 },
             Targettable(Allegiance::ENEMY),
             WillTarget(vec![Allegiance::PLAYER]),
             AI,

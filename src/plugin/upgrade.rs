@@ -195,6 +195,10 @@ fn upgrade_weapon_event(
                                     let mut shots =
                                         existing_rocket_launcher.get_mut(*entity).unwrap();
                                     shots.amount += 1;
+                                },
+                                TurretClass::PierceLaser => {
+                                    let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
+                                    size.0 += 2.0;
                                 }
                             }
                         }
