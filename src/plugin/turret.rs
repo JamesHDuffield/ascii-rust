@@ -3,6 +3,7 @@ mod rocket_launcher;
 mod mine_launcher;
 mod auto_cannon;
 mod shrapnel_cannon;
+mod chain_laser;
 
 use bevy::prelude::*;
 
@@ -15,6 +16,7 @@ use self::rocket_launcher::*;
 use self::mine_launcher::*;
 use self::auto_cannon::*;
 use self::shrapnel_cannon::*;
+use self::chain_laser::*;
 
 pub struct TurretPlugin;
 
@@ -38,6 +40,7 @@ impl Plugin for TurretPlugin {
                     fire_mine_launcher,
                     fire_auto_cannon,
                     fire_shrapnel_cannon,
+                    fire_chain_laser,
                 )
                     .in_set(OnUpdate(AppState::InGame)),
             );
@@ -49,30 +52,37 @@ pub struct TurretFireEvent {
     pub turret: Entity,
 }
 
+pub fn get_closest_target(
+    potentials: &mut Vec<(Entity, &Transform, &Targettable)>,
+    point: Vec2,
+) -> Option<Entity> {
+    potentials.sort_by(|a, b| {
+    a.1.translation.truncate()
+        .distance(point)
+        .partial_cmp(&b.1.translation.truncate().distance(point))
+        .unwrap()
+    });
+    potentials
+        .first()
+        .map(|potential| potential.0)
+}
+
 fn turret_targetting_system(
     mut query: Query<(&mut Targets, &Parent), With<Targets>>,
     target_query: Query<(Entity, &Transform, &Targettable), (With<Targettable>, With<Transform>)>,
     parent_query: Query<(&Transform, Entity, &WillTarget), (With<Transform>, With<WillTarget>)>,
 ) {
-    let potential_targets: Vec<(Entity, &Transform, &Targettable)> = target_query.iter().collect();
+    
     for (mut targets, parent) in &mut query {
         // Get parent (ship)
         if let Ok((parent_transform, parent_entity, parent_will_target)) = parent_query.get(parent.get()) {
             if targets.target == None {
                 // Look for a target
-                let mut potentials_without_parent: Vec<&(Entity, &Transform, &Targettable)> = potential_targets
+                let mut potentials_without_parent: Vec<(Entity, &Transform, &Targettable)> = target_query
                     .iter()
                     .filter(|a| a.0 != parent_entity && parent_will_target.0.contains(&a.2.0))
                     .collect();
-                potentials_without_parent.sort_by(|a, b| {
-                    a.1.translation.truncate()
-                        .distance(parent_transform.translation.truncate())
-                        .partial_cmp(&b.1.translation.truncate().distance(parent_transform.translation.truncate()))
-                        .unwrap()
-                });
-                targets.target = potentials_without_parent
-                    .first()
-                    .map(|potential| potential.0);
+                targets.target = get_closest_target(&mut potentials_without_parent, parent_transform.translation.truncate());
             }
         }
     }

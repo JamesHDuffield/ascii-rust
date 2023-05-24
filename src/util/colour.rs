@@ -10,4 +10,8 @@ impl Colour {
     pub const INACTIVE: Color = Color::Rgba { red: 119.0 / 255.0, green: 117.0 / 255.0, blue: 103.0 / 255.0, alpha: 1.0 };
     pub const ENEMY: Color = Color::Rgba { red: 172.0 / 255.0, green: 138.0 / 255.0, blue: 113.0 / 255.0, alpha: 1.0 };
     pub const RED: Color = Color::Rgba { red: 255.0 / 255.0, green: 138.0 / 255.0, blue: 113.0 / 255.0, alpha: 1.0 };
+    pub const GREEN: Color = Color::Rgba { red: 130.0 / 255.0, green: 170.0 / 255.0, blue: 119.0 / 255.0, alpha: 1.0 };
+    pub const YELLOW: Color = Color::Rgba { red: 237.0 / 255.0, green: 225.0 / 255.0, blue: 158.0 / 255.0, alpha: 1.0 };
+    pub const PURPLE: Color = Color::Rgba { red: 138.0 / 255.0, green: 112.0 / 255.0, blue: 225.0 / 255.0, alpha: 1.0 };
+    pub const PINK: Color = Color::Rgba { red: 255.0 / 255.0, green: 113.0 / 255.0, blue: 159.0 / 255.0, alpha: 1.0 };
 }

@@ -190,6 +190,11 @@ fn upgrade_weapon_event(
                                 TurretClass::MineLauncher => {
                                     let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
                                     size.0 *= 1.5;
+                                },
+                                TurretClass::ChainLaser => {
+                                    let mut shots =
+                                        existing_rocket_launcher.get_mut(*entity).unwrap();
+                                    shots.amount += 1;
                                 }
                             }
                         }

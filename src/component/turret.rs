@@ -40,6 +40,7 @@ pub enum TurretClass {
     RocketLauncher,
     MineLauncher,
     ShrapnelCannon,
+    ChainLaser,
 }
 
 impl Display for TurretClass {
@@ -50,17 +51,19 @@ impl Display for TurretClass {
             TurretClass::RocketLauncher => write!(f, "Rocket Launcher"),
             TurretClass::MineLauncher => write!(f, "Mine Launcher"),
             TurretClass::ShrapnelCannon => write!(f, "Shrapnel Cannon"),
+            TurretClass::ChainLaser =>  write!(f, "Chain Laser"),
         }
     }
 }
 
 impl Distribution<TurretClass> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> TurretClass {
-        match rng.gen_range(0..5) {
+        match rng.gen_range(0..6) {
             0 => TurretClass::BlastLaser,
             1 => TurretClass::RocketLauncher,
             2 => TurretClass::MineLauncher,
             3 => TurretClass::ShrapnelCannon,
+            4 => TurretClass::ChainLaser,
             _ => TurretClass::AutoCannon,
         }
     }
@@ -148,6 +151,17 @@ impl TurretBundle {
         }
     }
 
+    pub fn chain_laser() -> TurretBundle {
+        TurretBundle {
+            class: TurretClass::ChainLaser,
+            range: Range { max: 400.0 },
+            fire_rate: FireRate::from_rate_in_seconds(0.4),
+            damage: DoesDamage { amount: 1 },
+            shots: MultiShot { amount: 3 },
+            ..Default::default()
+        }
+    }
+
     pub fn from_class(class: &TurretClass) -> TurretBundle {
         match class {
             TurretClass::AutoCannon => TurretBundle::auto_cannon(),
@@ -155,6 +169,7 @@ impl TurretBundle {
             TurretClass::RocketLauncher => TurretBundle::rocket_launcher(),
             TurretClass::MineLauncher => TurretBundle::mine_launcher(),
             TurretClass::ShrapnelCannon => TurretBundle::shrapnel_cannon(),
+            TurretClass::ChainLaser => TurretBundle::chain_laser(),
         }
     }
 
