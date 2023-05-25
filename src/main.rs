@@ -163,45 +163,39 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, time: Res<Time>
 fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
     commands
         .spawn((
-            Text2dBundle {
-                text: Text::from_section(
-                    "V",
-                    TextStyle {
-                        font: fonts.primary.clone(),
-                        font_size: 40.0,
-                        color: Colour::PLAYER,
-                    },
-                )
-                .with_alignment(TextAlignment::Center),
-                transform: Transform {
-                    translation: Vec3 {
+            ShipBundle {
+                glyph: Text2dBundle {
+                    text: Text::from_section(
+                        "V",
+                        TextStyle {
+                            font: fonts.primary.clone(),
+                            font_size: 20.0,
+                            color: Colour::PLAYER,
+                        },
+                    )
+                    .with_alignment(TextAlignment::Center),
+                    transform: Transform::from_translation(Vec3 {
                         x: 100.0,
                         y: 100.0,
                         z: RenderLayer::Player.as_z(),
-                    },
-                    scale: Vec3 {
-                        x: 0.5,
-                        y: 0.5,
-                        z: 1.0,
-                    },
+                    }),
                     ..default()
                 },
-                ..default()
+                physics: Physics::new(5.0),
+                engine: Engine::new_with_steering(20.0, 40.0, 10.0),
+                health: Health::new(100, 100),
+                collider: Collider { radius: 10.0 },
+                targettable: Targettable(Allegiance::PLAYER),
+                will_target: WillTarget(vec![Allegiance::ENEMY]),
+                ..Default::default()
             },
+            
             BaseGlyphRotation {
                 rotation: Quat::from_rotation_z(PI / 2.0),
             },
             IsPlayer,
-            Physics::new(5.0),
-            Engine::new_with_steering(20.0, 40.0, 10.0),
-            Health::new(100, 100),
-            Collider { radius: 5.0 },
-            Targettable(Allegiance::PLAYER),
-            WillTarget(vec![Allegiance::ENEMY]),
             Cargo::default(),
             Magnet::default(),
-            ExplodesOnDespawn::default(),
-            DespawnWithScene,
         ));
 }
 

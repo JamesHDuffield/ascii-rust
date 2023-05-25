@@ -1,4 +1,8 @@
-use std::{cmp::min, f32::consts::PI, time::Duration};
+mod fighter;
+
+use self::fighter::*;
+
+use std::{cmp::min, time::Duration};
 
 use bevy::prelude::*;
 
@@ -40,50 +44,6 @@ fn spawn_startup(mut commands: Commands) {
     commands.insert_resource(Spawning { max: 100, timer });
 }
 
-fn spawn_enemy(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
-    commands
-        .spawn((
-            Text2dBundle {
-                text: Text::from_section(
-                    "w",
-                    TextStyle {
-                        font: fonts.primary.clone(),
-                        font_size: 32.0,
-                        color: Colour::ENEMY,
-                    },
-                )
-                .with_alignment(TextAlignment::Center),
-                transform: Transform {
-                    translation: position,
-                    scale: Vec3 {
-                        x: 0.5,
-                        y: 0.5,
-                        z: 1.0,
-                    },
-                    ..default()
-                },
-                ..default()
-            },
-            BaseGlyphRotation {
-                rotation: Quat::from_rotation_z(PI / 2.0),
-            },
-            Physics::new(5.0),
-            Engine::new(18.0, 18.0),
-            Health::new(10, 0),
-            Collider { radius: 10.0 },
-            Targettable(Allegiance::ENEMY),
-            WillTarget(vec![Allegiance::PLAYER]),
-            AI,
-            DropsLoot,
-            ExplodesOnDespawn::default(),
-            DespawnWithScene,
-            WorthPoints { value: 10 },
-        ))
-        .with_children(|parent| {
-            parent.spawn(TurretBundle::auto_cannon());
-        });
-}
-
 fn spawner_system(
     mut commands: Commands,
     fonts: Res<Fonts>,
@@ -120,7 +80,7 @@ fn spawner_system(
             for _ in 0..max_num_enemies_to_spawn {
                 // Ensure they spawn in a pack not on top of eachother
                 let jiggled_spawn = spawn_point + Math::random_2d_unit_vector() * 10.0;
-                spawn_enemy(
+                spawn_fighter(
                     &mut commands,
                     &fonts,
                     jiggled_spawn.extend(RenderLayer::Enemy.as_z()),

@@ -11,6 +11,10 @@ pub struct Engine {
     pub steering_factor: f32,
 }
 
+impl Default for Engine {
+    fn default() -> Self { Engine { target: None, method: EngineMethod::Approach, power: 10.0, speed: 0.0, max_speed: 10.0, depower_factor: 5.0, steering_factor: 20.0 } }
+}
+
 impl Engine {
 
     pub fn new(power: f32, max_speed: f32) -> Engine {

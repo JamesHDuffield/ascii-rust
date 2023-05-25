@@ -10,6 +10,10 @@ pub struct Health {
     pub shield_recharge_timer: Timer,
 }
 
+impl Default for Health {
+    fn default() -> Self { Health::new(100, 100) }
+}
+
 impl Health {
     pub fn new(max_health: i32, max_shield: i32) -> Health {
         Health {

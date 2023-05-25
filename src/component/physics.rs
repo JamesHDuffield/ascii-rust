@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct Physics {
     pub acceleration: Vec2,
     pub velocity: Vec2,
