@@ -71,19 +71,27 @@ pub fn get_closest_target(
 }
 
 fn turret_targetting_system(
-    mut query: Query<(&mut Targets, &Parent), With<Targets>>,
-    target_query: Query<(Entity, &Transform, &Targettable), (With<Targettable>, With<Transform>)>,
-    parent_query: Query<(&Transform, Entity, &WillTarget), (With<Transform>, With<WillTarget>)>,
+    mut query: Query<(&mut Targets, &Parent, &Range)>,
+    target_query: Query<(Entity, &Transform, &Targettable)>,
+    parent_query: Query<(&Transform, Entity, &WillTarget)>,
 ) {
     
-    for (mut targets, parent) in &mut query {
+    for (mut targets, parent, range) in &mut query {
         // Get parent (ship)
         if let Ok((parent_transform, parent_entity, parent_will_target)) = parent_query.get(parent.get()) {
-            if targets.target == None {
+            if let Some(target) = targets.target {
+                // Check still in range
+                if let Ok(current_target) = target_query.get(target) {
+                    if current_target.1.translation.truncate().distance(parent_transform.translation.truncate()) > range.max {
+                        targets.target = None;
+                    }
+                }
+            } else {
                 // Look for a target
                 let mut potentials_without_parent: Vec<(Entity, &Transform, &Targettable)> = target_query
                     .iter()
                     .filter(|a| a.0 != parent_entity && parent_will_target.0.contains(&a.2.0))
+                    .filter(|a| a.1.translation.truncate().distance(parent_transform.translation.truncate()) <= range.max)
                     .collect();
                 targets.target = get_closest_target(&mut potentials_without_parent, parent_transform.translation.truncate());
             }

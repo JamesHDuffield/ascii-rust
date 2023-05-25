@@ -1,10 +1,13 @@
 mod fighter;
+mod drone;
 
 use self::fighter::*;
+use self::drone::*;
 
 use std::{cmp::min, time::Duration};
 
 use bevy::prelude::*;
+use rand::Rng;
 
 use crate::{component::*, resource::*, util::*, AppState, GameState, game_not_paused};
 
@@ -80,11 +83,16 @@ fn spawner_system(
             for _ in 0..max_num_enemies_to_spawn {
                 // Ensure they spawn in a pack not on top of eachother
                 let jiggled_spawn = spawn_point + Math::random_2d_unit_vector() * 10.0;
-                spawn_fighter(
+                let spawn_func = match rand::thread_rng().gen_range(0..2) {
+                    0 => spawn_fighter,
+                    _ => spawn_drone,
+                };
+                spawn_func(
                     &mut commands,
                     &fonts,
                     jiggled_spawn.extend(RenderLayer::Enemy.as_z()),
                 );
+                
             }
         }
     }

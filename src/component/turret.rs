@@ -17,7 +17,7 @@ pub struct FireRate {
 }
 
 impl FireRate {
-    fn from_rate_in_seconds(rate: f32) -> FireRate {
+    pub fn from_rate_in_seconds(rate: f32) -> FireRate {
         FireRate { rate, timer: Timer::from_seconds(1.0 / rate, TimerMode::Repeating) }
     }
 
@@ -91,13 +91,13 @@ impl Default for MultiShot {
 
 #[derive(Bundle, Default)]
 pub struct TurretBundle {
-    range: Range,
-    fire_rate: FireRate,
-    target: Targets,
-    class: TurretClass,
-    damage: DoesDamage,
-    shots: MultiShot,
-    size: EffectSize,
+    pub range: Range,
+    pub fire_rate: FireRate,
+    pub target: Targets,
+    pub class: TurretClass,
+    pub damage: DoesDamage,
+    pub shots: MultiShot,
+    pub size: EffectSize,
 }
 
 impl TurretBundle {
