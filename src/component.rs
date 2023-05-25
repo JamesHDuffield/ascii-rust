@@ -24,9 +24,6 @@ use crate::util::Colour;
 pub struct IsPlayer;
 
 #[derive(Component)]
-pub struct AI;
-
-#[derive(Component)]
 pub struct MainCamera;
 
 #[derive(Component)]

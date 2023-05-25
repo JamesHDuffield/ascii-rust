@@ -18,12 +18,6 @@ impl fmt::Display for Points {
 }
 
 #[derive(Resource)]
-pub struct Spawning {
-    pub max: u32,
-    pub timer: Timer,
-}
-
-#[derive(Resource)]
 pub struct GameTime {
     pub start_time: Duration,
 }

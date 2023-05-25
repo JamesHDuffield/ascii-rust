@@ -11,6 +11,7 @@ use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_parallax::{LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin, ParallaxResource, ParallaxSystems};
 use bevy_prototype_lyon::prelude::*;
 use component::*;
+use plugin::EnemyPlugin;
 use plugin::HudPlugin;
 use plugin::TurretPlugin;
 use plugin::UpgradePlugin;
@@ -19,7 +20,7 @@ use plugin::SelectionPlugin;
 use util::RenderLayer;
 use util::Colour;
 use resource::*;
-use std::{f32::consts::PI, time::Duration};
+use std::f32::consts::PI;
 use system::*;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
@@ -63,6 +64,7 @@ fn main() {
         .add_plugin(UpgradePlugin)
         .add_plugin(TurretPlugin)
         .add_plugin(HudPlugin)
+        .add_plugin(EnemyPlugin)
         // InGame
         .add_system(
             setup_player.in_schedule(OnEnter(AppState::InGame)),
@@ -81,7 +83,6 @@ fn main() {
                 combat_system,
                 laser_render_system,
                 explosion_render_system,
-                ai_system,
                 death_system,
                 loot_magnet_system,
                 loot_cargo_collision,
@@ -89,12 +90,6 @@ fn main() {
                 level_up_system,
             )
                 .distributive_run_if(game_not_paused)
-                .in_set(OnUpdate(AppState::InGame)),
-        )
-        // Stop when game over
-        .add_system(
-            spawner_system
-                .run_if(in_state(GameState::Running))
                 .in_set(OnUpdate(AppState::InGame)),
         )
         // Cleanup
@@ -142,12 +137,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, time: Res<Time>
 
     // Start player at level 0 so they get immediate selection
     commands.insert_resource(PlayerLevel { value: 0 });
-
-    // Set spawn limit
-    let seconds = 30.0;
-    let mut timer = Timer::from_seconds(seconds, TimerMode::Repeating);
-    timer.set_elapsed(Duration::from_secs_f32(seconds - 1.0));
-    commands.insert_resource(Spawning { max: 100, timer });
 
     // Spawn the Camera
     commands
