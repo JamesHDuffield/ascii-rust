@@ -182,7 +182,7 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
                     ..default()
                 },
                 physics: Physics::new(5.0),
-                engine: Engine::new_with_steering(20.0, 40.0, 10.0),
+                engine: Engine::new_with_steering(8.0, 16.0, 10.0),
                 health: Health::new(100, 100),
                 collider: Collider { radius: 10.0 },
                 targettable: Targettable(Allegiance::PLAYER),

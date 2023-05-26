@@ -24,7 +24,12 @@ pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                     ..default()
                 },
                 physics: Physics::new(12.0),
-                engine: Engine::new(3.0, 3.0),
+                engine: Engine {
+                    max_speed: 3.0,
+                    power: 3.0,
+                    method: EngineMethod::Keep(500.0),
+                    ..Default::default()
+                },
                 health: Health::new(100, 80),
                 collider: Collider { radius: 50.0 },
                 explodes_on_despawn: ExplodesOnDespawn {

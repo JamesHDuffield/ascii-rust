@@ -24,7 +24,7 @@ pub fn spawn_fighter(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3
                     ..default()
                 },
                 physics: Physics::new(5.0),
-                engine: Engine::new(18.0, 18.0),
+                engine: Engine::new(14.0, 14.0),
                 health: Health::new(10, 0),
                 collider: Collider { radius: 10.0 },
                 explodes_on_despawn: ExplodesOnDespawn {
