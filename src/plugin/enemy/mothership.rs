@@ -6,16 +6,16 @@ use crate::{util::Colour, resource::Fonts, component::*};
 
 use super::AI;
 
-pub fn spawn_drone(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
+pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
     commands
         .spawn((
             ShipBundle {
                 glyph: Text2dBundle {
                     text: Text::from_section(
-                        "c",
+                        "@",
                         TextStyle {
                             font: fonts.primary.clone(),
-                            font_size: 18.0,
+                            font_size: 60.0,
                             color: Colour::ENEMY,
                         },
                     )
@@ -23,13 +23,13 @@ pub fn spawn_drone(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) 
                     transform: Transform::from_translation(position),
                     ..default()
                 },
-                physics: Physics::new(5.0),
-                engine: Engine::new(10.0, 10.0),
-                health: Health::new(1, 4),
-                collider: Collider { radius: 10.0 },
+                physics: Physics::new(12.0),
+                engine: Engine::new(3.0, 3.0),
+                health: Health::new(100, 80),
+                collider: Collider { radius: 50.0 },
                 explodes_on_despawn: ExplodesOnDespawn {
-                    size_min: 15.0,
-                    size_max: 20.0,
+                    size_min: 55.0,
+                    size_max: 65.0,
                     ..Default::default()
                 },
                 ..Default::default()
@@ -39,15 +39,16 @@ pub fn spawn_drone(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) 
             },
             AI,
             DropsLoot,
-            WorthPoints { value: 10 },
+            WorthPoints { value: 50 },
         ))
         .with_children(|parent| {
-            // Custom short range blast laser
+            // Custom rocket launcher
             parent.spawn(TurretBundle {
-                class: TurretClass::BlastLaser,
-                range: Range { max: 100.0 },
-                fire_rate: FireRate::from_rate_in_seconds(2.0),
-                damage: DoesDamage { amount: 1 },
+                class: TurretClass::RocketLauncher,
+                range: Range { max: 1000.0 },
+                fire_rate: FireRate::from_rate_in_seconds(0.2),
+                damage: DoesDamage { amount: 5 },
+                shots: MultiShot { amount: 8 },
                 ..Default::default()
             });
         });

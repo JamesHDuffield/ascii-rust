@@ -9,7 +9,7 @@ use super::TurretFireEvent;
 pub fn fire_rocket_launcher(
     mut commands: Commands,
     mut fire_event: EventReader<TurretFireEvent>,
-    turret_query: Query<(&Parent, &Targets, &DoesDamage, &MultiShot)>,
+    turret_query: Query<(&Parent, &Targets, &DoesDamage, &MultiShot, &EffectColour)>,
     parent_query: Query<&Transform>,
     fonts: Res<Fonts>,
 ) {
@@ -18,7 +18,7 @@ pub fn fire_rocket_launcher(
             TurretClass::RocketLauncher => {
 
                 // Get Turret Info
-                let Ok((parent, targets, damage, shots)) = turret_query.get(ev.turret) else { continue; };
+                let Ok((parent, targets, damage, shots, colour)) = turret_query.get(ev.turret) else { continue; };
 
                 // Get Target
                 let Some(target) = targets.target else { continue; };
@@ -37,7 +37,7 @@ pub fn fire_rocket_launcher(
                                 TextStyle {
                                     font: fonts.primary.clone(),
                                     font_size: 12.0,
-                                    color: Colour::WHITE,
+                                    color: colour.0,
                                 },
                             )
                             .with_alignment(TextAlignment::Center),
@@ -59,7 +59,10 @@ pub fn fire_rocket_launcher(
                         Seeker(target),
                         Collider { radius: 5.0 },
                         Owner(parent.get()),
-                        ExplodesOnDespawn::default(),
+                        ExplodesOnDespawn {
+                            colour: colour.0,
+                            ..Default::default()
+                        },
                         AoeDamage { damage: damage.amount, range: 40.0 },
                         DespawnWithScene,
                     ));

@@ -8,7 +8,7 @@ use super::TurretFireEvent;
 pub fn fire_pierce_laser(
     mut commands: Commands,
     mut fire_event: EventReader<TurretFireEvent>,
-    turret_query: Query<(&Parent, &Targets, &DoesDamage, &EffectSize)>,
+    turret_query: Query<(&Parent, &Targets, &DoesDamage, &EffectSize, &EffectColour)>,
     parent_query: Query<(&Transform, &WillTarget)>,
     target_query: Query<&Transform>,
     mut potential_query: Query<(Entity, &Transform, &Targettable, &Collider, &mut Health)>,
@@ -18,7 +18,7 @@ pub fn fire_pierce_laser(
             TurretClass::PierceLaser => {
 
                 // Get Turret Info
-                let Ok((parent, targets, damage, size)) = turret_query.get(ev.turret) else { continue; };
+                let Ok((parent, targets, damage, size, colour)) = turret_query.get(ev.turret) else { continue; };
 
                 // Get Target
                 let Some(target) = targets.target else { continue; };
@@ -42,7 +42,7 @@ pub fn fire_pierce_laser(
                         transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
                         ..default()
                     },
-                    Stroke::new(Colour::YELLOW, size.0),
+                    Stroke::new(colour.0, size.0),
                     Owner(parent.get()),
                     DespawnWithScene,
                 ));

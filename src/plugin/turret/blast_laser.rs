@@ -8,7 +8,7 @@ use super::TurretFireEvent;
 pub fn fire_blast_laser(
     mut commands: Commands,
     mut fire_event: EventReader<TurretFireEvent>,
-    turret_query: Query<(&Parent, &Targets, &DoesDamage)>,
+    turret_query: Query<(&Parent, &Targets, &DoesDamage, &EffectColour)>,
     parent_query: Query<&Transform>,
     mut target_query: Query<(&Transform, &mut Health)>,
 ) {
@@ -17,7 +17,7 @@ pub fn fire_blast_laser(
             TurretClass::BlastLaser => {
 
                 // Get Turret Info
-                let Ok((parent, targets, damage)) = turret_query.get(ev.turret) else { continue; };
+                let Ok((parent, targets, damage, colour)) = turret_query.get(ev.turret) else { continue; };
 
                 // Get Target
                 let Some(target) = targets.target else { continue; };
@@ -39,7 +39,7 @@ pub fn fire_blast_laser(
                         transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
                         ..default()
                     },
-                    Stroke::new(Colour::RED, 1.0),
+                    Stroke::new(colour.0, 1.0),
                     Owner(parent.get()),
                     DespawnWithScene,
                 ));

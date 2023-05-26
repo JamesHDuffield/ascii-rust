@@ -54,7 +54,7 @@ fn spawn_loot(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
                         TextStyle {
                             font: fonts.primary.clone(),
                             font_size: 12.0,
-                            color: Colour::INACTIVE,
+                            color: Colour::PURPLE,
                         },
                     )
                     .with_alignment(TextAlignment::Center),

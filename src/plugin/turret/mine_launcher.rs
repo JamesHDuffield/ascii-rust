@@ -7,7 +7,7 @@ use super::TurretFireEvent;
 pub fn fire_mine_launcher(
     mut commands: Commands,
     mut fire_event: EventReader<TurretFireEvent>,
-    turret_query: Query<(&Parent, &DoesDamage, &EffectSize)>,
+    turret_query: Query<(&Parent, &DoesDamage, &EffectSize, &EffectColour)>,
     parent_query: Query<&Transform>,
     fonts: Res<Fonts>,
 ) {
@@ -16,7 +16,7 @@ pub fn fire_mine_launcher(
             TurretClass::MineLauncher => {
 
                 // Get Turret Info
-                let Ok((parent, damage, size)) = turret_query.get(ev.turret) else { continue; };
+                let Ok((parent, damage, size, colour)) = turret_query.get(ev.turret) else { continue; };
 
                 // Get Parent Info
                 let Ok(parent_transform) = parent_query.get(parent.get()) else { continue; };
@@ -31,7 +31,7 @@ pub fn fire_mine_launcher(
                             TextStyle {
                                 font: fonts.primary.clone(),
                                 font_size: 12.0,
-                                color: Colour::SHIELD,
+                                color: colour.0,
                             },
                         )
                         .with_alignment(TextAlignment::Center),
@@ -47,7 +47,7 @@ pub fn fire_mine_launcher(
                     ExplodesOnDespawn {
                         size_min: size.0,
                         size_max: size.0,
-                        colour: Colour::SHIELD,
+                        colour: colour.0,
                         ..Default::default()
                     },
                     AoeDamage { damage: damage.amount, range: size.0 },

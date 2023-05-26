@@ -27,6 +27,11 @@ pub fn spawn_fighter(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3
                 engine: Engine::new(18.0, 18.0),
                 health: Health::new(10, 0),
                 collider: Collider { radius: 10.0 },
+                explodes_on_despawn: ExplodesOnDespawn {
+                    size_min: 20.0,
+                    size_max: 25.0,
+                    ..Default::default()
+                },
                 ..Default::default()
             },
             BaseGlyphRotation {
@@ -37,6 +42,11 @@ pub fn spawn_fighter(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3
             WorthPoints { value: 10 },
         ))
         .with_children(|parent| {
-            parent.spawn(TurretBundle::auto_cannon());
+            parent.spawn(TurretBundle {
+                class: TurretClass::AutoCannon,
+                fire_rate: FireRate::from_rate_in_seconds(1.0),
+                damage: DoesDamage { amount: 2 },
+                ..Default::default()
+            });
         });
 }

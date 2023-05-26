@@ -6,7 +6,7 @@ use crate::{component::*, util::*};
 use super::{TurretFireEvent, get_closest_target};
 
 
-fn spawn_link(commands: &mut Commands, target_query: &mut Query<(&Transform, &mut Health)>, origin: Vec2, target: Entity, damage: &DoesDamage, jump: u8) -> Result<Vec2, QueryEntityError> {
+fn spawn_link(commands: &mut Commands, target_query: &mut Query<(&Transform, &mut Health)>, origin: Vec2, target: Entity, damage: &DoesDamage, jump: u8, colour: &EffectColour) -> Result<Vec2, QueryEntityError> {
     // Get Target Info
     let (target_transform, mut target_health) = target_query.get_mut(target)?;
     let target = target_transform.translation.truncate();
@@ -19,7 +19,7 @@ fn spawn_link(commands: &mut Commands, target_query: &mut Query<(&Transform, &mu
             transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
             ..default()
         },
-        Stroke::new(Colour::GREEN, 2.0),
+        Stroke::new(colour.0, 2.0),
         DespawnWithScene,
     ));
     // Immediate hit
@@ -30,7 +30,7 @@ fn spawn_link(commands: &mut Commands, target_query: &mut Query<(&Transform, &mu
 pub fn fire_chain_laser(
     mut commands: Commands,
     mut fire_event: EventReader<TurretFireEvent>,
-    turret_query: Query<(&Parent, &Targets, &DoesDamage, &MultiShot)>,
+    turret_query: Query<(&Parent, &Targets, &DoesDamage, &MultiShot, &EffectColour)>,
     parent_query: Query<(&Transform, &WillTarget)>,
     mut target_query: Query<(&Transform, &mut Health)>,
     potential_query: Query<(Entity, &Transform, &Targettable), (With<Targettable>, With<Transform>)>,
@@ -40,7 +40,7 @@ pub fn fire_chain_laser(
             TurretClass::ChainLaser => {
 
                 // Get Turret Info
-                let Ok((parent, targets, damage, shots)) = turret_query.get(ev.turret) else { continue; };
+                let Ok((parent, targets, damage, shots, colour)) = turret_query.get(ev.turret) else { continue; };
 
                 // Get Target
                 let Some(target) = targets.target else { continue; };
@@ -68,7 +68,7 @@ pub fn fire_chain_laser(
                     // Remove target from potentials list so no repeats
                     potential_targets.retain(|potential| potential.0 != target);
                     
-                    let result = spawn_link(&mut commands, &mut target_query, previous_position, target, damage, num_jumps);
+                    let result = spawn_link(&mut commands, &mut target_query, previous_position, target, damage, num_jumps, colour);
 
                     match result {
                         Ok(pos) => {

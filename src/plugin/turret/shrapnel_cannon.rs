@@ -10,7 +10,7 @@ use super::TurretFireEvent;
 pub fn fire_shrapnel_cannon(
     mut commands: Commands,
     mut fire_event: EventReader<TurretFireEvent>,
-    turret_query: Query<(&Parent, &Targets, &DoesDamage, &MultiShot)>,
+    turret_query: Query<(&Parent, &Targets, &DoesDamage, &MultiShot, &EffectColour)>,
     parent_query: Query<&Transform>,
     target_query: Query<&Transform>,
     fonts: Res<Fonts>,
@@ -20,7 +20,7 @@ pub fn fire_shrapnel_cannon(
             TurretClass::ShrapnelCannon => {
 
                 // Get Turret Info
-                let Ok((parent, targets, damage, shots)) = turret_query.get(ev.turret) else { continue; };
+                let Ok((parent, targets, damage, shots, colour)) = turret_query.get(ev.turret) else { continue; };
 
                 // Get Target
                 let Some(target) = targets.target else { continue; };
@@ -52,8 +52,8 @@ pub fn fire_shrapnel_cannon(
                                 ".",
                                 TextStyle {
                                     font: fonts.primary.clone(),
-                                    font_size: 12.0,
-                                    color: Colour::RED,
+                                    font_size: 16.0,
+                                    color: colour.0,
                                 },
                             )
                             .with_alignment(TextAlignment::Center),

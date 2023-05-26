@@ -6,16 +6,16 @@ use crate::{util::Colour, resource::Fonts, component::*};
 
 use super::AI;
 
-pub fn spawn_drone(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
+pub fn spawn_drone_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
     commands
         .spawn((
             ShipBundle {
                 glyph: Text2dBundle {
                     text: Text::from_section(
-                        "c",
+                        "C",
                         TextStyle {
                             font: fonts.primary.clone(),
-                            font_size: 18.0,
+                            font_size: 32.0,
                             color: Colour::ENEMY,
                         },
                     )
@@ -23,15 +23,10 @@ pub fn spawn_drone(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) 
                     transform: Transform::from_translation(position),
                     ..default()
                 },
-                physics: Physics::new(5.0),
-                engine: Engine::new(10.0, 10.0),
-                health: Health::new(1, 4),
-                collider: Collider { radius: 10.0 },
-                explodes_on_despawn: ExplodesOnDespawn {
-                    size_min: 15.0,
-                    size_max: 20.0,
-                    ..Default::default()
-                },
+                physics: Physics::new(8.0),
+                engine: Engine::new(8.0, 8.0),
+                health: Health::new(10, 40),
+                collider: Collider { radius: 30.0 },
                 ..Default::default()
             },
             BaseGlyphRotation {
@@ -39,14 +34,14 @@ pub fn spawn_drone(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) 
             },
             AI,
             DropsLoot,
-            WorthPoints { value: 10 },
+            WorthPoints { value: 50 },
         ))
         .with_children(|parent| {
             // Custom short range blast laser
             parent.spawn(TurretBundle {
                 class: TurretClass::BlastLaser,
-                range: Range { max: 100.0 },
-                fire_rate: FireRate::from_rate_in_seconds(2.0),
+                range: Range { max: 150.0 },
+                fire_rate: FireRate::from_rate_in_seconds(1.0),
                 damage: DoesDamage { amount: 1 },
                 ..Default::default()
             });

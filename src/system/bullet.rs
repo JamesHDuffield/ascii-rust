@@ -61,7 +61,7 @@ pub fn bullet_collision_system(
             }
             if let Some(aoe_damage) = aoe_damage {
                 let all_hits = potentials.iter().filter(|potential| {
-                  transform.translation.truncate().distance(potential.1.translation.truncate()) <= aoe_damage.range
+                  transform.translation.truncate().distance(potential.1.translation.truncate()) <= aoe_damage.range + potential.0.radius
                 });
                 for h in all_hits {
                   if let Ok(mut health) = effected_query.get_mut(h.2) {
