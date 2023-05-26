@@ -50,6 +50,11 @@ pub struct Collider {
     pub radius: f32,
 }
 
+#[derive(Component)]
+pub struct ExpandingCollider {
+    pub final_radius: f32,
+}
+
 #[derive(Reflect, Component)]
 pub struct Owner(pub Entity);
 
@@ -82,6 +87,7 @@ pub struct ExplosionRender {
     pub origin: Vec2,
     pub radius: f32,
     pub ttl: Timer,
+    pub fade_out: bool,
 }
 
 #[derive(Component)]

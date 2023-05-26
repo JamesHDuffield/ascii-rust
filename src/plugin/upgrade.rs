@@ -199,6 +199,10 @@ fn upgrade_weapon_event(
                                 TurretClass::PierceLaser => {
                                     let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
                                     size.0 += 2.0;
+                                },
+                                TurretClass::Emp => {
+                                    let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
+                                    size.0 += 20.0;
                                 }
                             }
                         }

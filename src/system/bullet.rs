@@ -18,12 +18,13 @@ pub fn bullet_collision_system(
     mut commands: Commands,
     mut query: Query<
         (
-            &mut Collider,
+            &Collider,
             &Transform,
             Entity,
             &Owner,
             Option<&DirectDamage>,
             Option<&AoeDamage>,
+            &mut Bullet,
         ),
         (With<Bullet>, With<Collider>, With<Owner>),
     >,
@@ -33,7 +34,7 @@ pub fn bullet_collision_system(
     >,
     mut effected_query: Query<&mut Health, With<Health>>,
 ) {
-    for (collider, transform, entity, owner, direct_damage, aoe_damage) in &mut query {
+    for (collider, transform, entity, owner, direct_damage, aoe_damage, mut bullet) in &mut query {
         // Get all potentials
         let potentials = potential_query
             .iter()
@@ -48,28 +49,47 @@ pub fn bullet_collision_system(
 
         // Sort by distance to bullet
         let hit = potentials.iter().find(|potential| {
-            transform.translation.truncate().distance(potential.1.translation.truncate())
+            transform
+                .translation
+                .truncate()
+                .distance(potential.1.translation.truncate())
                 <= collider.radius + potential.0.radius
+                && bullet.entities_hit.get(&potential.2).unwrap_or(&0) < &bullet.max_hits_per_entity
         });
 
         if let Some((_collider, _transform, potential_entity)) = hit {
+            let number_of_times_hit = bullet.entities_hit.entry(*potential_entity).or_insert(0);
+            *number_of_times_hit += 1;
 
             if let Some(direct_damage) = direct_damage {
-              if let Ok(mut health) = effected_query.get_mut(*potential_entity) {
-                health.take_damage(direct_damage.0);
-              }
-            }
-            if let Some(aoe_damage) = aoe_damage {
-                let all_hits = potentials.iter().filter(|potential| {
-                  transform.translation.truncate().distance(potential.1.translation.truncate()) <= aoe_damage.range + potential.0.radius
-                });
-                for h in all_hits {
-                  if let Ok(mut health) = effected_query.get_mut(h.2) {
-                    health.take_damage(aoe_damage.damage);
-                  }
+                if let Ok(mut health) = effected_query.get_mut(*potential_entity) {
+                    health.take_damage(direct_damage.0);
                 }
             }
-            commands.entity(entity).insert(ShouldDespawn);
+            if let Some(aoe_damage) = aoe_damage {
+                let all_hits: Vec<_> = potentials
+                    .iter()
+                    .filter(|potential| {
+                        transform
+                            .translation
+                            .truncate()
+                            .distance(potential.1.translation.truncate())
+                            <= aoe_damage.range + potential.0.radius
+                            && bullet.entities_hit.get(&potential.2).unwrap_or(&0)
+                                < &bullet.max_hits_per_entity
+                    })
+                    .collect();
+                for h in all_hits.iter() {
+                    let number_of_times_hit = bullet.entities_hit.entry(h.2).or_insert(0);
+                    *number_of_times_hit += 1;
+                    if let Ok(mut health) = effected_query.get_mut(h.2) {
+                        health.take_damage(aoe_damage.damage);
+                    }
+                }
+            }
+            if bullet.despawn_on_hit {
+                commands.entity(entity).insert(ShouldDespawn);
+            }
             break;
         }
     }

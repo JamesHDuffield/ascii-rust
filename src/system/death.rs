@@ -90,6 +90,7 @@ fn explode(commands: &mut Commands, explodes: &ExplodesOnDespawn, position: Vec2
               origin: position + offset,
               radius: rng.gen_range(explodes.size_min..=explodes.size_max),
               ttl: Timer::from_seconds(rng.gen_range(explodes.duration_min..=explodes.duration_max), TimerMode::Once),
+              fade_out: false,
           },
           ShapeBundle {
               path: GeometryBuilder::build_as(&shapes::Circle {

@@ -83,6 +83,7 @@ fn main() {
                 combat_system,
                 laser_render_system,
                 explosion_render_system,
+                expanding_collider_system,
                 death_system,
                 loot_magnet_system,
                 loot_cargo_collision,

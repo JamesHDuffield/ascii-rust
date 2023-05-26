@@ -88,9 +88,9 @@ fn spawner_system(
                 // Ensure they spawn in a pack not on top of eachother
                 let jiggled_spawn = spawn_point + Math::random_2d_unit_vector() * 10.0;
                 let spawn_func = match rand::thread_rng().gen_range(0..100) {
-                    0 => spawn_mothership,
-                    1..=5 => spawn_drone_boss,
-                    6..=15 => spawn_fighter,
+                    // 0 => spawn_mothership,
+                    // 1..=5 => spawn_drone_boss,
+                    // 6..=15 => spawn_fighter,
                     _ => spawn_drone,
                 };
                 spawn_func(

@@ -6,6 +6,7 @@ mod bullet;
 mod combat;
 mod laser_render;
 mod explosion_render;
+mod expanding_collider;
 mod death;
 mod loot;
 
@@ -17,5 +18,6 @@ pub use bullet::*;
 pub use combat::*;
 pub use laser_render::*;
 pub use explosion_render::*;
+pub use expanding_collider::*;
 pub use death::*;
 pub use loot::*;

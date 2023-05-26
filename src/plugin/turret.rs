@@ -5,6 +5,7 @@ mod auto_cannon;
 mod shrapnel_cannon;
 mod chain_laser;
 mod pierce_laser;
+mod emp;
 
 use bevy::prelude::*;
 
@@ -19,6 +20,7 @@ use self::auto_cannon::*;
 use self::shrapnel_cannon::*;
 use self::chain_laser::*;
 use self::pierce_laser::*;
+use self::emp::*;
 
 pub struct TurretPlugin;
 
@@ -44,6 +46,7 @@ impl Plugin for TurretPlugin {
                     fire_shrapnel_cannon,
                     fire_chain_laser,
                     fire_pierce_laser,
+                    fire_emp,
                 )
                     .in_set(OnUpdate(AppState::InGame)),
             );
