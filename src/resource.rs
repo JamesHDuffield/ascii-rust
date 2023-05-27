@@ -29,6 +29,6 @@ pub struct PlayerLevel {
 
 impl PlayerLevel {
     pub fn required_cargo_to_level(&self) -> u32 {
-        self.value * 10 // TODO make exponential?
+        self.value * 1 // TODO make exponential?
     }
 }

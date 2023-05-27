@@ -82,6 +82,7 @@ pub enum Passive {
     Magnet,
     ShieldRecharge,
     Armor,
+    FireRate,
 }
 
 impl Display for Passive {
@@ -91,19 +92,27 @@ impl Display for Passive {
             Passive::Magnet => write!(f, "Magnet"),
             Passive::ShieldRecharge => write!(f, "Shield Boost"),
             Passive::Armor => write!(f, "Reinforced Armor"),
+            Passive::FireRate => write!(f, "Rapid Fire"),
         }
     }
 }
 
 impl Distribution<Passive> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Passive {
-        match rng.gen_range(0..4) {
-            0 => Passive::Speed,
-            1 => Passive::ShieldRecharge,
-            2 => Passive::Armor,
-            _ => Passive::Magnet,
+        match rng.gen_range(0..5) {
+            // 0 => Passive::Speed,
+            // 1 => Passive::ShieldRecharge,
+            // 2 => Passive::Armor,
+            _ => Passive::FireRate,
+            // _ => Passive::Magnet,
         }
     }
+}
+
+#[derive(Copy, Clone, Eq, Hash, PartialEq)]
+pub struct TurretBuffEvent {
+    turret: Entity,
+    buff: Passive,
 }
 
 pub struct UpgradePlugin;
@@ -112,6 +121,7 @@ impl Plugin for UpgradePlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(PlayerUpgrades(HashMap::new()))
             .add_event::<UpgradeEvent>()
+            .add_event::<TurretBuffEvent>()
             .add_systems(
                 (
                     record_upgrade,
@@ -119,6 +129,8 @@ impl Plugin for UpgradePlugin {
                     upgrade_magnet_event,
                     upgrade_speed_event,
                     upgrade_health_events,
+                    upgrade_fire_rate_events,
+                    turret_buff_events,
                 )
                     .in_set(OnUpdate(AppState::InGame)),
             );
@@ -135,6 +147,22 @@ fn record_upgrade(
     }
 }
 
+fn turret_buff_events(
+    mut buff_event: EventReader<TurretBuffEvent>,
+    mut turret_query: Query<&mut FireRate>,
+) {
+    for ev in buff_event.iter() {
+        let Ok(mut fire_rate) = turret_query.get_mut(ev.turret) else { continue; };
+        match ev.buff {
+            Passive::FireRate => {
+                let new_rate = fire_rate.rate * 10.0;
+                fire_rate.set_rate_in_seconds(new_rate);
+            }
+            _ => (),
+        }
+    }
+}
+
 fn upgrade_weapon_event(
     mut upgrade_event: EventReader<UpgradeEvent>,
     mut commands: Commands,
@@ -144,6 +172,7 @@ fn upgrade_weapon_event(
     mut existing_rocket_launcher: Query<&mut MultiShot>,
     mut existing_shrapnel_cannon: Query<&mut DoesDamage>,
     mut existing_mine_launcher: Query<&mut EffectSize>,
+    mut buff_event: EventWriter<TurretBuffEvent>,
 ) {
     for ev in upgrade_event.iter() {
         match ev {
@@ -190,16 +219,16 @@ fn upgrade_weapon_event(
                                 TurretClass::MineLauncher => {
                                     let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
                                     size.0 *= 1.5;
-                                },
+                                }
                                 TurretClass::ChainLaser => {
                                     let mut shots =
                                         existing_rocket_launcher.get_mut(*entity).unwrap();
                                     shots.amount += 1;
-                                },
+                                }
                                 TurretClass::PierceLaser => {
                                     let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
                                     size.0 += 2.0;
-                                },
+                                }
                                 TurretClass::Emp => {
                                     let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
                                     size.0 += 20.0;
@@ -208,7 +237,12 @@ fn upgrade_weapon_event(
                         }
                         None => {
                             commands.entity(player_entity).with_children(|parent| {
-                                parent.spawn(TurretBundle::from_class(weapon));
+                                let mut bundle = TurretBundle::from_class(weapon);
+                                // Apply upgrades
+                                let new_rate = bundle.fire_rate.rate * 10.0;
+                                bundle.fire_rate.set_rate_in_seconds(new_rate);
+
+                                parent.spawn(bundle);
                             });
                         }
                     }
@@ -277,12 +311,34 @@ fn upgrade_health_events(
                         .shield_recharge_cooldown
                         .set_duration(Duration::from_secs_f32(new_timer));
                 }
-            },
+            }
             UpgradeEvent::Passive(Passive::Armor) => {
                 for mut health in &mut query {
                     health.max_health += 25;
                     health.health += 25;
                 }
+            }
+            _ => (),
+        }
+    }
+}
+
+fn upgrade_fire_rate_events(
+    mut upgrade_event: EventReader<UpgradeEvent>,
+    player_query: Query<&Children, With<IsPlayer>>,
+    mut buff_event: EventWriter<TurretBuffEvent>,
+) {
+    for ev in upgrade_event.iter() {
+        match ev {
+            UpgradeEvent::Passive(Passive::FireRate) => {
+                let to_send = player_query
+                    .iter()
+                    .flat_map(|children| children.iter())
+                    .map(|child| TurretBuffEvent {
+                        turret: *child,
+                        buff: Passive::FireRate,
+                    });
+                buff_event.send_batch(to_send);
             }
             _ => (),
         }
