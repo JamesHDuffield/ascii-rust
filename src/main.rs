@@ -65,6 +65,7 @@ fn main() {
         .add_plugin(TurretPlugin)
         .add_plugin(HudPlugin)
         .add_plugin(EnemyPlugin)
+        .add_event::<TakeDamageEvent>()
         // InGame
         .add_system(
             setup_player.in_schedule(OnEnter(AppState::InGame)),
@@ -95,6 +96,7 @@ fn main() {
         )
         .add_systems(
             (
+                take_damage_events,
                 hit_flash_system,
             )
                 .distributive_run_if(game_not_paused)

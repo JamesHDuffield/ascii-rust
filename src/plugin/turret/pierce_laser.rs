@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 
-use crate::{component::*, util::*};
+use crate::{component::*, util::*, resource::TakeDamageEvent};
 
 use super::TurretFireEvent;
 
@@ -11,7 +11,8 @@ pub fn fire_pierce_laser(
     turret_query: Query<(&Parent, &Targets, &DoesDamage, &EffectSize, &EffectColour)>,
     parent_query: Query<(&Transform, &WillTarget)>,
     target_query: Query<&Transform>,
-    mut potential_query: Query<(Entity, &Transform, &Targettable, &Collider, &mut Health)>,
+    potential_query: Query<(Entity, &Transform, &Targettable, &Collider)>,
+    mut take_damage_event: EventWriter<TakeDamageEvent>,
 ) {
     for ev in fire_event.iter() {
         match ev.class {
@@ -48,11 +49,12 @@ pub fn fire_pierce_laser(
                 ));
 
                 // Hit everything on the path
-                potential_query
-                    .iter_mut()
+                let events = potential_query
+                    .iter()
                     .filter(|a| a.0 != parent.get() && parent_will_target.0.contains(&a.2.0))
                     .filter(|a| Math::distance_from_point_to_line(a.1.translation.truncate(), origin, end) <= a.3.radius + size.0)
-                    .for_each(|mut hit| hit.4.take_damage(damage.amount));
+                    .map(|hit| TakeDamageEvent { entity: hit.0, amount: damage.amount});
+                take_damage_event.send_batch(events);
 
             },
             _ => (),

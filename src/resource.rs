@@ -32,3 +32,8 @@ impl PlayerLevel {
         self.value * 10 // TODO make exponential?
     }
 }
+
+pub struct TakeDamageEvent { 
+    pub entity: Entity,
+    pub amount: i32,
+}

@@ -34,7 +34,7 @@ impl Health {
         }
     }
 
-    fn hit_flash(&mut self) {
+    pub fn hit_flash(&mut self) {
         self.hit_flash_timer.reset();
         self.hit_flash_timer.unpause();
     }
