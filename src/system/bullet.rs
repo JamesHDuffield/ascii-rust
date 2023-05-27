@@ -58,14 +58,17 @@ pub fn bullet_collision_system(
         });
 
         if let Some((_collider, _transform, potential_entity)) = hit {
-            let number_of_times_hit = bullet.entities_hit.entry(*potential_entity).or_insert(0);
-            *number_of_times_hit += 1;
-
+            
             if let Some(direct_damage) = direct_damage {
+                
+                let number_of_times_hit = bullet.entities_hit.entry(*potential_entity).or_insert(0);
+                *number_of_times_hit += 1;
+
                 if let Ok(mut health) = effected_query.get_mut(*potential_entity) {
                     health.take_damage(direct_damage.0);
                 }
             }
+
             if let Some(aoe_damage) = aoe_damage {
                 let all_hits: Vec<_> = potentials
                     .iter()
