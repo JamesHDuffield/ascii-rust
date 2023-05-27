@@ -190,7 +190,6 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
                 will_target: WillTarget(vec![Allegiance::ENEMY]),
                 ..Default::default()
             },
-            
             BaseGlyphRotation {
                 rotation: Quat::from_rotation_z(PI / 2.0),
             },

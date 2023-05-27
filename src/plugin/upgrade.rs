@@ -81,7 +81,7 @@ pub enum Passive {
     Speed,
     Magnet,
     ShieldRecharge,
-    ShieldCooldown,
+    Armor,
 }
 
 impl Display for Passive {
@@ -90,7 +90,7 @@ impl Display for Passive {
             Passive::Speed => write!(f, "Speed"),
             Passive::Magnet => write!(f, "Magnet"),
             Passive::ShieldRecharge => write!(f, "Shield Boost"),
-            Passive::ShieldCooldown => write!(f, "Quick Shield"),
+            Passive::Armor => write!(f, "Reinforced Armor"),
         }
     }
 }
@@ -100,7 +100,7 @@ impl Distribution<Passive> for Standard {
         match rng.gen_range(0..4) {
             0 => Passive::Speed,
             1 => Passive::ShieldRecharge,
-            2 => Passive::ShieldCooldown,
+            2 => Passive::Armor,
             _ => Passive::Magnet,
         }
     }
@@ -118,7 +118,7 @@ impl Plugin for UpgradePlugin {
                     upgrade_weapon_event,
                     upgrade_magnet_event,
                     upgrade_speed_event,
-                    upgrade_shield_events,
+                    upgrade_health_events,
                 )
                     .in_set(OnUpdate(AppState::InGame)),
             );
@@ -253,7 +253,7 @@ fn upgrade_speed_event(
     }
 }
 
-fn upgrade_shield_events(
+fn upgrade_health_events(
     mut upgrade_event: EventReader<UpgradeEvent>,
     mut query: Query<&mut Health, With<IsPlayer>>,
 ) {
@@ -268,10 +268,6 @@ fn upgrade_shield_events(
                     health
                         .shield_recharge_timer
                         .set_duration(Duration::from_secs_f32(new_timer));
-                }
-            }
-            UpgradeEvent::Passive(Passive::ShieldCooldown) => {
-                for mut health in &mut query {
                     let mut new_timer =
                         health.shield_recharge_cooldown.duration().as_secs_f32() - 1.0;
                     if new_timer < 0.5 {
@@ -280,6 +276,12 @@ fn upgrade_shield_events(
                     health
                         .shield_recharge_cooldown
                         .set_duration(Duration::from_secs_f32(new_timer));
+                }
+            },
+            UpgradeEvent::Passive(Passive::Armor) => {
+                for mut health in &mut query {
+                    health.max_health += 25;
+                    health.health += 25;
                 }
             }
             _ => (),
