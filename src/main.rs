@@ -93,6 +93,13 @@ fn main() {
                 .distributive_run_if(game_not_paused)
                 .in_set(OnUpdate(AppState::InGame)),
         )
+        .add_systems(
+            (
+                hit_flash_system,
+            )
+                .distributive_run_if(game_not_paused)
+                .in_set(OnUpdate(AppState::InGame)),
+        )
         // Cleanup
         .add_system(reset_game.in_schedule(OnExit(AppState::InGame)))
         // Resources required on boot

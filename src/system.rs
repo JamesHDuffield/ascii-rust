@@ -9,6 +9,7 @@ mod explosion_render;
 mod expanding_collider;
 mod death;
 mod loot;
+mod hit_flash;
 
 pub use engine::*;
 pub use physics::*;
@@ -21,3 +22,4 @@ pub use explosion_render::*;
 pub use expanding_collider::*;
 pub use death::*;
 pub use loot::*;
+pub use hit_flash::*;
