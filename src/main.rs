@@ -156,6 +156,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, time: Res<Time>
                 ..Default::default()
             },
             MainCamera,
+            CameraShake::default(),
         ))
         .insert(ParallaxCameraComponent);
     // Spawn a shape so that the shape loop always runs (fixes bug with library cleaning itself up)

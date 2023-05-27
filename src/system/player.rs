@@ -25,13 +25,21 @@ pub fn player_control(
 pub fn pause_control(
   key_input: Res<Input<KeyCode>>,
   game_state: Res<State<GameState>>,
-  mut change_game_state: ResMut<NextState<GameState>>
+  mut change_game_state: ResMut<NextState<GameState>>,
+  mut query: Query<&mut CameraShake>,
 ) {
   if key_input.just_pressed(KeyCode::Escape) {
     match game_state.0 {
       GameState::Running => change_game_state.set(GameState::Paused),
       GameState::Paused => change_game_state.set(GameState::Running),
       _ => ()
+    }
+  }
+
+  // Debug camera shake
+  if key_input.just_pressed(KeyCode::R) {
+    for mut shake in &mut query {
+      shake.trauma = 5.0;
     }
   }
 }

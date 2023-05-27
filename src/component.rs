@@ -122,3 +122,18 @@ impl Default for ExplodesOnDespawn {
         }
     }
 }
+
+#[derive(Component)]
+pub struct CameraShake {
+    pub trauma: f32,
+    pub decay: f32,
+}
+
+impl Default for CameraShake {
+    fn default() -> Self {
+        Self {
+            trauma: 0.0,
+            decay: 20.0,
+        }
+    }
+}
