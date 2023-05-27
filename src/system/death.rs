@@ -83,7 +83,8 @@ fn spawn_loot(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
 fn explode(commands: &mut Commands, explodes: &ExplodesOnDespawn, position: Vec2) {
     // Spawn several explosions
     let mut rng = rand::thread_rng();
-    for _ in explodes.amount_min..=explodes.amount_max {
+    let amount = rng.gen_range(explodes.amount_min..=explodes.amount_max);
+    for _ in 0..amount {
       let offset = Vec2 { x: rng.gen_range(-explodes.spread..=explodes.spread), y: rng.gen_range(-explodes.spread..=explodes.spread) };
       commands.spawn((
           ExplosionRender {
