@@ -157,6 +157,7 @@ impl TurretBundle {
             fire_rate: FireRate::from_rate_in_seconds(0.9),
             damage: DoesDamage { amount: 6 },
             size: EffectSize(40.0),
+            shots: MultiShot { amount: 3 },
             colour: EffectColour(Colour::PLAYER),
             ..Default::default()
         }
