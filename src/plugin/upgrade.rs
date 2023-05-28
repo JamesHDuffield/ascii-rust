@@ -100,19 +100,13 @@ impl Display for Passive {
 impl Distribution<Passive> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Passive {
         match rng.gen_range(0..5) {
-            // 0 => Passive::Speed,
-            // 1 => Passive::ShieldRecharge,
-            // 2 => Passive::Armor,
-            _ => Passive::FireRate,
-            // _ => Passive::Magnet,
+            0 => Passive::Speed,
+            1 => Passive::ShieldRecharge,
+            2 => Passive::Armor,
+            3 => Passive::FireRate,
+            _ => Passive::Magnet,
         }
     }
-}
-
-#[derive(Copy, Clone, Eq, Hash, PartialEq)]
-pub struct TurretBuffEvent {
-    turret: Entity,
-    buff: Passive,
 }
 
 pub struct UpgradePlugin;
@@ -121,7 +115,6 @@ impl Plugin for UpgradePlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(PlayerUpgrades(HashMap::new()))
             .add_event::<UpgradeEvent>()
-            .add_event::<TurretBuffEvent>()
             .add_systems(
                 (
                     record_upgrade,
@@ -130,7 +123,6 @@ impl Plugin for UpgradePlugin {
                     upgrade_speed_event,
                     upgrade_health_events,
                     upgrade_fire_rate_events,
-                    turret_buff_events,
                 )
                     .in_set(OnUpdate(AppState::InGame)),
             );
@@ -147,23 +139,8 @@ fn record_upgrade(
     }
 }
 
-fn turret_buff_events(
-    mut buff_event: EventReader<TurretBuffEvent>,
-    mut turret_query: Query<&mut FireRate>,
-) {
-    for ev in buff_event.iter() {
-        let Ok(mut fire_rate) = turret_query.get_mut(ev.turret) else { continue; };
-        match ev.buff {
-            Passive::FireRate => {
-                let new_rate = fire_rate.rate * 10.0;
-                fire_rate.set_rate_in_seconds(new_rate);
-            }
-            _ => (),
-        }
-    }
-}
-
 fn upgrade_weapon_event(
+    upgrades: Res<PlayerUpgrades>,
     mut upgrade_event: EventReader<UpgradeEvent>,
     mut commands: Commands,
     player_query: Query<(Entity, Option<&Children>), With<IsPlayer>>,
@@ -172,7 +149,6 @@ fn upgrade_weapon_event(
     mut existing_rocket_launcher: Query<&mut MultiShot>,
     mut existing_shrapnel_cannon: Query<&mut DoesDamage>,
     mut existing_mine_launcher: Query<&mut EffectSize>,
-    mut buff_event: EventWriter<TurretBuffEvent>,
 ) {
     for ev in upgrade_event.iter() {
         match ev {
@@ -238,9 +214,14 @@ fn upgrade_weapon_event(
                         None => {
                             commands.entity(player_entity).with_children(|parent| {
                                 let mut bundle = TurretBundle::from_class(weapon);
-                                // Apply upgrades
-                                let new_rate = bundle.fire_rate.rate * 10.0;
-                                bundle.fire_rate.set_rate_in_seconds(new_rate);
+                                
+                                // Apply existing upgrades
+                                for (upgrade, level) in upgrades.0.iter() {
+                                    match upgrade {
+                                        UpgradeEvent::Passive(passive) => apply_turret_upgrade(&mut bundle.fire_rate, passive, *level),
+                                        _ => (),
+                                    }
+                                }
 
                                 parent.spawn(bundle);
                             });
@@ -326,20 +307,33 @@ fn upgrade_health_events(
 fn upgrade_fire_rate_events(
     mut upgrade_event: EventReader<UpgradeEvent>,
     player_query: Query<&Children, With<IsPlayer>>,
-    mut buff_event: EventWriter<TurretBuffEvent>,
+    mut turret_query: Query<&mut FireRate>,
 ) {
+
     for ev in upgrade_event.iter() {
         match ev {
-            UpgradeEvent::Passive(Passive::FireRate) => {
-                let to_send = player_query
+            UpgradeEvent::Passive(passive) => {
+                let turrets = player_query
                     .iter()
-                    .flat_map(|children| children.iter())
-                    .map(|child| TurretBuffEvent {
-                        turret: *child,
-                        buff: Passive::FireRate,
-                    });
-                buff_event.send_batch(to_send);
-            }
+                    .flat_map(|children| children.iter());
+                for turret in turrets {
+                    if let Ok(mut fire_rate) = turret_query.get_mut(*turret) {
+                        apply_turret_upgrade(&mut fire_rate, passive, 1);
+                    }
+                }
+            },
+            _ => (),
+        }
+    }
+}
+
+fn apply_turret_upgrade(turret: &mut FireRate, passive: &Passive, times: u8) {
+    for _ in 0..times {
+        match passive {
+            Passive::FireRate => {
+                let new_rate = turret.rate * 1.1;
+                turret.set_rate_in_seconds(new_rate);
+            },
             _ => (),
         }
     }
