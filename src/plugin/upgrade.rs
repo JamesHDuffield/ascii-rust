@@ -203,6 +203,9 @@ fn upgrade_weapon_event(
                                 TurretClass::Emp => {
                                     let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
                                     size.0 += 20.0;
+                                },
+                                TurretClass::Needler => {
+                                    todo!("No upgrade available for needler");
                                 }
                             }
                         }

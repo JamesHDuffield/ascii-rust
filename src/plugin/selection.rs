@@ -30,8 +30,8 @@ impl Plugin for SelectionPlugin {
 }
 
 fn random_starting_weapon() -> TurretClass {
-    match rand::thread_rng().gen_range(0..4) {
-        0 => TurretClass::AutoCannon,
+    match rand::thread_rng().gen_range(0..3) {
+        0 => TurretClass::Needler,
         1 => TurretClass::BlastLaser,
         2 => TurretClass::RocketLauncher,
         _ => TurretClass::MineLauncher,
