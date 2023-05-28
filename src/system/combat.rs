@@ -28,16 +28,21 @@ pub fn combat_system(
 
 pub fn take_damage_events(
     mut take_damage_events: EventReader<TakeDamageEvent>,
-    mut query: Query<(&mut Health, Option<&IsPlayer>)>,
+    mut query: Query<(&mut Health, Option<&IsPlayer>, Option<&mut HitFlash>)>,
     mut camera: Query<&mut CameraShake>,
 ) {
     for ev in take_damage_events.iter() {
-        if let Ok((mut health, is_player)) = query.get_mut(ev.entity) {
+        if let Ok((mut health, is_player, hit_flash)) = query.get_mut(ev.entity) {
             health.take_damage(ev.amount);
+            
             if is_player.is_some() {
                 if let Ok(mut shake) = camera.get_single_mut() {
-                    shake.trauma = 5.0;
+                    shake.trauma = ev.amount.clamp(0, 5) as f32;
                 }
+            }
+
+            if let Some(mut hit_flash) = hit_flash {
+                hit_flash.hit();
             }
         } 
     }

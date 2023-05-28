@@ -31,6 +31,7 @@ pub struct ShipBundle {
     pub will_target: WillTarget,
     pub despawn_with_scene: DespawnWithScene,
     pub explodes_on_despawn: ExplodesOnDespawn,
+    pub hit_flash: HitFlash,
 }
 
 // Simple components
@@ -135,5 +136,27 @@ impl Default for CameraShake {
             trauma: 0.0,
             decay: 20.0,
         }
+    }
+}
+
+#[derive(Component)]
+pub struct HitFlash {
+    pub timer: Timer,
+    pub flash_colour: Color,
+    pub original_colour: Option<Color>,
+}
+
+impl HitFlash {
+    pub fn hit(&mut self) {
+        self.timer.reset();
+        self.timer.unpause();
+    }
+}
+
+impl Default for HitFlash {
+    fn default() -> Self {
+        let mut timer = Timer::from_seconds(0.1, TimerMode::Once);
+        timer.pause();
+        Self { timer, flash_colour: Colour::RED, original_colour: None }
     }
 }
