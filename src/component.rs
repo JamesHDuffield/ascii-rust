@@ -160,3 +160,15 @@ impl Default for HitFlash {
         Self { timer, flash_colour: Colour::RED, original_colour: None }
     }
 }
+
+#[derive(Component)]
+pub struct FloatingText {
+    pub ttl: Timer,
+    pub rise_distance: f32,
+}
+
+impl Default for FloatingText {
+    fn default() -> Self {
+        Self { ttl: Timer::from_seconds(1.0, TimerMode::Once), rise_distance: 10.0 }
+    }
+}

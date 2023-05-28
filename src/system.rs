@@ -10,6 +10,7 @@ mod expanding_collider;
 mod death;
 mod loot;
 mod hit_flash;
+mod floating_text;
 
 pub use engine::*;
 pub use physics::*;
@@ -23,3 +24,4 @@ pub use expanding_collider::*;
 pub use death::*;
 pub use loot::*;
 pub use hit_flash::*;
+pub use floating_text::*;

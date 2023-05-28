@@ -98,6 +98,7 @@ fn main() {
             (
                 take_damage_events,
                 hit_flash_system,
+                floating_text_system,
             )
                 .distributive_run_if(game_not_paused)
                 .in_set(OnUpdate(AppState::InGame)),
