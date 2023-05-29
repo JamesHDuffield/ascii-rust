@@ -1,4 +1,4 @@
-
+/// Warning: Cannot go above 998 as the Camera defaults to z = 999 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 #[repr(u16)]
 pub enum RenderLayer {
@@ -7,7 +7,6 @@ pub enum RenderLayer {
     Player = 500,
     Enemy = 700,
     Effects = 900,
-    Overlay = 1100,
 }
 
 impl RenderLayer {
