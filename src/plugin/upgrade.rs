@@ -2,10 +2,7 @@ use bevy::{prelude::*, utils::HashMap};
 use std::{fmt::Display, time::Duration};
 
 use crate::{
-    component::{
-        DoesDamage, EffectSize, Engine, FireRate, Health, IsPlayer, Magnet, MultiShot,
-        TurretBundle, TurretClass,
-    },
+    component::*,
     AppState,
 };
 use rand::{
@@ -84,6 +81,7 @@ pub enum Passive {
     Armor,
     FireRate,
     Crit,
+    Experience,
 }
 
 impl Display for Passive {
@@ -95,18 +93,20 @@ impl Display for Passive {
             Passive::Armor => write!(f, "Reinforced Armor"),
             Passive::FireRate => write!(f, "Rapid Fire"),
             Passive::Crit => write!(f, "Critical Strikes"),
+            Passive::Experience => write!(f, "Experience Booster"),
         }
     }
 }
 
 impl Distribution<Passive> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Passive {
-        match rng.gen_range(0..6) {
+        match rng.gen_range(0..7) {
             0 => Passive::Speed,
             1 => Passive::ShieldRecharge,
             2 => Passive::Armor,
             3 => Passive::FireRate,
             4 => Passive::Crit,
+            5 => Passive::Experience,
             _ => Passive::Magnet,
         }
     }
@@ -126,6 +126,7 @@ impl Plugin for UpgradePlugin {
                     upgrade_speed_event,
                     upgrade_health_events,
                     upgrade_fire_rate_events,
+                    upgrade_experience_event,
                 )
                     .in_set(OnUpdate(AppState::InGame)),
             );
@@ -300,6 +301,22 @@ fn upgrade_health_events(
                 for mut health in &mut query {
                     health.max_health += 25;
                     health.health += 25;
+                }
+            }
+            _ => (),
+        }
+    }
+}
+
+fn upgrade_experience_event(
+    mut upgrade_event: EventReader<UpgradeEvent>,
+    mut query: Query<&mut Cargo, With<IsPlayer>>,
+) {
+    for ev in upgrade_event.iter() {
+        match ev {
+            UpgradeEvent::Passive(Passive::Experience) => {
+                for mut cargo in &mut query {
+                    cargo.bonus_chance += 0.1;
                 }
             }
             _ => (),

@@ -5,13 +5,10 @@ pub struct IsLoot;
 #[derive(Component)]
 pub struct DropsLoot;
 
-#[derive(Component)]
-pub struct Cargo(pub u32);
-
-impl Cargo {
-    pub fn default() -> Cargo {
-        Cargo(0)
-    }
+#[derive(Component, Default)]
+pub struct Cargo {
+  pub amount: u32,
+  pub bonus_chance: f32,
 }
 
 #[derive(Component)]

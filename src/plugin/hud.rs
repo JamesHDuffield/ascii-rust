@@ -184,7 +184,7 @@ pub fn hud_system(
                 UINode::Status => vec![
                     format!("{:<8} {} {}", "Armor", bar(health.health, health.max_health, 10), health.health),
                     format!("{:<8} {} {}", "Shield", bar(health.shield, health.max_shield, 10), health.shield),
-                    format!("{:<8} {} {:0>2}", "Level", bar(cargo.0 as i32, level.required_cargo_to_level() as i32, 10), level.value),
+                    format!("{:<8} {} {:0>2}", "Level", bar(cargo.amount as i32, level.required_cargo_to_level() as i32, 10), level.value),
                     format!("{:<8} {} m/s", "Speed", engine.speed.round()),
                 ],
                 UINode::Equipment => { 

@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use rand::Rng;
 use crate::{component::*, resource::Points};
 
 pub fn loot_magnet_system(
@@ -27,12 +28,20 @@ pub fn loot_cargo_collision(
   for (mut cargo, transform, collider) in &mut query {
     for (loot_transform, loot_entity, loot_collider, worth_points) in &loot_query {
       if loot_transform.translation.truncate().distance(transform.translation.truncate()) <= loot_collider.radius + collider.radius {
-        cargo.0 += 1;
+        // Increase cargo
+        cargo.amount += 1;
+        if rand::thread_rng().gen_range(0.0..1.0) < cargo.bonus_chance {
+          cargo.amount += 2;
+        }
+
+        // Add points
+        if let Some(worth_points) = worth_points {
+          points.value += worth_points.value;
+        }
+
+        // Despawn
         if let Some(mut subcommand) = commands.get_entity(loot_entity) {
           subcommand.despawn(); // Direct despawn because adding ShouldDespawn has issues
-          if let Some(worth_points) = worth_points {
-              points.value += worth_points.value;
-          }
         }
       }
     }

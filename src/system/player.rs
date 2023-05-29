@@ -50,8 +50,8 @@ pub fn level_up_system(
   mut next_state: ResMut<NextState<GameState>>,
 ) {
   for mut cargo in &mut query {
-    if cargo.0 >= level.required_cargo_to_level() {
-      cargo.0 -= level.required_cargo_to_level();
+    if cargo.amount >= level.required_cargo_to_level() {
+      cargo.amount -= level.required_cargo_to_level();
       level.value += 1;
       next_state.set(GameState::Selection);
     }
