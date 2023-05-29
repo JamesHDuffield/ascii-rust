@@ -42,7 +42,7 @@ pub fn spawn_drone_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                 class: TurretClass::BlastLaser,
                 range: Range { max: 150.0 },
                 fire_rate: FireRate::from_rate_in_seconds(1.0),
-                damage: DoesDamage { amount: 1 },
+                damage: DoesDamage::from_amount(1),
                 ..Default::default()
             });
         });

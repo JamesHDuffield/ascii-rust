@@ -23,7 +23,7 @@ fn spawn_link(commands: &mut Commands, take_damage_event: &mut EventWriter<TakeD
         DespawnWithScene,
     ));
     // Immediate hit
-    take_damage_event.send(TakeDamageEvent { entity: target, amount: damage.amount });
+    take_damage_event.send(TakeDamageEvent { entity: target, damage: damage.roll() });
     Ok(target_position)
 }
 

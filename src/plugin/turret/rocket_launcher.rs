@@ -63,7 +63,7 @@ pub fn fire_rocket_launcher(
                             colour: colour.0,
                             ..Default::default()
                         },
-                        AoeDamage { damage: damage.amount, range: 40.0 },
+                        AoeDamage { damage: damage.roll(), range: 40.0 },
                         DespawnWithScene,
                     ));
                 }

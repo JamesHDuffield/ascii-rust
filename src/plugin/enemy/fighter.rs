@@ -45,7 +45,7 @@ pub fn spawn_fighter(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3
             parent.spawn(TurretBundle {
                 class: TurretClass::AutoCannon,
                 fire_rate: FireRate::from_rate_in_seconds(1.0),
-                damage: DoesDamage { amount: 2 },
+                damage: DoesDamage::from_amount(2),
                 ..Default::default()
             });
         });

@@ -50,7 +50,7 @@ pub fn fire_emp(
                     Transform::from_translation(parent_transform.translation),
                     Collider { radius: 0.0 },
                     ExpandingCollider { final_radius: size.0 },
-                    DirectDamage(damage.amount),
+                    DirectDamage(damage.roll()),
                     Owner(parent.get()),
                 ));
 

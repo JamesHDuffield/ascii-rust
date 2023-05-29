@@ -44,11 +44,11 @@ pub fn take_damage_events(
 ) {
     for ev in take_damage_events.iter() {
         if let Ok((transform, mut health, is_player, hit_flash)) = query.get_mut(ev.entity) {
-            health.take_damage(ev.amount);
+            health.take_damage(ev.damage.amount);
 
             if is_player.is_some() {
                 if let Ok(mut shake) = camera.get_single_mut() {
-                    shake.trauma = ev.amount.clamp(0, 5) as f32;
+                    shake.trauma = ev.damage.amount.clamp(0, 5) as f32;
                 }
             } else {
                 // Floating Text
@@ -56,11 +56,11 @@ pub fn take_damage_events(
                     FloatingText::default(),
                     Text2dBundle {
                         text: Text::from_section(
-                            format!("{}", ev.amount),
+                            format!("{}", ev.damage.amount),
                             TextStyle {
                                 font: fonts.primary.clone(),
-                                font_size: 12.0,
-                                color: Colour::WHITE,
+                                font_size: if ev.damage.is_crit { 14.0 } else { 12.0 },
+                                color: if ev.damage.is_crit { Colour::YELLOW } else { Colour::WHITE },
                             },
                         )
                         .with_alignment(TextAlignment::Center),

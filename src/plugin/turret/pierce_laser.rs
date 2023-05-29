@@ -53,7 +53,7 @@ pub fn fire_pierce_laser(
                     .iter()
                     .filter(|a| a.0 != parent.get() && parent_will_target.0.contains(&a.2.0))
                     .filter(|a| Math::distance_from_point_to_line(a.1.translation.truncate(), origin, end) <= a.3.radius + size.0)
-                    .map(|hit| TakeDamageEvent { entity: hit.0, amount: damage.amount});
+                    .map(|hit| TakeDamageEvent { entity: hit.0, damage: damage.roll() });
                 take_damage_event.send_batch(events);
 
             },

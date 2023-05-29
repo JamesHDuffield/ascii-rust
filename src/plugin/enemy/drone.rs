@@ -47,7 +47,7 @@ pub fn spawn_drone(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) 
                 class: TurretClass::BlastLaser,
                 range: Range { max: 100.0 },
                 fire_rate: FireRate::from_rate_in_seconds(2.0),
-                damage: DoesDamage { amount: 1 },
+                damage: DoesDamage::from_amount(1),
                 ..Default::default()
             });
         });

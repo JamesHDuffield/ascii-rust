@@ -46,7 +46,7 @@ pub fn fire_blast_laser(
                 ));
 
                 // Immediate hit
-                take_damage_event.send(TakeDamageEvent { entity: target, amount: damage.amount });
+                take_damage_event.send(TakeDamageEvent { entity: target, damage: damage.roll() });
 
             },
             _ => (),

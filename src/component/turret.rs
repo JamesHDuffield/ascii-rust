@@ -7,6 +7,8 @@ use rand::{
 
 use crate::util::Colour;
 
+use super::Damage;
+
 #[derive(Component)]
 pub struct Range {
     pub max: f32,
@@ -86,6 +88,20 @@ impl Distribution<TurretClass> for Standard {
 #[derive(Component, Default)]
 pub struct DoesDamage {
     pub amount: i32,
+    pub crit_chance: f32,
+}
+
+impl DoesDamage {
+    pub fn from_amount(amount: i32) -> Self {
+        Self { amount, ..Default::default() }
+    }
+
+    pub fn roll(&self) -> Damage {
+        if rand::thread_rng().gen_range(0.0..1.0) < self.crit_chance {
+            return Damage { amount: self.amount * 2, is_crit: true };
+        }
+        Damage { amount: self.amount, is_crit: false }
+    }
 }
 
 #[derive(Component)]
@@ -125,7 +141,7 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::AutoCannon,
             fire_rate: FireRate::from_rate_in_seconds(2.0),
-            damage: DoesDamage { amount: 2 },
+            damage: DoesDamage::from_amount(2),
             colour: EffectColour(Colour::PLAYER),
             ..Default::default()
         }
@@ -135,7 +151,7 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::BlastLaser,
             fire_rate: FireRate::from_rate_in_seconds(1.5),
-            damage: DoesDamage { amount: 1 },
+            damage: DoesDamage::from_amount(1),
             colour: EffectColour(Colour::PINK),
             ..Default::default()
         }
@@ -145,7 +161,7 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::RocketLauncher,
             fire_rate: FireRate::from_rate_in_seconds(0.5),
-            damage: DoesDamage { amount: 5 },
+            damage: DoesDamage::from_amount(5),
             colour: EffectColour(Colour::YELLOW),
             ..Default::default()
         }
@@ -155,7 +171,7 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::MineLauncher,
             fire_rate: FireRate::from_rate_in_seconds(0.9),
-            damage: DoesDamage { amount: 6 },
+            damage: DoesDamage::from_amount(6),
             size: EffectSize(40.0),
             shots: MultiShot { amount: 3 },
             colour: EffectColour(Colour::PLAYER),
@@ -167,7 +183,7 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::ShrapnelCannon,
             fire_rate: FireRate::from_rate_in_seconds(0.25),
-            damage: DoesDamage { amount: 2 },
+            damage: DoesDamage::from_amount(2),
             shots: MultiShot { amount: 16 },
             colour: EffectColour(Colour::PLAYER),
             ..Default::default()
@@ -178,7 +194,7 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::ChainLaser,
             fire_rate: FireRate::from_rate_in_seconds(0.4),
-            damage: DoesDamage { amount: 1 },
+            damage: DoesDamage::from_amount(1),
             shots: MultiShot { amount: 3 },
             colour: EffectColour(Colour::GREEN),
             ..Default::default()
@@ -189,7 +205,7 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::PierceLaser,
             fire_rate: FireRate::from_rate_in_seconds(0.15),
-            damage: DoesDamage { amount: 8 },
+            damage: DoesDamage::from_amount(8),
             size: EffectSize(1.0),
             colour: EffectColour(Colour::YELLOW),
             ..Default::default()
@@ -200,7 +216,7 @@ impl TurretBundle {
         TurretBundle {
             class: TurretClass::Emp,
             fire_rate: FireRate::from_rate_in_seconds(0.7),
-            damage: DoesDamage { amount: 3 },
+            damage: DoesDamage::from_amount(3),
             size: EffectSize(80.0),
             colour: EffectColour(Colour::SHIELD),
             ..Default::default()

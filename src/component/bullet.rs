@@ -1,4 +1,5 @@
 use bevy::{prelude::*, utils::HashMap};
+use crate::component::*;
 
 #[derive(Component)]
 pub struct Bullet {
@@ -27,10 +28,10 @@ pub struct LaserRender;
 pub struct Seeker(pub Entity);
 
 #[derive(Component)]
-pub struct DirectDamage(pub i32);
+pub struct DirectDamage(pub Damage);
 
 #[derive(Component)]
 pub struct AoeDamage {
-    pub damage: i32,
+    pub damage: Damage,
     pub range: f32,
 }

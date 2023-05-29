@@ -58,7 +58,7 @@ pub fn fire_auto_cannon(
                     },
                     Collider { radius: 5.0 },
                     Owner(parent.get()),
-                    DirectDamage(damage.amount),
+                    DirectDamage(damage.roll()),
                     DespawnWithScene,
                 ));
 

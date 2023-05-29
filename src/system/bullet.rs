@@ -32,7 +32,6 @@ pub fn bullet_collision_system(
         (&Collider, &Transform, Entity),
         (Without<Bullet>, With<Collider>, With<Health>),
     >,
-    mut effected_query: Query<&mut Health, With<Health>>,
     mut take_damage_event: EventWriter<TakeDamageEvent>,
 ) {
     for (collider, transform, entity, owner, direct_damage, aoe_damage, mut bullet) in &mut query {
@@ -65,7 +64,7 @@ pub fn bullet_collision_system(
                 let number_of_times_hit = bullet.entities_hit.entry(*potential_entity).or_insert(0);
                 *number_of_times_hit += 1;
 
-                take_damage_event.send(TakeDamageEvent { entity: *potential_entity, amount: direct_damage.0 });
+                take_damage_event.send(TakeDamageEvent { entity: *potential_entity, damage: direct_damage.0 });
 
             }
 
@@ -86,7 +85,7 @@ pub fn bullet_collision_system(
                     let number_of_times_hit = bullet.entities_hit.entry(h.2).or_insert(0);
                     *number_of_times_hit += 1;
 
-                    take_damage_event.send(TakeDamageEvent { entity: h.2, amount: aoe_damage.damage });
+                    take_damage_event.send(TakeDamageEvent { entity: h.2, damage: aoe_damage.damage });
                 }
             }
             if bullet.despawn_on_hit {

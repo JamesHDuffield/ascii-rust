@@ -52,7 +52,7 @@ pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                 class: TurretClass::RocketLauncher,
                 range: Range { max: 1000.0 },
                 fire_rate: FireRate::from_rate_in_seconds(0.2),
-                damage: DoesDamage { amount: 5 },
+                damage: DoesDamage::from_amount(5),
                 shots: MultiShot { amount: 8 },
                 ..Default::default()
             });

@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use std::{fmt, time::Duration};
 
+use crate::component::Damage;
+
 #[derive(Resource)]
 pub struct Fonts {
     pub primary: Handle<Font>,
@@ -35,5 +37,5 @@ impl PlayerLevel {
 
 pub struct TakeDamageEvent { 
     pub entity: Entity,
-    pub amount: i32,
+    pub damage: Damage,
 }

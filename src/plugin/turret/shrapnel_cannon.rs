@@ -70,7 +70,7 @@ pub fn fire_shrapnel_cannon(
                         },
                         Collider { radius: 5.0 },
                         Owner(parent.get()),
-                        DirectDamage(damage.amount),
+                        DirectDamage(damage.roll()),
                         DespawnWithScene,
                     ));
                 }

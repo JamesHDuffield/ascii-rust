@@ -172,3 +172,9 @@ impl Default for FloatingText {
         Self { ttl: Timer::from_seconds(1.0, TimerMode::Once), rise_distance: 10.0 }
     }
 }
+
+#[derive(Component, Copy, Clone)]
+pub struct Damage {
+    pub amount: i32,
+    pub is_crit: bool,
+}

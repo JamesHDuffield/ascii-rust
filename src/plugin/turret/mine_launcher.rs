@@ -53,7 +53,7 @@ pub fn fire_mine_launcher(
                         spread: size.0,
                         ..Default::default()
                     },
-                    AoeDamage { damage: damage.amount, range: size.0 },
+                    AoeDamage { damage: damage.roll(), range: size.0 },
                     DespawnWithScene,
                 ));
 

@@ -83,6 +83,7 @@ pub enum Passive {
     ShieldRecharge,
     Armor,
     FireRate,
+    Crit,
 }
 
 impl Display for Passive {
@@ -93,17 +94,19 @@ impl Display for Passive {
             Passive::ShieldRecharge => write!(f, "Shield Boost"),
             Passive::Armor => write!(f, "Reinforced Armor"),
             Passive::FireRate => write!(f, "Rapid Fire"),
+            Passive::Crit => write!(f, "Critical Strikes"),
         }
     }
 }
 
 impl Distribution<Passive> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Passive {
-        match rng.gen_range(0..5) {
+        match rng.gen_range(0..6) {
             0 => Passive::Speed,
             1 => Passive::ShieldRecharge,
             2 => Passive::Armor,
             3 => Passive::FireRate,
+            4 => Passive::Crit,
             _ => Passive::Magnet,
         }
     }
@@ -218,7 +221,7 @@ fn upgrade_weapon_event(
                                 // Apply existing upgrades
                                 for (upgrade, level) in upgrades.0.iter() {
                                     match upgrade {
-                                        UpgradeEvent::Passive(passive) => apply_turret_upgrade(&mut bundle.fire_rate, passive, *level),
+                                        UpgradeEvent::Passive(passive) => apply_turret_upgrade((&mut bundle.fire_rate, &mut bundle.damage), passive, *level),
                                         _ => (),
                                     }
                                 }
@@ -307,7 +310,7 @@ fn upgrade_health_events(
 fn upgrade_fire_rate_events(
     mut upgrade_event: EventReader<UpgradeEvent>,
     player_query: Query<&Children, With<IsPlayer>>,
-    mut turret_query: Query<&mut FireRate>,
+    mut turret_query: Query<(&mut FireRate, &mut DoesDamage)>,
 ) {
 
     for ev in upgrade_event.iter() {
@@ -317,8 +320,8 @@ fn upgrade_fire_rate_events(
                     .iter()
                     .flat_map(|children| children.iter());
                 for turret in turrets {
-                    if let Ok(mut fire_rate) = turret_query.get_mut(*turret) {
-                        apply_turret_upgrade(&mut fire_rate, passive, 1);
+                    if let Ok((mut fire_rate, mut damage)) = turret_query.get_mut(*turret) {
+                        apply_turret_upgrade((&mut fire_rate, &mut damage), passive, 1);
                     }
                 }
             },
@@ -327,13 +330,17 @@ fn upgrade_fire_rate_events(
     }
 }
 
-fn apply_turret_upgrade(turret: &mut FireRate, passive: &Passive, times: u8) {
+fn apply_turret_upgrade(turret: (&mut FireRate, &mut DoesDamage), passive: &Passive, times: u8) {
+    let (fire_rate, damage) = turret;
     for _ in 0..times {
         match passive {
             Passive::FireRate => {
-                let new_rate = turret.rate * 1.1;
-                turret.set_rate_in_seconds(new_rate);
+                let new_rate = fire_rate.rate * 1.1;
+                fire_rate.set_rate_in_seconds(new_rate);
             },
+            Passive::Crit => {
+                damage.crit_chance += 0.125;
+            }
             _ => (),
         }
     }
