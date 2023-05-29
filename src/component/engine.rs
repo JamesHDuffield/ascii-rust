@@ -30,5 +30,6 @@ impl Engine {
 pub enum EngineMethod {
     Approach,
     Keep(f32),
+    #[allow(dead_code)]
     Orbit(f32),
 }
