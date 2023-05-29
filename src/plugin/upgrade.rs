@@ -73,6 +73,28 @@ impl Display for UpgradeEvent {
     }
 }
 
+impl UpgradeEvent {
+    pub fn describe(&self) -> String {
+        match self {
+            UpgradeEvent::Weapon(TurretClass::AutoCannon) => "Rapidly fires bullets towards the target",
+            UpgradeEvent::Weapon(TurretClass::BlastLaser) => "Always hits. Deals low damage",
+            UpgradeEvent::Weapon(TurretClass::ChainLaser) => "Shoots a laser that jumps to nearby enemies",
+            UpgradeEvent::Weapon(TurretClass::Emp) => "Creates a shockwave around you that deals damage to enemies",
+            UpgradeEvent::Weapon(TurretClass::MineLauncher) => "Drops mines that explode when enemies are in close proximity",
+            UpgradeEvent::Weapon(TurretClass::PierceLaser) => "Shoots a heavy damaging laser that pierces through enemies",
+            UpgradeEvent::Weapon(TurretClass::RocketLauncher) => "Shoots a seeking missile that explodes on impact",
+            UpgradeEvent::Weapon(TurretClass::ShrapnelCannon) => "Shoots a spray of bullets in a cone towards the target",
+            UpgradeEvent::Passive(Passive::Armor) => "Increase armor by 25",
+            UpgradeEvent::Passive(Passive::Crit) => "Increase chance to deal double damage by 12.5%",
+            UpgradeEvent::Passive(Passive::Experience) => "Increase chance to triple experience by 10%",
+            UpgradeEvent::Passive(Passive::FireRate) => "Increase turret fire rate by 10%",
+            UpgradeEvent::Passive(Passive::Magnet) => "Increase range and speed of experience magnetism",
+            UpgradeEvent::Passive(Passive::ShieldRecharge) => "Decrease shield hit and regeneration cooldown",
+            UpgradeEvent::Passive(Passive::Speed) => "Increase engine power and max speed",
+        }.to_string()
+    }
+}
+
 #[derive(Copy, Clone, Eq, Hash, PartialEq)]
 pub enum Passive {
     Speed,

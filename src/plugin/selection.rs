@@ -1,12 +1,11 @@
 use core::panic;
 
-use bevy::prelude::*;
+use bevy::{prelude::*, reflect::erased_serde::__private::serde::de::value};
 use rand::Rng;
 
-use crate::{resource::*, GameState, util::Colour, component::TurretClass};
+use crate::{component::TurretClass, resource::*, util::Colour, GameState};
 
-use super::{UpgradeEvent, PlayerUpgrades};
-
+use super::{PlayerUpgrades, UpgradeEvent};
 
 #[derive(Resource)]
 struct SelectionData(pub Vec<Entity>);
@@ -21,8 +20,7 @@ pub struct SelectionPlugin;
 
 impl Plugin for SelectionPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .insert_resource(SelectionData(vec![]))
+        app.insert_resource(SelectionData(vec![]))
             .add_system(setup_selection.in_schedule(OnEnter(GameState::Selection)))
             .add_system(menu.in_set(OnUpdate(GameState::Selection)))
             .add_system(cleanup.in_schedule(OnExit(GameState::Selection)));
@@ -64,7 +62,7 @@ fn roll(upgrades: Res<PlayerUpgrades>) -> Vec<UpgradeEvent> {
         }
 
         let current_level = upgrades.0.get(&potential).unwrap_or(&0);
-        
+
         // Can't go above max level
         if *current_level >= PlayerUpgrades::max_allowed_level() {
             continue;
@@ -85,12 +83,17 @@ fn roll(upgrades: Res<PlayerUpgrades>) -> Vec<UpgradeEvent> {
     options
 }
 
-fn setup_selection(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<SelectionData>, player_level: Res<PlayerLevel>, upgrades: Res<PlayerUpgrades>) { 
-
+fn setup_selection(
+    mut commands: Commands,
+    fonts: Res<Fonts>,
+    mut menu_data: ResMut<SelectionData>,
+    player_level: Res<PlayerLevel>,
+    upgrades: Res<PlayerUpgrades>,
+) {
     // Roll for options
     let options = match player_level.value {
         1 => roll_starting(),
-        _ => roll(upgrades)
+        _ => roll(upgrades),
     };
 
     let root_entity = commands
@@ -161,11 +164,12 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
         .spawn((
             ButtonBundle {
                 style: Style {
-                    min_size: Size::width(Val::Px(200.0)),
+                    size: Size::new(Val::Px(300.0), Val::Px(140.0)),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
                     flex_direction: FlexDirection::Column,
                     padding: UiRect::all(Val::Px(10.0)),
+                    gap: Size::height(Val::Px(10.0)),
                     ..default()
                 },
                 background_color: NORMAL_BUTTON.into(),
@@ -174,23 +178,68 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
             SelectionButton(upgrade),
         ))
         .with_children(|parent| {
-            parent.spawn(TextBundle::from_section(
-                type_text,
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 14.0,
-                    color: type_color,
+            parent.spawn(TextBundle {
+                text: Text::from_section(
+                    type_text,
+                    TextStyle {
+                        font: fonts.primary.clone(),
+                        font_size: 14.0,
+                        color: type_color,
+                    },
+                ),
+                style: Style {
+                    position: UiRect {
+                        top: Val::Px(10.0),
+                        ..Default::default()
+                    },
+                    position_type: PositionType::Absolute,
+                    ..Default::default()
                 },
-            ));
-            parent.spawn(TextBundle::from_section(
-                format!("{}", upgrade),
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 24.0,
-                    color: Color::rgb(0.9, 0.9, 0.9),
+                ..Default::default()
+            });
+            parent.spawn(TextBundle {
+                text: Text::from_section(
+                    format!("{}", upgrade),
+                    TextStyle {
+                        font: fonts.primary.clone(),
+                        font_size: 24.0,
+                        color: Color::rgb(0.9, 0.9, 0.9),
+                    },
+                ),
+                style: Style {
+                    position: UiRect {
+                        top: Val::Px(30.0),
+                        ..Default::default()
+                    },
+                    position_type: PositionType::Absolute,
+                    ..Default::default()
                 },
-            ));
+                ..Default::default()
+            });
+            parent.spawn(TextBundle {
+                text: Text::from_section(
+                    format!("{}", upgrade.describe()),
+                    TextStyle {
+                        font: fonts.primary.clone(),
+                        font_size: 14.0,
+                        color: Color::rgba(0.8, 0.8, 0.8, 0.8),
+                    },
+                )
+                .with_alignment(TextAlignment::Center),
+                style: Style {
+                    position: UiRect {
+                        bottom: Val::Px(20.0),
+                        ..Default::default()
+                    },
+                    position_type: PositionType::Absolute,
+                    margin: UiRect {
+                        left: Val::Px(15.0),
+                        ..Default::default()
+                    }, // Text wrapping kind of sucks in bevy...
+                    size: Size::width(Val::Px(200.0)),
+                    ..Default::default()
+                },
+                ..Default::default()
+            });
         });
 }
-
-
