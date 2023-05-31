@@ -28,7 +28,7 @@ pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(spawn_startup)
+        app.add_system(spawn_startup.in_schedule(OnEnter(AppState::InGame)))
             .add_system(
                 ai_system
                     .run_if(game_not_paused)
@@ -47,7 +47,7 @@ fn spawn_startup(mut commands: Commands) {
     // Set spawn limit
     let seconds = 30.0;
     let mut timer = Timer::from_seconds(seconds, TimerMode::Repeating);
-    timer.set_elapsed(Duration::from_secs_f32(seconds - 1.0));
+    timer.set_elapsed(Duration::from_secs_f32(seconds));
     commands.insert_resource(Spawning { max: 100, timer });
 }
 

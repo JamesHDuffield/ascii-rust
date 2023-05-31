@@ -2,8 +2,12 @@ use bevy::{prelude::*, app::AppExit};
 
 use crate::{resource::*, AppState, GameState};
 
-#[derive(Resource)]
-struct MenuData(pub Vec<Entity>);
+#[derive(Resource, Default)]
+struct MenuData {
+    main: Option<Entity>,
+    pause: Option<Entity>,
+    game_over: Option<Entity>,
+}
 
 #[derive(Component)]
 struct MenuButton(pub ButtonAction);
@@ -22,17 +26,17 @@ pub struct MainMenuPlugin;
 impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
         app
-            .insert_resource(MenuData(vec![]))
+            .insert_resource(MenuData::default())
             .add_system(setup_menu.in_schedule(OnEnter(AppState::Menu)))
             .add_system(menu.in_set(OnUpdate(AppState::Menu)))
-            .add_system(cleanup.in_schedule(OnExit(AppState::Menu)))
+            .add_system(cleanup_menu.in_schedule(OnExit(AppState::Menu)))
 
             .add_system(setup_paused.in_schedule(OnEnter(GameState::Paused)))
-            .add_system(cleanup.in_schedule(OnExit(GameState::Paused)))
+            .add_system(cleanup_pause.in_schedule(OnExit(GameState::Paused)))
 
             .add_system(setup_game_over.in_schedule(OnEnter(GameState::GameOver)))
             .add_system(menu.in_set(OnUpdate(GameState::GameOver)))
-            .add_system(cleanup.in_schedule(OnExit(GameState::GameOver)));
+            .add_system(cleanup_game_over.in_schedule(OnExit(GameState::GameOver)));
     }
 }
 
@@ -56,7 +60,7 @@ fn setup_menu(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<M
             button(parent, &fonts, "Exit", ButtonAction::Exit);
         })
         .id();
-    menu_data.0.push(root_entity);
+    menu_data.main = Some(root_entity);
 }
 
 fn menu(
@@ -86,13 +90,25 @@ fn menu(
     }
 }
 
-fn cleanup(mut commands: Commands, mut menu_data: ResMut<MenuData>) {
-    for entity in menu_data.0.iter() {
-        if let Some(entity) = commands.get_entity(*entity) {
+fn cleanup(mut commands: Commands, root_entity: &mut Option<Entity>) {
+    if let Some(entity) = *root_entity {
+        if let Some(entity) = commands.get_entity(entity) {
             entity.despawn_recursive();
         }
+        *root_entity = None;
     }
-    menu_data.0.clear();
+}
+
+fn cleanup_menu(commands: Commands, mut menu_data: ResMut<MenuData>) {
+    cleanup(commands, &mut menu_data.main);
+}
+
+fn cleanup_pause(commands: Commands, mut menu_data: ResMut<MenuData>) {
+    cleanup(commands, &mut menu_data.pause);
+}
+
+fn cleanup_game_over(commands: Commands, mut menu_data: ResMut<MenuData>) {
+    cleanup(commands, &mut menu_data.game_over);
 }
 
 fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, text: &str, action: ButtonAction) {
@@ -157,7 +173,7 @@ fn setup_paused(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut
                 },
             ));
         }).id();
-    menu_data.0.push(root_entity);
+    menu_data.pause = Some(root_entity);
 }
 
 fn setup_game_over(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<MenuData>, points: Res<Points>) {
@@ -186,5 +202,5 @@ fn setup_game_over(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: Res
             button(parent, &fonts, "Return To Title", ButtonAction::ToTitle);
         })
         .id();
-    menu_data.0.push(root_entity);
+    menu_data.game_over = Some(root_entity);
 }

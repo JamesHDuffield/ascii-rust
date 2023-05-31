@@ -216,11 +216,9 @@ fn reset_game(
     mut commands: Commands,
     query: Query<Entity, With<DespawnWithScene>>,
     mut next_game_state: ResMut<NextState<GameState>>,
-    mut points: ResMut<Points>,
 ) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
     next_game_state.set(GameState::Running);
-    points.value = 0;
 }
