@@ -67,8 +67,8 @@ fn main() {
         .add_plugin(EnemyPlugin)
         .add_event::<TakeDamageEvent>()
         // InGame
-        .add_system(
-            setup_player.in_schedule(OnEnter(AppState::InGame)),
+        .add_systems(
+            (setup_new_game, setup_player).in_schedule(OnEnter(AppState::InGame)),
         )
         // Always run while game is running
         .add_system(pause_control.in_set(OnUpdate(AppState::InGame)))
@@ -134,20 +134,11 @@ fn game_not_paused(game_state: Res<State<GameState>>) -> bool {
     game_state.0 != GameState::Paused && game_state.0 != GameState::Selection
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>, time: Res<Time>) {
-    // Create resources
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+    // Set the font
     commands.insert_resource(Fonts {
         primary: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
     });
-
-    // Set the start time
-    commands.insert_resource(GameTime { start_time: time.elapsed().clone() });
-
-    // Create point count
-    commands.insert_resource(Points { value: 0 });
-
-    // Start player at level 0 so they get immediate selection
-    commands.insert_resource(PlayerLevel { value: 0 });
 
     // Spawn the Camera
     commands
@@ -169,6 +160,17 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, time: Res<Time>
             ..default()
         },
     ));
+}
+
+fn setup_new_game(mut commands: Commands, time: Res<Time>) {
+    // Set the start time
+    commands.insert_resource(GameTime { start_time: time.elapsed().clone() });
+
+    // Create point count
+    commands.insert_resource(Points { value: 0 });
+
+    // Start player at level 0 so they get immediate selection
+    commands.insert_resource(PlayerLevel { value: 0 });
 }
 
 // Spawn the player
