@@ -53,6 +53,7 @@ impl PlayerUpgrades {
 pub enum UpgradeEvent {
     Weapon(TurretClass),
     Passive(Passive),
+    Heal,
 }
 
 impl Distribution<UpgradeEvent> for Standard {
@@ -69,6 +70,7 @@ impl Display for UpgradeEvent {
         match self {
             UpgradeEvent::Weapon(weapon) => write!(f, "{}", weapon),
             UpgradeEvent::Passive(passive) => write!(f, "{}", passive),
+            UpgradeEvent::Heal => write!(f, "Heal"),
         }
     }
 }
@@ -91,6 +93,7 @@ impl UpgradeEvent {
             UpgradeEvent::Passive(Passive::Magnet) => "Increase range and speed of experience magnetism",
             UpgradeEvent::Passive(Passive::ShieldRecharge) => "Decrease shield hit and regeneration cooldown",
             UpgradeEvent::Passive(Passive::Speed) => "Increase engine power and max speed",
+            UpgradeEvent::Heal => "Restore 50 armor or shields",
         }.to_string()
     }
 }
@@ -149,6 +152,7 @@ impl Plugin for UpgradePlugin {
                     upgrade_health_events,
                     upgrade_fire_rate_events,
                     upgrade_experience_event,
+                    upgrade_heal_event,
                 )
                     .in_set(OnUpdate(AppState::InGame)),
             );
@@ -160,8 +164,13 @@ fn record_upgrade(
     mut player_upgrades: ResMut<PlayerUpgrades>,
 ) {
     for ev in upgrade_event.iter() {
-        let level = player_upgrades.0.entry(*ev).or_insert(0);
-        *level += 1;
+        match ev {
+            UpgradeEvent::Heal => (), // No need to record this
+            _ => {
+                let level = player_upgrades.0.entry(*ev).or_insert(0);
+                *level += 1;
+            },
+        }
     }
 }
 
@@ -339,6 +348,22 @@ fn upgrade_experience_event(
             UpgradeEvent::Passive(Passive::Experience) => {
                 for mut cargo in &mut query {
                     cargo.bonus_chance += 0.1;
+                }
+            }
+            _ => (),
+        }
+    }
+}
+
+fn upgrade_heal_event(
+    mut upgrade_event: EventReader<UpgradeEvent>,
+    mut query: Query<&mut Health, With<IsPlayer>>,
+) {
+    for ev in upgrade_event.iter() {
+        match ev {
+            UpgradeEvent::Heal => {
+                for mut health in &mut query {
+                    health.heal(50);
                 }
             }
             _ => (),

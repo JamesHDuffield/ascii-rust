@@ -37,4 +37,17 @@ impl Health {
             self.shield -= amount;
         }
     }
+
+    pub fn heal(&mut self, amount: i32) {
+        let missing_health = self.max_health - self.health;
+        if amount > missing_health {
+            self.health = self.max_health;
+            self.shield += amount - missing_health;
+            if self.shield > self.max_shield {
+                self.shield = self.max_shield;
+            }
+        } else {
+            self.health += amount;
+        }
+    }
 }

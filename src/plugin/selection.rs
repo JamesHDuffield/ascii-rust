@@ -1,5 +1,3 @@
-use core::panic;
-
 use bevy::prelude::*;
 use rand::Rng;
 
@@ -52,9 +50,12 @@ fn roll(upgrades: Res<PlayerUpgrades>) -> Vec<UpgradeEvent> {
     let mut iterations = 0;
     while options.len() < 3 {
         iterations += 1;
+
         if iterations > 100 {
-            panic!("Cannot roll any valid upgrades!");
+            options.push(UpgradeEvent::Heal);
+            continue;
         }
+
         let potential: UpgradeEvent = rand::random();
         // No duplicates
         if options.contains(&potential) {
@@ -72,6 +73,7 @@ fn roll(upgrades: Res<PlayerUpgrades>) -> Vec<UpgradeEvent> {
         let cap_reached = match potential {
             UpgradeEvent::Weapon(_) => upgrades.reached_max_weapons(),
             UpgradeEvent::Passive(_) => upgrades.reached_max_passives(),
+            UpgradeEvent::Heal => false,
         };
         // If new check we haven't had too many of given type
         if current_level == &0 && cap_reached {
@@ -155,10 +157,12 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
     let type_text = match upgrade {
         UpgradeEvent::Weapon(_) => format!("Weapon"),
         UpgradeEvent::Passive(_) => format!("Passive"),
+        UpgradeEvent::Heal => format!("Consumable"),
     };
     let type_color = match upgrade {
         UpgradeEvent::Weapon(_) => Colour::RED,
         UpgradeEvent::Passive(_) => Colour::SHIELD,
+        UpgradeEvent::Heal => Colour::GREEN,
     };
     parent
         .spawn((
