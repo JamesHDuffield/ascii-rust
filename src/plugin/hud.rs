@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{resource::{Fonts, PlayerLevel}, component::*, util::Colour, AppState};
+use crate::{resource::{Fonts, PlayerLevel, GameTime}, component::*, util::Colour, AppState};
 
 use super::PlayerUpgrades;
 
@@ -78,6 +78,14 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
                     font: fonts.primary.clone(),
                     font_size: 12.0,
                     color: Colour::INACTIVE,
+                },
+            ));
+            parent.spawn(TextBundle::from_section(
+                "",
+                TextStyle {
+                    font: fonts.primary.clone(),
+                    font_size: 12.0,
+                    color: Colour::PLAYER,
                 },
             ));
         });
@@ -175,6 +183,7 @@ pub fn hud_system(
     mut query: Query<(&Children, &UINode)>,
     mut q_child: Query<&mut Text>,
     level: Res<PlayerLevel>,
+    game_time: Res<GameTime>,
 ) {
     if let Ok((engine, health, cargo, turrets)) = player_query.get_single() {
         // Loop over children and update display values
@@ -186,6 +195,7 @@ pub fn hud_system(
                     format!("{:<8} {} {}", "Shield", bar(health.shield, health.max_shield, 10), health.shield),
                     format!("{:<8} {} {:0>2}", "Level", bar(cargo.amount as i32, level.required_cargo_to_level() as i32, 10), level.value),
                     format!("{:<8} {} m/s", "Speed", engine.speed.round()),
+                    format!("{:<8} {:0>2}:{:0>2}", "Time", game_time.0.elapsed().as_secs() / 60, game_time.0.elapsed().as_secs() % 60),
                 ],
                 UINode::Equipment => { 
                     let mut display = turrets

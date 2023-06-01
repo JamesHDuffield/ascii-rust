@@ -60,11 +60,7 @@ fn spawner_system(
     enemies_query: Query<Entity, With<AI>>,
     player_query: Query<&Transform, With<IsPlayer>>,
 ) {
-    let seconds_since_start: u32 = (time.elapsed() - game_time.start_time)
-        .as_secs()
-        .try_into()
-        .unwrap_or_default();
-    let difficulty = seconds_since_start / 30 + 1; // Goes from 1-20 difficulty in 10 minutes
+    let difficulty = game_time.0.elapsed_secs() as u32 / 30 + 1; // Goes from 1-20 difficulty in 10 minutes
 
     spawning.timer.tick(time.delta() * difficulty); // Spawns quicker as time goes on
 

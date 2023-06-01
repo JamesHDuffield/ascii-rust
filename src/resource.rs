@@ -1,5 +1,5 @@
-use bevy::prelude::*;
-use std::{fmt, time::Duration};
+use bevy::{prelude::*, time::Stopwatch};
+use std::fmt;
 
 use crate::component::Damage;
 
@@ -19,10 +19,8 @@ impl fmt::Display for Points {
     }
 }
 
-#[derive(Resource)]
-pub struct GameTime {
-    pub start_time: Duration,
-}
+#[derive(Resource, Default)]
+pub struct GameTime(pub Stopwatch);
 
 #[derive(Resource)]
 pub struct PlayerLevel {

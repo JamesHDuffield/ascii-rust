@@ -75,6 +75,7 @@ fn main() {
         // Only run when unpaused
         .add_systems(
             (
+                game_time_system,
                 physics_system,
                 engine_system,
                 player_control,
@@ -89,13 +90,13 @@ fn main() {
                 loot_magnet_system,
                 loot_cargo_collision,
                 seeker_system,
-                level_up_system,
             )
                 .distributive_run_if(game_not_paused)
                 .in_set(OnUpdate(AppState::InGame)),
         )
         .add_systems(
             (
+                level_up_system,
                 take_damage_events,
                 hit_flash_system,
                 floating_text_system,
@@ -162,9 +163,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     ));
 }
 
-fn setup_new_game(mut commands: Commands, time: Res<Time>) {
+fn setup_new_game(mut commands: Commands) {
     // Set the start time
-    commands.insert_resource(GameTime { start_time: time.elapsed().clone() });
+    commands.insert_resource(GameTime::default());
 
     // Create point count
     commands.insert_resource(Points { value: 0 });
@@ -210,6 +211,10 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
             Cargo::default(),
             Magnet::default(),
         ));
+}
+
+fn game_time_system(time: Res<Time>, mut game_time: ResMut<GameTime>) {
+    game_time.0.tick(time.delta());
 }
 
 fn reset_game(
