@@ -27,7 +27,7 @@ pub fn fire_mine_launcher(
                     Bullet::new(30.0),
                     Text2dBundle {
                         text: Text::from_section(
-                            "+",
+                            "¤",
                             TextStyle {
                                 font: fonts.primary.clone(),
                                 font_size: 12.0,

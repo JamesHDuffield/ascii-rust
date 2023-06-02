@@ -2,11 +2,13 @@ mod fighter;
 mod drone;
 mod drone_boss;
 mod mothership;
+mod final_boss;
 
 use self::fighter::*;
 use self::drone::*;
 use self::drone_boss::*;
 use self::mothership::*;
+use self::final_boss::*;
 
 use std::{cmp::min, time::Duration};
 
@@ -24,6 +26,9 @@ pub struct Spawning {
 #[derive(Component)]
 pub struct AI;
 
+#[derive(Component)]
+pub struct FinalBoss;
+
 pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
@@ -35,9 +40,9 @@ impl Plugin for EnemyPlugin {
                     .in_set(OnUpdate(AppState::InGame)),
             )
             // Stop when game over
-            .add_system(
-                spawner_system
-                    .run_if(in_state(GameState::Running))
+            .add_systems(
+                (spawner_system, spawn_final_boss_system)
+                    .distributive_run_if(in_state(GameState::Running))
                     .in_set(OnUpdate(AppState::InGame)),
             );
     }
@@ -154,4 +159,21 @@ fn seperation(position: Vec2, neighbours: &Vec<Vec2>) -> Vec2 {
         .map(|neighbour| position - *neighbour)
         .sum();
     away.normalize_or_zero()
+}
+
+fn spawn_final_boss_system(
+    mut commands: Commands,
+    fonts: Res<Fonts>,
+    game_time: Res<GameTime>,
+    query: Query<(), With<FinalBoss>>,
+    player_query: Query<&Transform, With<IsPlayer>>,
+) {
+    if game_time.0.elapsed_secs() > 60.0 * 10.0 {
+        if query.is_empty() {
+            // Spawn final boss
+            let pos = player_query.get_single().map(|transform| transform.translation.truncate()).unwrap_or_default();
+            let spawn_point = pos + Math::random_2d_unit_vector() * 1000.0;
+            spawn_final_boss(&mut commands, &fonts, spawn_point.extend(RenderLayer::Enemy.as_z()))
+        }
+    }
 }
