@@ -4,6 +4,7 @@ mod upgrade;
 mod turret;
 mod hud;
 mod enemy;
+mod audio;
 
 pub use menu::*;
 pub use selection::*;
@@ -11,3 +12,4 @@ pub use upgrade::*;
 pub use turret::*;
 pub use hud::*;
 pub use enemy::*;
+pub use audio::*;

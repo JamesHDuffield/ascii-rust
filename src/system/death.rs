@@ -1,4 +1,4 @@
-use crate::{component::*, resource::{Fonts, Points}, GameState, util::{Colour, RenderLayer}};
+use crate::{component::*, resource::{Fonts, Points}, GameState, util::{Colour, RenderLayer}, plugin::SoundEffectEvent};
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use rand::prelude::*;
@@ -19,6 +19,7 @@ pub fn death_system(
     >,
     mut game_state: ResMut<NextState<GameState>>,
     mut points: ResMut<Points>,
+    mut sound_effect_event: EventWriter<SoundEffectEvent>,
 ) {
     for (entity, drops_loot, transform, is_player, explodes, worth_points) in &mut query {
         commands.entity(entity).despawn_recursive();
@@ -29,6 +30,7 @@ pub fn death_system(
             }
             if let Some(explodes) = explodes {
                 explode(&mut commands, explodes, transform.translation.truncate());
+                sound_effect_event.send(SoundEffectEvent::Explosion(explodes.size_max + explodes.size_min / 2.0));
             }
         }
 

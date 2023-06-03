@@ -12,6 +12,7 @@ use bevy_parallax::{LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlug
 use bevy_prototype_lyon::prelude::*;
 use component::*;
 use plugin::EnemyPlugin;
+use plugin::GameAudioPlugin;
 use plugin::HudPlugin;
 use plugin::TurretPlugin;
 use plugin::UpgradePlugin;
@@ -56,6 +57,7 @@ fn main() {
         )
         .add_plugin(ShapePlugin)
         .add_plugin(ParallaxPlugin)
+        .add_plugin(GameAudioPlugin)
         .add_state::<AppState>()
         .add_state::<GameState>()
         .add_startup_system(setup)

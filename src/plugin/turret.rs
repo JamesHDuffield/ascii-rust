@@ -22,6 +22,8 @@ use self::chain_laser::*;
 use self::pierce_laser::*;
 use self::emp::*;
 
+use super::SoundEffectEvent;
+
 pub struct TurretPlugin;
 
 impl Plugin for TurretPlugin {
@@ -107,6 +109,7 @@ fn turret_fire_system(
     time: Res<Time>,
     mut query: Query<(&mut FireRate, &TurretClass, &mut Targets, Entity)>,
     mut fire_event: EventWriter<TurretFireEvent>,
+    mut sound_effect_event: EventWriter<SoundEffectEvent>,
 ) {
     for (mut fire_rate, class, mut targets, entity) in &mut query {
         if let Some(target) = targets.target {
@@ -122,6 +125,8 @@ fn turret_fire_system(
             if fire_rate.timer.just_finished() {
                 // Fire!
                 fire_event.send(TurretFireEvent { class: *class, turret: entity });
+                // Potential Sound Effect
+                sound_effect_event.send(SoundEffectEvent::WeaponFire(*class));
             }
         } else {
             fire_rate.timer.reset();
