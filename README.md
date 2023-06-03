@@ -1,6 +1,6 @@
 # ASCII Space Shooter
 
-![Rust Version](https://img.shields.io/static/v1?logo=Rust&label=&message=1.69&color=grey)
+![Rust Version](https://img.shields.io/static/v1?logo=Rust&label=&message=1.70&color=grey)
 ![Language](https://img.shields.io/github/languages/top/jameshduffield/ascii-rust)
 ![Latest Commit](https://img.shields.io/github/last-commit/jameshduffield/ascii-rust)
 
