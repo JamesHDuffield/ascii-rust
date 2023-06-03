@@ -6,7 +6,7 @@ use crate::{component::*, util::*, resource::TakeDamageEvent};
 use super::{TurretFireEvent, get_closest_target};
 
 
-fn spawn_link(commands: &mut Commands, take_damage_event: &mut EventWriter<TakeDamageEvent>, target_query: &Query<&Transform>, origin: Vec2, target: Entity, damage: &DoesDamage, jump: u8, colour: &EffectColour) -> Result<Vec2, QueryEntityError> {
+fn spawn_link(commands: &mut Commands, take_damage_event: &mut EventWriter<TakeDamageEvent>, target_query: &Query<&Transform>, origin: Vec2, target: Entity, damage: &DoesDamage, jump: u8, colour: &EffectColour, owner: Entity) -> Result<Vec2, QueryEntityError> {
     // Get Target Info
     let target_transform = target_query.get(target)?;
     let target_position = target_transform.translation.truncate();
@@ -20,6 +20,7 @@ fn spawn_link(commands: &mut Commands, take_damage_event: &mut EventWriter<TakeD
             ..default()
         },
         Stroke::new(colour.0, 2.0),
+        Owner(owner),
         DespawnWithScene,
     ));
     // Immediate hit
@@ -69,7 +70,7 @@ pub fn fire_chain_laser(
                     // Remove target from potentials list so no repeats
                     potential_targets.retain(|potential| potential.0 != target);
                     
-                    let result = spawn_link(&mut commands, &mut take_damage_event, &target_query, previous_position, target, damage, num_jumps, colour);
+                    let result = spawn_link(&mut commands, &mut take_damage_event, &target_query, previous_position, target, damage, num_jumps, colour, parent.get());
 
                     match result {
                         Ok(pos) => {
