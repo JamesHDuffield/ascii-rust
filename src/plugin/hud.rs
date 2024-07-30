@@ -217,7 +217,7 @@ pub fn hud_system(
             for (i, display) in displays.iter().enumerate() {
                 if let Some(&child) = children.get(i) {
                     if let Ok(mut text) = q_child.get_mut(child) {
-                        if let Some(mut section) = text.sections.get_mut(0) {
+                        if let Some(section) = text.sections.get_mut(0) {
                             section.value = display.to_string();
                         }
                     }
