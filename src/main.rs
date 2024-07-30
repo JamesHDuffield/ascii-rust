@@ -71,7 +71,7 @@ fn main() {
             (setup_new_game, setup_player).in_schedule(OnEnter(AppState::InGame)),
         )
         // Always run while game is running
-        .add_system(pause_control.in_set(OnUpdate(AppState::InGame)))
+        .add_systems((pause_control, zoom_control).in_set(OnUpdate(AppState::InGame)))
         // Only run when unpaused
         .add_systems(
             (
@@ -141,6 +141,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         primary: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
     });
 
+    
     // Spawn the Camera
     commands
         .spawn((

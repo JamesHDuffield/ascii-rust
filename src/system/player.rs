@@ -57,3 +57,25 @@ pub fn level_up_system(
     }
   }
 }
+
+pub fn zoom_control(
+  key_input: Res<Input<KeyCode>>,
+  mut camera_q: Query<
+        &mut OrthographicProjection,
+        (With<OrthographicProjection>, With<MainCamera>),
+    >,
+) {
+  let scale_factor = 0.25;
+
+  if key_input.just_pressed(KeyCode::NumpadAdd) {
+    if let Ok(mut projection) = camera_q.get_single_mut() {
+      projection.scale = (projection.scale - scale_factor).max(1.);
+    }
+  }
+
+  if key_input.just_pressed(KeyCode::NumpadSubtract) {
+    if let Ok(mut projection) = camera_q.get_single_mut() {
+      projection.scale = (projection.scale + scale_factor).min(3.);
+    }
+  }
+}
