@@ -23,7 +23,7 @@ jobs:
       with:
         targets: wasm32-unknown-unknown
     - name: Install wasm-bindgen 
-      run:  cargo install wasm-bindgen-cli --version 0.2.84 ## Bevy 0.10.1 uses this
+      run:  cargo install wasm-bindgen-cli --version 0.2.92 ## Bevy 0.11 uses this
     - name: Build
       run: cargo build --profile release-web --target wasm32-unknown-unknown
     - name: Wasm Bundle
