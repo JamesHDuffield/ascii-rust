@@ -6,7 +6,7 @@ use crate::component::*;
 pub fn explosion_render_system(
   mut commands: Commands,
   time: Res<Time>,
-  mut query: Query<(&mut ExplosionRender, &mut Path, Entity, &mut Stroke)>,
+  mut query: Query<(&mut ExplosionRender, &mut Path, Entity, &mut Stroke), Without<ShouldDespawn>>,
 ) {
   for (mut explosion, mut path, entity, mut stroke) in &mut query {
     explosion.ttl.tick(time.delta());
