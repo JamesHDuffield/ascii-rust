@@ -19,9 +19,9 @@ pub struct SelectionPlugin;
 impl Plugin for SelectionPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(SelectionData(vec![]))
-            .add_system(setup_selection.in_schedule(OnEnter(GameState::Selection)))
-            .add_system(menu.in_set(OnUpdate(GameState::Selection)))
-            .add_system(cleanup.in_schedule(OnExit(GameState::Selection)));
+            .add_systems(OnEnter(GameState::Selection), setup_selection)
+            .add_systems(Update, menu.run_if(in_state(GameState::Selection)))
+            .add_systems(OnExit(GameState::Selection), cleanup);
     }
 }
 
@@ -101,12 +101,13 @@ fn setup_selection(
     let root_entity = commands
         .spawn(NodeBundle {
             style: Style {
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 position_type: PositionType::Absolute,
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Row,
-                gap: Size::width(Val::Px(10.0)),
+                column_gap: Val::Px(10.0),
                 ..Default::default()
             },
             ..default()
@@ -130,7 +131,7 @@ fn menu(
 ) {
     for (interaction, mut color, button) in &mut interaction_query {
         match *interaction {
-            Interaction::Clicked => {
+            Interaction::Pressed => {
                 upgrade_event.send(button.0);
                 next_state.set(GameState::Running);
             }
@@ -168,12 +169,13 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
         .spawn((
             ButtonBundle {
                 style: Style {
-                    size: Size::new(Val::Px(300.0), Val::Px(140.0)),
+                    width: Val::Px(300.0),
+                    height: Val::Px(140.0),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
                     flex_direction: FlexDirection::Column,
                     padding: UiRect::all(Val::Px(10.0)),
-                    gap: Size::height(Val::Px(10.0)),
+                    column_gap: Val::Px(10.0),
                     ..default()
                 },
                 background_color: NORMAL_BUTTON.into(),
@@ -192,10 +194,7 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
                     },
                 ),
                 style: Style {
-                    position: UiRect {
-                        top: Val::Px(10.0),
-                        ..Default::default()
-                    },
+                    top: Val::Px(10.0),
                     position_type: PositionType::Absolute,
                     ..Default::default()
                 },
@@ -211,10 +210,7 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
                     },
                 ),
                 style: Style {
-                    position: UiRect {
-                        top: Val::Px(30.0),
-                        ..Default::default()
-                    },
+                    top: Val::Px(30.0),
                     position_type: PositionType::Absolute,
                     ..Default::default()
                 },
@@ -231,16 +227,13 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
                 )
                 .with_alignment(TextAlignment::Center),
                 style: Style {
-                    position: UiRect {
-                        bottom: Val::Px(20.0),
-                        ..Default::default()
-                    },
+                    bottom: Val::Px(20.0),
                     position_type: PositionType::Absolute,
                     margin: UiRect {
                         left: Val::Px(15.0),
                         ..Default::default()
                     }, // Text wrapping kind of sucks in bevy...
-                    size: Size::width(Val::Px(200.0)),
+                    width: Val::Px(200.0),
                     ..Default::default()
                 },
                 ..Default::default()

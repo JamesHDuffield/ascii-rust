@@ -8,7 +8,8 @@ mod system;
 
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
 use bevy_embedded_assets::EmbeddedAssetPlugin;
-use bevy_parallax::{LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin, ParallaxResource, ParallaxSystems};
+use bevy_parallax::CreateParallaxEvent;
+use bevy_parallax::{LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin, ParallaxSystems};
 use bevy_prototype_lyon::prelude::*;
 use component::*;
 use plugin::EnemyPlugin;
@@ -54,26 +55,24 @@ fn main() {
                 .build()
                 .add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin),
         )
-        .add_plugin(ShapePlugin)
-        .add_plugin(ParallaxPlugin)
+        .add_plugins(ShapePlugin)
+        .add_plugins(ParallaxPlugin)
         .add_state::<AppState>()
         .add_state::<GameState>()
-        .add_startup_system(setup)
-        .add_plugin(MainMenuPlugin)
-        .add_plugin(SelectionPlugin)
-        .add_plugin(UpgradePlugin)
-        .add_plugin(TurretPlugin)
-        .add_plugin(HudPlugin)
-        .add_plugin(EnemyPlugin)
+        .add_systems(Startup, setup)
+        .add_plugins(MainMenuPlugin)
+        .add_plugins(SelectionPlugin)
+        .add_plugins(UpgradePlugin)
+        .add_plugins(TurretPlugin)
+        .add_plugins(HudPlugin)
+        .add_plugins(EnemyPlugin)
         .add_event::<TakeDamageEvent>()
         // InGame
-        .add_systems(
-            (setup_new_game, setup_player).in_schedule(OnEnter(AppState::InGame)),
-        )
+        .add_systems(OnEnter(AppState::InGame), (setup_new_game, setup_player))
         // Always run while game is running
-        .add_systems((pause_control, zoom_control).in_set(OnUpdate(AppState::InGame)))
+        .add_systems(Update, (pause_control, zoom_control).run_if(in_state(AppState::InGame)))
         // Only run when unpaused
-        .add_systems(
+        .add_systems(Update,
             (
                 game_time_system,
                 physics_system,
@@ -92,9 +91,9 @@ fn main() {
                 seeker_system,
             )
                 .distributive_run_if(game_not_paused)
-                .in_set(OnUpdate(AppState::InGame)),
+                .distributive_run_if(in_state(AppState::InGame)),
         )
-        .add_systems(
+        .add_systems(Update,
             (
                 level_up_system,
                 take_damage_events,
@@ -102,40 +101,18 @@ fn main() {
                 floating_text_system,
             )
                 .distributive_run_if(game_not_paused)
-                .in_set(OnUpdate(AppState::InGame)),
+                .distributive_run_if(in_state(AppState::InGame)),
         )
         // Cleanup
-        .add_system(reset_game.in_schedule(OnExit(AppState::InGame)))
-        // Resources required on boot
-        .insert_resource(ParallaxResource {
-            layer_data: vec![
-                LayerData {
-                    speed: LayerSpeed::Bidirectional(0.95, 0.95),
-                    path: "nebula-tile.png".to_string(),
-                    tile_size: Vec2::new(1024.0, 1024.0),
-                    scale: 5.0,
-                    z: RenderLayer::Background.as_z_with_offset(-10.),
-                    ..default()
-                },
-                LayerData {
-                    speed: LayerSpeed::Bidirectional(0.9, 0.9),
-                    path: "stars-tile.png".to_string(),
-                    tile_size: Vec2::new(1024.0, 1024.0),
-                    scale: 1.0,
-                    z: RenderLayer::Background.as_z(),
-                    ..default()
-                },
-            ],
-            ..default()
-        })
+        .add_systems(OnExit(AppState::InGame), reset_game)
         .run();
 }
 
 fn game_not_paused(game_state: Res<State<GameState>>) -> bool {
-    game_state.0 != GameState::Paused && game_state.0 != GameState::Selection
+    *game_state.get() != GameState::Paused && *game_state.get() != GameState::Selection
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut create_parallax: EventWriter<CreateParallaxEvent>) {
     // Set the font
     commands.insert_resource(Fonts {
         primary: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
@@ -143,7 +120,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     
     // Spawn the Camera
-    commands
+    let camera = commands
         .spawn((
             Camera2dBundle {
                 camera_2d: Camera2d {
@@ -154,7 +131,32 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             MainCamera,
             CameraShake::default(),
         ))
-        .insert(ParallaxCameraComponent);
+        .insert(ParallaxCameraComponent::default())
+        .id();
+
+    // Setup parralax
+    create_parallax.send(CreateParallaxEvent {
+        layers_data: vec![
+            LayerData {
+                speed: LayerSpeed::Bidirectional(0.95, 0.95),
+                path: "nebula-tile.png".to_string(),
+                tile_size: Vec2::new(1024.0, 1024.0),
+                scale: 5.0,
+                z: RenderLayer::Background.as_z_with_offset(-10.),
+                ..default()
+            },
+            LayerData {
+                speed: LayerSpeed::Bidirectional(0.9, 0.9),
+                path: "stars-tile.png".to_string(),
+                tile_size: Vec2::new(1024.0, 1024.0),
+                scale: 1.0,
+                z: RenderLayer::Background.as_z(),
+                ..default()
+            },
+        ],
+        camera,
+    });
+
     // Spawn a shape so that the shape loop always runs (fixes bug with library cleaning itself up)
     commands.spawn((
         ShapeBundle {

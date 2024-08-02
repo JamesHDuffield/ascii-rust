@@ -28,15 +28,15 @@ impl Plugin for TurretPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_event::<TurretFireEvent>()
-            .add_systems(
+            .add_systems(Update,
                 (
                     turret_targetting_system,
                     turret_fire_system,
                 )
                     .distributive_run_if(game_not_paused)
-                    .in_set(OnUpdate(AppState::InGame)),
+                    .distributive_run_if(in_state(AppState::InGame)),
             )
-            .add_systems(
+            .add_systems(Update,
                 (
 
                     fire_blast_laser,
@@ -48,11 +48,12 @@ impl Plugin for TurretPlugin {
                     fire_pierce_laser,
                     fire_emp,
                 )
-                    .in_set(OnUpdate(AppState::InGame)),
+                    .distributive_run_if(in_state(AppState::InGame)),
             );
     }
 }
 
+#[derive(Event)]
 pub struct TurretFireEvent {
     pub class: TurretClass,
     pub turret: Entity,

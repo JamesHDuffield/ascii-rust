@@ -9,11 +9,9 @@ pub struct HudPlugin;
 impl Plugin for HudPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_system(
-                setup_hud.in_schedule(OnEnter(AppState::InGame)),
-            )
+            .add_systems(OnEnter(AppState::InGame), setup_hud)
             // Always run while game is running
-            .add_system(hud_system.in_set(OnUpdate(AppState::InGame)));
+            .add_systems(Update, hud_system.run_if(in_state(AppState::InGame)));
     }
 }
 
@@ -30,15 +28,10 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
         .spawn((
             NodeBundle {
                 style: Style {
-                    size: Size {
-                        width: Val::Percent(20.0),
-                        height: Val::Percent(20.0),
-                    },
+                    width: Val::Percent(20.0),
+                    height: Val::Percent(20.0),
                     margin: UiRect::all(Val::Px(5.0)),
-                    gap: Size {
-                        height: Val::Px(2.0),
-                        ..Default::default()
-                    },
+                    column_gap: Val::Px(2.0),
                     flex_direction: FlexDirection::Column,
                     ..default()
                 },
@@ -95,16 +88,11 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
             NodeBundle {
                 style: Style {
                     position_type: PositionType::Absolute,
-                    position: UiRect { right: Val::Px(0.0), ..Default::default() },
-                    size: Size {
-                        width: Val::Percent(20.0),
-                        height: Val::Percent(20.0),
-                    },
+                    right: Val::Px(0.0),
+                    width: Val::Percent(20.0),
+                    height: Val::Percent(20.0),
                     margin: UiRect::all(Val::Px(5.0)),
-                    gap: Size {
-                        height: Val::Px(2.0),
-                        ..Default::default()
-                    },
+                    column_gap: Val::Px(2.0),
                     flex_direction: FlexDirection::Column,
                     align_items: AlignItems::End,
                     ..default()
@@ -132,16 +120,12 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
             NodeBundle {
                 style: Style {
                     position_type: PositionType::Absolute,
-                    position: UiRect { right: Val::Px(0.0), bottom: Val::Px(0.0), ..Default::default() },
-                    size: Size {
-                        width: Val::Percent(20.0),
-                        height: Val::Percent(20.0),
-                    },
+                    right: Val::Px(0.0),
+                    bottom: Val::Px(0.0),
+                    width: Val::Percent(20.0),
+                    height: Val::Percent(20.0),
                     margin: UiRect::all(Val::Px(5.0)),
-                    gap: Size {
-                        height: Val::Px(2.0),
-                        ..Default::default()
-                    },
+                    column_gap: Val::Px(2.0),
                     flex_direction: FlexDirection::ColumnReverse,
                     align_items: AlignItems::End,
                     ..default()

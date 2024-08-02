@@ -49,7 +49,7 @@ impl PlayerUpgrades {
     }
 }
 
-#[derive(Copy, Clone, Eq, Hash, PartialEq)]
+#[derive(Event, Copy, Clone, Eq, Hash, PartialEq)]
 pub enum UpgradeEvent {
     Weapon(TurretClass),
     Passive(Passive),
@@ -143,7 +143,7 @@ impl Plugin for UpgradePlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(PlayerUpgrades(HashMap::new()))
             .add_event::<UpgradeEvent>()
-            .add_systems(
+            .add_systems(Update,
                 (
                     record_upgrade,
                     upgrade_weapon_event,
@@ -154,7 +154,7 @@ impl Plugin for UpgradePlugin {
                     upgrade_experience_event,
                     upgrade_heal_event,
                 )
-                    .in_set(OnUpdate(AppState::InGame)),
+                    .distributive_run_if(in_state(AppState::InGame)),
             );
     }
 }
