@@ -8,7 +8,7 @@ use bevy::prelude::*;
 pub fn combat_system(
     mut commands: Commands,
     time: Res<Time>,
-    mut query: Query<(&mut Health, Entity), With<Health>>,
+    mut query: Query<(&mut Health, Entity), Without<ShouldDespawn>>,
 ) {
     for (mut health, entity) in &mut query {
         if health.health <= 0 {

@@ -27,16 +27,16 @@ impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
         app
             .insert_resource(MenuData::default())
-            .add_system(setup_menu.in_schedule(OnEnter(AppState::Menu)))
-            .add_system(menu.in_set(OnUpdate(AppState::Menu)))
-            .add_system(cleanup_menu.in_schedule(OnExit(AppState::Menu)))
+            .add_systems(OnEnter(AppState::Menu), setup_menu)
+            .add_systems(Update, menu.run_if(in_state(AppState::Menu)))
+            .add_systems(OnExit(AppState::Menu), cleanup_menu)
 
-            .add_system(setup_paused.in_schedule(OnEnter(GameState::Paused)))
-            .add_system(cleanup_pause.in_schedule(OnExit(GameState::Paused)))
+            .add_systems(OnEnter(GameState::Paused), setup_paused)
+            .add_systems(OnExit(GameState::Paused), cleanup_pause)
 
-            .add_system(setup_game_over.in_schedule(OnEnter(GameState::GameOver)))
-            .add_system(menu.in_set(OnUpdate(GameState::GameOver)))
-            .add_system(cleanup_game_over.in_schedule(OnExit(GameState::GameOver)));
+            .add_systems(OnEnter(GameState::GameOver), setup_game_over)
+            .add_systems(Update, menu.run_if(in_state(GameState::GameOver)))
+            .add_systems(OnExit(GameState::GameOver), cleanup_game_over);
     }
 }
 
@@ -45,11 +45,12 @@ fn setup_menu(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<M
         .spawn(NodeBundle {
             style: Style {
                 // center button
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Column,
-                gap: Size::height(Val::Px(10.0)),
+                row_gap: Val::Px(10.0),
                 ..default()
             },
             ..default()
@@ -73,7 +74,7 @@ fn menu(
 ) {
     for (interaction, mut color, button) in &mut interaction_query {
         match *interaction {
-            Interaction::Clicked => {
+            Interaction::Pressed => {
                 match button.0 {
                     ButtonAction::Play => next_state.set(AppState::InGame),
                     ButtonAction::Exit => exit.send(AppExit),
@@ -116,7 +117,7 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, text: &str, action: But
         .spawn((
             ButtonBundle {
                 style: Style {
-                    min_size: Size::width(Val::Px(200.0)),
+                    min_width: Val::Px(200.0),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
                     padding: UiRect::all(Val::Px(10.0)),
@@ -144,13 +145,14 @@ fn setup_paused(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut
         .spawn(NodeBundle {
             style: Style {
                 // center button
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 position_type: PositionType::Absolute,
                 padding: UiRect::top(Val::Px(10.0)),
                 justify_content: JustifyContent::Start,
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Column,
-                gap: Size::height(Val::Px(10.0)),
+                row_gap: Val::Px(10.0),
                 ..default()
             },
             ..default()
@@ -180,12 +182,13 @@ fn setup_game_over(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: Res
     let root_entity = commands
         .spawn(NodeBundle {
             style: Style {
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                height: Val::Percent(100.0),
+                width: Val::Percent(100.0),
                 position_type: PositionType::Absolute,
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Column,
-                gap: Size::height(Val::Px(10.0)),
+                row_gap: Val::Px(10.0),
                 ..default()
             },
             ..default()

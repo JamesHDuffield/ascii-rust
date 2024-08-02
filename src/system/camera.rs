@@ -6,12 +6,12 @@ pub fn camera_follow(
     time: Res<Time>,
     player_q: Query<&Transform, (With<Transform>, With<IsPlayer>, Without<MainCamera>)>,
     mut camera_q: Query<
-        (&Transform, &mut CameraShake),
+        (Entity, &Transform, &mut CameraShake),
         (With<Transform>, With<MainCamera>, Without<IsPlayer>),
     >,
     mut move_event_writer: EventWriter<ParallaxMoveEvent>,
 ) {
-    if let Ok((camera_transform, mut shake)) = camera_q.get_single_mut() {
+    if let Ok((camera_entity, camera_transform, mut shake)) = camera_q.get_single_mut() {
         if let Ok(player_transform) = player_q.get_single() {
             // Calculate the new camera position based on the player's position
             let target_position = Vec2::new(
@@ -29,6 +29,7 @@ pub fn camera_follow(
 
             move_event_writer.send(ParallaxMoveEvent {
                 camera_move_speed: smooth_move_position - current_position,
+                camera: camera_entity,
             });
         }
     }

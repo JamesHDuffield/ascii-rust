@@ -33,6 +33,7 @@ impl PlayerLevel {
     }
 }
 
+#[derive(Event)]
 pub struct TakeDamageEvent { 
     pub entity: Entity,
     pub damage: Damage,

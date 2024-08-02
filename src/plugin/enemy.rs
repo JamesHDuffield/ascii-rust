@@ -33,17 +33,18 @@ pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(spawn_startup.in_schedule(OnEnter(AppState::InGame)))
-            .add_system(
+        app.add_systems(OnEnter(AppState::InGame), spawn_startup)
+            .add_systems(
+                Update,
                 ai_system
                     .run_if(game_not_paused)
-                    .in_set(OnUpdate(AppState::InGame)),
+                    .run_if(in_state(AppState::InGame)),
             )
             // Stop when game over
-            .add_systems(
+            .add_systems(Update,
                 (spawner_system, spawn_final_boss_system)
                     .distributive_run_if(in_state(GameState::Running))
-                    .in_set(OnUpdate(AppState::InGame)),
+                    .distributive_run_if(in_state(AppState::InGame)),
             );
     }
 }

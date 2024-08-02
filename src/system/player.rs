@@ -29,7 +29,7 @@ pub fn pause_control(
   mut query: Query<&mut CameraShake>,
 ) {
   if key_input.just_pressed(KeyCode::Escape) {
-    match game_state.0 {
+    match game_state.get() {
       GameState::Running => change_game_state.set(GameState::Paused),
       GameState::Paused => change_game_state.set(GameState::Running),
       _ => ()
