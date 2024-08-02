@@ -44,7 +44,7 @@ pub fn fire_auto_cannon(
                                 color: colour.0,
                             },
                         )
-                        .with_alignment(TextAlignment::Center),
+                        .with_justify(JustifyText::Center),
                         transform: Transform {
                             translation: origin.extend(RenderLayer::Bullet.as_z()),
                             ..Default::default()

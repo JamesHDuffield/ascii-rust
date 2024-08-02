@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use crate::{component::*, GameState, resource::PlayerLevel};
 
 pub fn player_control(
-  mouse_button_input: Res<Input<MouseButton>>,
+  mouse_button_input: Res<ButtonInput<MouseButton>>,
   windows: Query<&Window>,
   camera_q: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
   mut query: Query<(&IsPlayer, &mut Engine), (With<IsPlayer>, With<Engine>)>,
@@ -23,7 +23,7 @@ pub fn player_control(
 }
 
 pub fn pause_control(
-  key_input: Res<Input<KeyCode>>,
+  key_input: Res<ButtonInput<KeyCode>>,
   game_state: Res<State<GameState>>,
   mut change_game_state: ResMut<NextState<GameState>>,
   mut query: Query<&mut CameraShake>,
@@ -37,7 +37,7 @@ pub fn pause_control(
   }
 
   // Debug camera shake
-  if key_input.just_pressed(KeyCode::R) {
+  if key_input.just_pressed(KeyCode::KeyR) {
     for mut shake in &mut query {
       shake.trauma = 5.0;
     }
@@ -59,7 +59,7 @@ pub fn level_up_system(
 }
 
 pub fn zoom_control(
-  key_input: Res<Input<KeyCode>>,
+  key_input: Res<ButtonInput<KeyCode>>,
   mut camera_q: Query<
         &mut OrthographicProjection,
         (With<OrthographicProjection>, With<MainCamera>),

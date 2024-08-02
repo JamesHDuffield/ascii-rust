@@ -19,7 +19,7 @@ pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                             color: Colour::ENEMY,
                         },
                     )
-                    .with_alignment(TextAlignment::Center),
+                    .with_justify(JustifyText::Center),
                     transform: Transform::from_translation(position),
                     ..default()
                 },

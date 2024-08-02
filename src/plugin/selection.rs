@@ -225,7 +225,7 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
                         color: Color::rgba(0.8, 0.8, 0.8, 0.8),
                     },
                 )
-                .with_alignment(TextAlignment::Center),
+                .with_justify(JustifyText::Center),
                 style: Style {
                     bottom: Val::Px(20.0),
                     position_type: PositionType::Absolute,

@@ -77,7 +77,7 @@ fn menu(
             Interaction::Pressed => {
                 match button.0 {
                     ButtonAction::Play => next_state.set(AppState::InGame),
-                    ButtonAction::Exit => exit.send(AppExit),
+                    ButtonAction::Exit => { exit.send(AppExit); },
                     ButtonAction::ToTitle => next_state.set(AppState::Menu),
                 }
             }

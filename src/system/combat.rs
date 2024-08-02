@@ -63,7 +63,7 @@ pub fn take_damage_events(
                                 color: if ev.damage.is_crit { Colour::YELLOW } else { Colour::WHITE },
                             },
                         )
-                        .with_alignment(TextAlignment::Center),
+                        .with_justify(JustifyText::Center),
                         transform: Transform::from_xyz(
                             transform.translation.x,
                             transform.translation.y + 10.0,

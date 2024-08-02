@@ -6,7 +6,7 @@ mod plugin;
 mod resource;
 mod system;
 
-use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
+use bevy::prelude::*;
 use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_parallax::CreateParallaxEvent;
 use bevy_parallax::{LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin, ParallaxSystems};
@@ -47,7 +47,6 @@ fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         title: String::from("Outer Shell"),
-                        fit_canvas_to_parent: true,
                         ..Default::default()
                     }),
                     ..Default::default()
@@ -57,8 +56,8 @@ fn main() {
         )
         .add_plugins(ShapePlugin)
         .add_plugins(ParallaxPlugin)
-        .add_state::<AppState>()
-        .add_state::<GameState>()
+        .init_state::<AppState>()
+        .init_state::<GameState>()
         .add_systems(Startup, setup)
         .add_plugins(MainMenuPlugin)
         .add_plugins(SelectionPlugin)
@@ -122,12 +121,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut create_para
     // Spawn the Camera
     let camera = commands
         .spawn((
-            Camera2dBundle {
-                camera_2d: Camera2d {
-                    clear_color: ClearColorConfig::Custom(Colour::BLACK),
-                },
-                ..Default::default()
-            },
+            Camera2dBundle::default(),
             MainCamera,
             CameraShake::default(),
         ))
@@ -141,7 +135,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut create_para
                 speed: LayerSpeed::Bidirectional(0.95, 0.95),
                 path: "nebula-tile.png".to_string(),
                 tile_size: Vec2::new(1024.0, 1024.0),
-                scale: 5.0,
+                scale: Vec2::splat(5.0),
                 z: RenderLayer::Background.as_z_with_offset(-10.),
                 ..default()
             },
@@ -149,7 +143,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut create_para
                 speed: LayerSpeed::Bidirectional(0.9, 0.9),
                 path: "stars-tile.png".to_string(),
                 tile_size: Vec2::new(1024.0, 1024.0),
-                scale: 1.0,
                 z: RenderLayer::Background.as_z(),
                 ..default()
             },
@@ -191,7 +184,7 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
                             color: Colour::PLAYER,
                         },
                     )
-                    .with_alignment(TextAlignment::Center),
+                    .with_justify(JustifyText::Center),
                     transform: Transform::from_translation(Vec3 {
                         x: 100.0,
                         y: 100.0,

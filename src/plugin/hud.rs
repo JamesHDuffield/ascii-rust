@@ -186,7 +186,7 @@ pub fn hud_system(
                         .iter()
                         .map(|e| turret_query.get(*e))
                         .filter_map(|result| result.ok())
-                        .map(|(fire_rate, class)| format!("{} {:>16}", bar((fire_rate.timer.percent() * 10.0).round() as i32, 10, 10), class))
+                        .map(|(fire_rate, class)| format!("{} {:>16}", bar((fire_rate.timer.fraction() * 10.0).round() as i32, 10, 10), class))
                         .collect::<Vec<String>>();
                     display.resize_with(10, Default::default);
                     display

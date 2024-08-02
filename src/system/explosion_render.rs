@@ -13,12 +13,12 @@ pub fn explosion_render_system(
     
     let shape = shapes::Circle {
         center: explosion.origin,
-        radius: explosion.radius * explosion.ttl.percent(),
+        radius: explosion.radius * explosion.ttl.fraction(),
     };
     *path = GeometryBuilder::build_as(&shape);
 
     if explosion.fade_out {
-      stroke.color.set_a(explosion.ttl.percent_left()); 
+      stroke.color.set_a(explosion.ttl.fraction_remaining()); 
     }
 
     if explosion.ttl.finished() {
