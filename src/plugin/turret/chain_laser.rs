@@ -16,7 +16,7 @@ fn spawn_link(commands: &mut Commands, take_damage_event: &mut EventWriter<TakeD
         LaserRender,
         ShapeBundle {
             path: GeometryBuilder::build_as(&shapes::Line(origin, target_position)),
-            transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
+            spatial: SpatialBundle::from_transform(Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z())),
             ..default()
         },
         Stroke::new(colour.0, 2.0),
@@ -37,7 +37,7 @@ pub fn fire_chain_laser(
     potential_query: Query<(Entity, &Transform, &Targettable), (With<Targettable>, With<Transform>)>,
     mut take_damage_event: EventWriter<TakeDamageEvent>,
 ) {
-    for ev in fire_event.iter() {
+    for ev in fire_event.read() {
         match ev.class {
             TurretClass::ChainLaser => {
 

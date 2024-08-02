@@ -11,7 +11,7 @@ pub fn fire_emp(
     turret_query: Query<(&Parent, &DoesDamage, &EffectSize, &EffectColour)>,
     parent_query: Query<&Transform>,
 ) {
-    for ev in fire_event.iter() {
+    for ev in fire_event.read() {
         match ev.class {
             TurretClass::Emp => {
 
@@ -38,7 +38,7 @@ pub fn fire_emp(
                             center: origin,
                             radius: 0.0,
                         }),
-                        transform: Transform::from_xyz(0.0, 0.0, RenderLayer::Effects.as_z()),
+                        spatial: SpatialBundle::from_transform(Transform::from_xyz(0.0, 0.0, RenderLayer::Effects.as_z())),
                         ..default()
                     },
                     Stroke::new(colour.0, 1.0),

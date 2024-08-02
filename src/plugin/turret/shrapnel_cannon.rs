@@ -15,7 +15,7 @@ pub fn fire_shrapnel_cannon(
     target_query: Query<&Transform>,
     fonts: Res<Fonts>,
 ) {
-    for ev in fire_event.iter() {
+    for ev in fire_event.read() {
         match ev.class {
             TurretClass::ShrapnelCannon => {
 

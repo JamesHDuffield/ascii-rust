@@ -163,7 +163,7 @@ fn record_upgrade(
     mut upgrade_event: EventReader<UpgradeEvent>,
     mut player_upgrades: ResMut<PlayerUpgrades>,
 ) {
-    for ev in upgrade_event.iter() {
+    for ev in upgrade_event.read() {
         match ev {
             UpgradeEvent::Heal => (), // No need to record this
             _ => {
@@ -185,7 +185,7 @@ fn upgrade_weapon_event(
     mut existing_shrapnel_cannon: Query<&mut DoesDamage>,
     mut existing_mine_launcher: Query<&mut EffectSize>,
 ) {
-    for ev in upgrade_event.iter() {
+    for ev in upgrade_event.read() {
         match ev {
             UpgradeEvent::Weapon(weapon) => {
                 // Get player
@@ -273,7 +273,7 @@ fn upgrade_magnet_event(
     mut upgrade_event: EventReader<UpgradeEvent>,
     mut query: Query<&mut Magnet, With<IsPlayer>>,
 ) {
-    for ev in upgrade_event.iter() {
+    for ev in upgrade_event.read() {
         match ev {
             UpgradeEvent::Passive(Passive::Magnet) => {
                 for mut magnet in &mut query {
@@ -290,7 +290,7 @@ fn upgrade_speed_event(
     mut upgrade_event: EventReader<UpgradeEvent>,
     mut query: Query<&mut Engine, With<IsPlayer>>,
 ) {
-    for ev in upgrade_event.iter() {
+    for ev in upgrade_event.read() {
         match ev {
             UpgradeEvent::Passive(Passive::Speed) => {
                 for mut engine in &mut query {
@@ -307,7 +307,7 @@ fn upgrade_health_events(
     mut upgrade_event: EventReader<UpgradeEvent>,
     mut query: Query<&mut Health, With<IsPlayer>>,
 ) {
-    for ev in upgrade_event.iter() {
+    for ev in upgrade_event.read() {
         match ev {
             UpgradeEvent::Passive(Passive::ShieldRecharge) => {
                 for mut health in &mut query {
@@ -343,7 +343,7 @@ fn upgrade_experience_event(
     mut upgrade_event: EventReader<UpgradeEvent>,
     mut query: Query<&mut Cargo, With<IsPlayer>>,
 ) {
-    for ev in upgrade_event.iter() {
+    for ev in upgrade_event.read() {
         match ev {
             UpgradeEvent::Passive(Passive::Experience) => {
                 for mut cargo in &mut query {
@@ -359,7 +359,7 @@ fn upgrade_heal_event(
     mut upgrade_event: EventReader<UpgradeEvent>,
     mut query: Query<&mut Health, With<IsPlayer>>,
 ) {
-    for ev in upgrade_event.iter() {
+    for ev in upgrade_event.read() {
         match ev {
             UpgradeEvent::Heal => {
                 for mut health in &mut query {
@@ -377,7 +377,7 @@ fn upgrade_fire_rate_events(
     mut turret_query: Query<(&mut FireRate, &mut DoesDamage)>,
 ) {
 
-    for ev in upgrade_event.iter() {
+    for ev in upgrade_event.read() {
         match ev {
             UpgradeEvent::Passive(passive) => {
                 let turrets = player_query

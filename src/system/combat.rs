@@ -42,7 +42,7 @@ pub fn take_damage_events(
     )>,
     mut camera: Query<&mut CameraShake>,
 ) {
-    for ev in take_damage_events.iter() {
+    for ev in take_damage_events.read() {
         if let Ok((transform, mut health, is_player, hit_flash)) = query.get_mut(ev.entity) {
             health.take_damage(ev.damage.amount);
 

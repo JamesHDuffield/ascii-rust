@@ -53,7 +53,7 @@ fn main() {
                     ..Default::default()
                 })
                 .build()
-                .add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin),
+                .add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin { mode: bevy_embedded_assets::PluginMode::AutoLoad }),
         )
         .add_plugins(ShapePlugin)
         .add_plugins(ParallaxPlugin)

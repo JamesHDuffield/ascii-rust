@@ -13,7 +13,7 @@ pub fn fire_rocket_launcher(
     parent_query: Query<&Transform>,
     fonts: Res<Fonts>,
 ) {
-    for ev in fire_event.iter() {
+    for ev in fire_event.read() {
         match ev.class {
             TurretClass::RocketLauncher => {
 
