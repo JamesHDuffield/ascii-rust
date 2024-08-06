@@ -50,7 +50,7 @@ pub fn bullet_collision_system(
             Option<&AoeDamage>,
             &mut Bullet,
         ),
-        (With<Bullet>, With<Collider>, With<Owner>),
+        (With<Bullet>, With<Collider>, With<Owner>, Without<ShouldDespawn>),
     >,
     potential_query: Query<
         (&Collider, &Transform, Entity),

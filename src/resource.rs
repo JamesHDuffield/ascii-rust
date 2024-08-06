@@ -3,9 +3,11 @@ use std::fmt;
 
 use crate::component::Damage;
 
+#[allow(dead_code)]
 #[derive(Resource)]
 pub struct Fonts {
     pub primary: Handle<Font>,
+    pub unicode: Handle<Font>,
 }
 
 #[derive(Resource)]
@@ -29,7 +31,7 @@ pub struct PlayerLevel {
 
 impl PlayerLevel {
     pub fn required_cargo_to_level(&self) -> u32 {
-        self.value * 8 // TODO make exponential?
+        self.value * 4 // TODO make exponential?
     }
 }
 

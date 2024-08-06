@@ -15,8 +15,9 @@ pub fn physics_system(
       physics.acceleration = Vec2::ZERO;
       physics.velocity *= 1.0 - (drag * time.delta_seconds());
 
-      // Face velocity
-      transform.rotation = Math::quaternion_from_2d_vector(physics.velocity);
+      if physics.face_velocity {
+        transform.rotation = Math::quaternion_from_2d_vector(physics.velocity);
+      }
 
       if let Some(base_rotation) = base_rotation {
           transform.rotation *= base_rotation.rotation; // Multiplication is like combining rotations together

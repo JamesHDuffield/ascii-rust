@@ -64,9 +64,8 @@ pub fn fire_shrapnel_cannon(
                             ..default()
                         },
                         Physics {
-                            acceleration: Vec2::ZERO,
                             velocity: spread_direction * random_speed,
-                            drag: 0.0,
+                            ..Default::default()
                         },
                         Collider { radius: 5.0 },
                         Owner(parent.get()),

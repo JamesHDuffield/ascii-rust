@@ -11,6 +11,7 @@ mod death;
 mod loot;
 mod hit_flash;
 mod floating_text;
+mod rotator;
 
 pub use engine::*;
 pub use physics::*;
@@ -25,3 +26,4 @@ pub use death::*;
 pub use loot::*;
 pub use hit_flash::*;
 pub use floating_text::*;
+pub use rotator::*;

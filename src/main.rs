@@ -18,11 +18,13 @@ use plugin::TurretPlugin;
 use plugin::UpgradePlugin;
 use plugin::MainMenuPlugin;
 use plugin::SelectionPlugin;
+use plugin::ObjectPlugin;
 use util::RenderLayer;
 use util::Colour;
 use resource::*;
 use std::f32::consts::PI;
 use system::*;
+use bevy::core_pipeline::bloom::{BloomCompositeMode, BloomSettings};
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum AppState {
@@ -54,6 +56,7 @@ fn main() {
                 .build()
                 .add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin { mode: bevy_embedded_assets::PluginMode::ReplaceDefault }),
         )
+        .insert_resource(ClearColor(Color::rgb(0.04, 0.005, 0.04)))
         .add_plugins(ShapePlugin)
         .add_plugins(ParallaxPlugin)
         .init_state::<AppState>()
@@ -65,6 +68,7 @@ fn main() {
         .add_plugins(TurretPlugin)
         .add_plugins(HudPlugin)
         .add_plugins(EnemyPlugin)
+        .add_plugins(ObjectPlugin)
         .add_event::<TakeDamageEvent>()
         // InGame
         .add_systems(OnEnter(AppState::InGame), (setup_new_game, setup_player))
@@ -98,6 +102,7 @@ fn main() {
                 take_damage_events,
                 hit_flash_system,
                 floating_text_system,
+                rotator_system,
             )
                 .distributive_run_if(game_not_paused)
                 .distributive_run_if(in_state(AppState::InGame)),
@@ -115,15 +120,27 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut create_para
     // Set the font
     commands.insert_resource(Fonts {
         primary: asset_server.load("fonts/AnonymousPro-Regular.ttf"),
+        unicode: asset_server.load("fonts/DejaVuLGCSansMono.ttf"),
     });
 
     
     // Spawn the Camera
     let camera = commands
         .spawn((
-            Camera2dBundle::default(),
+            Camera2dBundle {
+                camera: Camera {
+                    hdr: true,
+                    ..Default::default()
+                },
+                ..default()
+            },
             MainCamera,
             CameraShake::default(),
+            BloomSettings {
+                intensity: 0.15,
+                composite_mode: BloomCompositeMode::Additive,
+                ..Default::default()
+            },
         ))
         .insert(ParallaxCameraComponent::default())
         .id();

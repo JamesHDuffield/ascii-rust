@@ -51,9 +51,8 @@ pub fn fire_rocket_launcher(
                             rotation: Quat::from_rotation_z(PI / 2.0),
                         },
                         Physics {
-                            acceleration: Vec2::ZERO,
                             velocity: Math::random_2d_unit_vector() * 100.0,
-                            drag: 0.0,
+                            ..Default::default()
                         },
                         Engine::new_with_steering(40.0, 10.0, 0.5),
                         Seeker(target),

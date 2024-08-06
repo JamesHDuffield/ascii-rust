@@ -52,9 +52,8 @@ pub fn fire_auto_cannon(
                         ..default()
                     },
                     Physics {
-                        acceleration: Vec2::ZERO,
                         velocity: direction * bullet_speed,
-                        drag: 0.0,
+                        ..Default::default()
                     },
                     Collider { radius: 5.0 },
                     Owner(parent.get()),

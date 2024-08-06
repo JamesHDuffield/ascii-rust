@@ -69,7 +69,7 @@ fn spawn_loot(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
                     .normalize_or_zero()
                         * rng.gen_range(50.0..100.0),
                     drag: 1.0,
-                    velocity: Vec2::ZERO,
+                    ..Default::default()
                 },
                 Collider { radius: 20.0 },
                 DespawnWithScene,
