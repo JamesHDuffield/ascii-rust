@@ -16,8 +16,8 @@ No automated build of the windows standalone are available yet, but you can comp
 
 *Note: This project has been an educational exercise to further learning of the Rust programming language.*
 
-
 - Install rust: https://www.rust-lang.org/tools/install
+- **On linux you may require some sound & device inspection libraries `sudo apt-get install -y libasound2-dev libudev-dev`**
 - `cargo run --features bevy/dynamic_linking` to run locally
 
 ## Web Build
