@@ -1,14 +1,14 @@
 use bevy::prelude::*;
-use crate::{component::*, GameState, resource::PlayerLevel};
+use leafwing_input_manager::prelude::ActionState;
+use crate::{component::*, input::PlayerAction, resource::PlayerLevel, GameState};
 
 pub fn player_control(
-  mouse_button_input: Res<ButtonInput<MouseButton>>,
   windows: Query<&Window>,
   camera_q: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
-  mut query: Query<(&IsPlayer, &mut Engine), (With<IsPlayer>, With<Engine>)>,
+  mut query: Query<(&IsPlayer, &mut Engine, &ActionState<PlayerAction>), (With<IsPlayer>, With<Engine>, With<ActionState<PlayerAction>>)>,
 ) {
-  for (_, mut engine) in &mut query {
-      if mouse_button_input.pressed(MouseButton::Left) {
+  for (_, mut engine, action_state) in &mut query {
+      if action_state.pressed(&PlayerAction::Move) {
           // Calculate current position to mouse position
           let (camera, camera_transform) = camera_q.single();
           let window = windows.get_single().expect("no primary window");

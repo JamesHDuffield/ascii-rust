@@ -5,6 +5,7 @@ mod component;
 mod plugin;
 mod resource;
 mod system;
+mod input;
 
 use bevy::prelude::*;
 use bevy_embedded_assets::EmbeddedAssetPlugin;
@@ -12,6 +13,9 @@ use bevy_parallax::CreateParallaxEvent;
 use bevy_parallax::{LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin, ParallaxSystems};
 use bevy_prototype_lyon::prelude::*;
 use component::*;
+use input::PlayerAction;
+use leafwing_input_manager::plugin::InputManagerPlugin;
+use leafwing_input_manager::InputManagerBundle;
 use plugin::EnemyPlugin;
 use plugin::HudPlugin;
 use plugin::TurretPlugin;
@@ -56,6 +60,7 @@ fn main() {
                 .build()
                 .add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin { mode: bevy_embedded_assets::PluginMode::ReplaceDefault }),
         )
+        .add_plugins(InputManagerPlugin::<PlayerAction>::default())
         .insert_resource(ClearColor(Color::rgb(0.04, 0.005, 0.04)))
         .add_plugins(ShapePlugin)
         .add_plugins(ParallaxPlugin)
@@ -223,6 +228,7 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
             IsPlayer,
             Cargo::default(),
             Magnet::default(),
+            InputManagerBundle::with_map(PlayerAction::default_input_map()),
         ));
 }
 
