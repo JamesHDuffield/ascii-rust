@@ -30,6 +30,39 @@ use std::f32::consts::PI;
 use system::*;
 use bevy::core_pipeline::bloom::{BloomCompositeMode, BloomSettings};
 
+mod client;
+mod server;
+mod shared;
+use clap::{Parser, Subcommand};
+
+/// CLI options to create an [`App`]
+#[derive(Parser, Debug)]
+#[command(version, about)]
+pub struct Cli {
+    #[command(subcommand)]
+    pub mode: Mode,
+}
+
+#[derive(Subcommand, Debug)]
+pub enum Mode {
+    Client,
+    Server,
+}
+
+fn main() {
+    let cli = Cli::parse();
+
+    match cli.mode {
+        Mode::Client => {
+            main_client();
+        }
+        Mode::Server => {
+            App::new().add_plugins(server::ExampleServerPlugin).run();
+        }
+    }
+}
+
+
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum AppState {
     #[default]
@@ -46,7 +79,7 @@ pub enum GameState {
     GameOver,
 }
 
-fn main() {
+fn main_client() {
     App::new()
         .add_plugins(
             DefaultPlugins
@@ -60,6 +93,7 @@ fn main() {
                 .build()
                 .add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin { mode: bevy_embedded_assets::PluginMode::ReplaceDefault }),
         )
+        .add_plugins(client::NetworkClientPlugin)
         .add_plugins(InputManagerPlugin::<PlayerAction>::default())
         .insert_resource(ClearColor(Color::rgb(0.04, 0.005, 0.04)))
         .add_plugins(ShapePlugin)

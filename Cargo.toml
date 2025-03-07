@@ -9,8 +9,11 @@ bevy = "0.13.2"
 bevy-parallax = "0.8.0"
 bevy_embedded_assets = "0.10.0"
 bevy_prototype_lyon = "0.11.0"
+clap = { version = "4", features = ["derive"]}
 leafwing-input-manager = "0.13"
+lightyear = "0.15"
 rand = "0.8.5"
+serde = "1.0.218"
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]
