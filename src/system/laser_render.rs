@@ -7,6 +7,6 @@ pub fn laser_render_system(
   mut query: Query<(&Bullet, &mut Stroke), (With<LaserRender>, With<Bullet>, With<Stroke>)>,
 ) {
   for (bullet, mut stroke) in &mut query {
-    stroke.color.set_a(bullet.ttl.fraction_remaining()); 
+    stroke.color.set_alpha(bullet.ttl.fraction_remaining()); 
   }
 }

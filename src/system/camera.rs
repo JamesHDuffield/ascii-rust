@@ -28,7 +28,8 @@ pub fn camera_follow(
             shake.trauma = f32::max(shake.trauma - shake.decay * time.delta_seconds(), 0.0);
 
             move_event_writer.send(ParallaxMoveEvent {
-                camera_move_speed: smooth_move_position - current_position,
+                translation: smooth_move_position - current_position,
+                rotation: 0.,
                 camera: camera_entity,
             });
         }

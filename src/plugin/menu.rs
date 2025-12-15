@@ -18,8 +18,8 @@ enum ButtonAction {
     ToTitle,
 }
 
-const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
-const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
+const HOVERED_BUTTON: Color = Color::srgb(0.25, 0.25, 0.25);
+const NORMAL_BUTTON: Color = Color::srgb(0.15, 0.15, 0.15);
 
 pub struct MainMenuPlugin;
 
@@ -77,7 +77,7 @@ fn menu(
             Interaction::Pressed => {
                 match button.0 {
                     ButtonAction::Play => next_state.set(AppState::InGame),
-                    ButtonAction::Exit => { exit.send(AppExit); },
+                    ButtonAction::Exit => { exit.send(AppExit::Success); },
                     ButtonAction::ToTitle => next_state.set(AppState::Menu),
                 }
             }
@@ -134,7 +134,7 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, text: &str, action: But
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 40.0,
-                    color: Color::rgb(0.9, 0.9, 0.9),
+                    color: Color::srgb(0.9, 0.9, 0.9),
                 },
             ));
         });
@@ -163,7 +163,7 @@ fn setup_paused(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 30.0,
-                    color: Color::rgb(0.9, 0.9, 0.9),
+                    color: Color::srgb(0.9, 0.9, 0.9),
                 },
             ));
             parent.spawn(TextBundle::from_section(
@@ -171,7 +171,7 @@ fn setup_paused(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 16.0,
-                    color: Color::rgb(0.9, 0.9, 0.9),
+                    color: Color::srgb(0.9, 0.9, 0.9),
                 },
             ));
         }).id();
@@ -199,7 +199,7 @@ fn setup_game_over(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: Res
                 TextStyle {
                     font: fonts.primary.clone(),
                     font_size: 30.0,
-                    color: Color::rgb(0.9, 0.9, 0.9),
+                    color: Color::srgb(0.9, 0.9, 0.9),
                 },
             ));
             button(parent, &fonts, "Return To Title", ButtonAction::ToTitle);

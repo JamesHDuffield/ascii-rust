@@ -11,8 +11,8 @@ struct SelectionData(pub Vec<Entity>);
 #[derive(Component)]
 struct SelectionButton(UpgradeEvent);
 
-const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
-const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
+const HOVERED_BUTTON: Color = Color::srgb(0.25, 0.25, 0.25);
+const NORMAL_BUTTON: Color = Color::srgb(0.15, 0.15, 0.15);
 
 pub struct SelectionPlugin;
 
@@ -206,7 +206,7 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
                     TextStyle {
                         font: fonts.primary.clone(),
                         font_size: 24.0,
-                        color: Color::rgb(0.9, 0.9, 0.9),
+                        color: Color::srgb(0.9, 0.9, 0.9),
                     },
                 ),
                 style: Style {
@@ -222,7 +222,7 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
                     TextStyle {
                         font: fonts.primary.clone(),
                         font_size: 14.0,
-                        color: Color::rgba(0.8, 0.8, 0.8, 0.8),
+                        color: Color::srgba(0.8, 0.8, 0.8, 0.8),
                     },
                 )
                 .with_justify(JustifyText::Center),

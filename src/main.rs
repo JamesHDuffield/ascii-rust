@@ -33,6 +33,7 @@ use bevy::core_pipeline::bloom::{BloomCompositeMode, BloomSettings};
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum AppState {
     #[default]
+    Setup,
     Menu,
     InGame,
 }
@@ -61,12 +62,13 @@ fn main() {
                 .add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin { mode: bevy_embedded_assets::PluginMode::ReplaceDefault }),
         )
         .add_plugins(InputManagerPlugin::<PlayerAction>::default())
-        .insert_resource(ClearColor(Color::rgb(0.04, 0.005, 0.04)))
+        .insert_resource(ClearColor(Color::srgb(0.04, 0.005, 0.04)))
         .add_plugins(ShapePlugin)
         .add_plugins(ParallaxPlugin)
         .init_state::<AppState>()
         .init_state::<GameState>()
-        .add_systems(Startup, setup)
+        .add_systems(OnEnter(AppState::Setup), setup)
+        .add_systems(Update, transition_to_in_menu.run_if(in_state(AppState::Setup)))
         .add_plugins(MainMenuPlugin)
         .add_plugins(SelectionPlugin)
         .add_plugins(UpgradePlugin)
@@ -156,7 +158,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut create_para
             LayerData {
                 speed: LayerSpeed::Bidirectional(0.95, 0.95),
                 path: "nebula-tile.png".to_string(),
-                tile_size: Vec2::new(1024.0, 1024.0),
+                tile_size: UVec2::new(1024, 1024),
                 scale: Vec2::splat(5.0),
                 z: RenderLayer::Background.as_z_with_offset(-10.),
                 ..default()
@@ -164,7 +166,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut create_para
             LayerData {
                 speed: LayerSpeed::Bidirectional(0.9, 0.9),
                 path: "stars-tile.png".to_string(),
-                tile_size: Vec2::new(1024.0, 1024.0),
+                tile_size: UVec2::new(1024, 1024),
                 z: RenderLayer::Background.as_z(),
                 ..default()
             },
@@ -180,6 +182,11 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut create_para
         },
     ));
 }
+
+fn transition_to_in_menu(mut app_state: ResMut<NextState<AppState>>) {
+    app_state.set(AppState::Menu);
+}
+
 
 fn setup_new_game(mut commands: Commands) {
     // Set the start time

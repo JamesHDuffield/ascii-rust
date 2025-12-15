@@ -18,7 +18,7 @@ pub fn explosion_render_system(
     *path = GeometryBuilder::build_as(&shape);
 
     if explosion.fade_out {
-      stroke.color.set_a(explosion.ttl.fraction_remaining()); 
+      stroke.color.set_alpha(explosion.ttl.fraction_remaining()); 
     }
 
     if explosion.ttl.finished() {
