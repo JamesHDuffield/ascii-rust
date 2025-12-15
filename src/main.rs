@@ -28,7 +28,7 @@ use util::Colour;
 use resource::*;
 use std::f32::consts::PI;
 use system::*;
-use bevy::core_pipeline::bloom::{BloomCompositeMode, BloomSettings};
+use bevy::core_pipeline::bloom::{Bloom, BloomCompositeMode};
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum AppState {
@@ -59,7 +59,7 @@ fn main() {
                     ..Default::default()
                 })
                 .build()
-                .add_before::<bevy::asset::AssetPlugin, _>(EmbeddedAssetPlugin { mode: bevy_embedded_assets::PluginMode::ReplaceDefault }),
+                .add_before::<bevy::asset::AssetPlugin>(EmbeddedAssetPlugin { mode: bevy_embedded_assets::PluginMode::ReplaceDefault }),
         )
         .add_plugins(InputManagerPlugin::<PlayerAction>::default())
         .insert_resource(ClearColor(Color::srgb(0.04, 0.005, 0.04)))
@@ -134,16 +134,10 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut create_para
     // Spawn the Camera
     let camera = commands
         .spawn((
-            Camera2dBundle {
-                camera: Camera {
-                    hdr: true,
-                    ..Default::default()
-                },
-                ..default()
-            },
+            Camera2d,
             MainCamera,
             CameraShake::default(),
-            BloomSettings {
+            Bloom {
                 intensity: 0.15,
                 composite_mode: BloomCompositeMode::Additive,
                 ..Default::default()
@@ -204,23 +198,12 @@ fn setup_player(mut commands: Commands, fonts: Res<Fonts>) {
     commands
         .spawn((
             ShipBundle {
-                glyph: Text2dBundle {
-                    text: Text::from_section(
-                        "V",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 20.0,
-                            color: Colour::PLAYER,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
-                    transform: Transform::from_translation(Vec3 {
-                        x: 100.0,
-                        y: 100.0,
-                        z: RenderLayer::Player.as_z(),
-                    }),
-                    ..default()
-                },
+                glyph: GlyphBundle::new("V", Colour::PLAYER, 20.0, fonts.primary.clone()),
+                transform: Transform::from_translation(Vec3 {
+                    x: 100.0,
+                    y: 100.0,
+                    z: RenderLayer::Player.as_z(),
+                }),
                 physics: Physics::new(5.0),
                 engine: Engine::new_with_steering(8.0, 16.0, 10.0),
                 health: Health::new(100, 100),

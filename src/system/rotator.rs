@@ -6,6 +6,6 @@ pub fn rotator_system(
   mut query: Query<(&mut Transform, &Rotator)>,
 ) {
   for (mut transform, rotator) in &mut query {
-    transform.rotate(Quat::from_rotation_z(rotator.speed * time.delta_seconds()));
+    transform.rotate(Quat::from_rotation_z(rotator.speed * time.delta_secs()));
   }
 }

@@ -14,7 +14,7 @@ pub fn player_control(
           let window = windows.get_single().expect("no primary window");
 
           engine.target = window.cursor_position()
-              .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
+              .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor).ok())
               .map(|ray| ray.origin.truncate());
       } else {
           engine.target = None;

@@ -6,7 +6,7 @@ use crate::{component::*, util::*, resource::TakeDamageEvent};
 use super::{TurretFireEvent, get_closest_target};
 
 
-fn spawn_link(commands: &mut Commands, take_damage_event: &mut EventWriter<TakeDamageEvent>, target_query: &Query<&Transform>, origin: Vec2, target: Entity, damage: &DoesDamage, jump: u8, colour: &EffectColour, owner: Entity) -> Result<Vec2, QueryEntityError> {
+fn spawn_link<'a>(commands: &mut Commands, take_damage_event: &mut EventWriter<TakeDamageEvent>, target_query: &'a Query<&Transform>, origin: Vec2, target: Entity, damage: &DoesDamage, jump: u8, colour: &EffectColour, owner: Entity) -> Result<Vec2, QueryEntityError<'a>> {
     // Get Target Info
     let target_transform = target_query.get(target)?;
     let target_position = target_transform.translation.truncate();
@@ -16,7 +16,7 @@ fn spawn_link(commands: &mut Commands, take_damage_event: &mut EventWriter<TakeD
         LaserRender,
         ShapeBundle {
             path: GeometryBuilder::build_as(&shapes::Line(origin, target_position)),
-            spatial: SpatialBundle::from_transform(Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z())),
+            transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
             ..default()
         },
         Stroke::new(colour.0, 2.0),

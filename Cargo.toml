@@ -5,11 +5,11 @@ edition = "2021"
 rust-version = "1.70"
 
 [dependencies]
-bevy = "0.14"
-bevy-parallax = "0.10.0"
-bevy_embedded_assets = "0.11.0"
-bevy_prototype_lyon = "0.12.0"
-leafwing-input-manager = "0.15"
+bevy = "0.15"
+bevy-parallax = { git = "https://github.com/Corrosive-Games/bevy-parallax.git", rev = "5e09918" }
+bevy_embedded_assets = "0.12.0"
+bevy_prototype_lyon = "0.13.0"
+leafwing-input-manager = "0.16"
 rand = "0.8.5"
 
 # Enable a small amount of optimization in debug mode

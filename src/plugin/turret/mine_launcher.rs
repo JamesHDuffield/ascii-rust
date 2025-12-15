@@ -25,21 +25,10 @@ pub fn fire_mine_launcher(
                 let origin = parent_transform.translation.truncate();
                 commands.spawn((
                     Bullet::new(30.0),
-                    Text2dBundle {
-                        text: Text::from_section(
-                            "¤",
-                            TextStyle {
-                                font: fonts.primary.clone(),
-                                font_size: 12.0,
-                                color: colour.0,
-                            },
-                        )
-                        .with_justify(JustifyText::Center),
-                        transform: Transform {
-                            translation: origin.extend(RenderLayer::Bullet.as_z()),
-                            ..Default::default()
-                        },
-                        ..default()
+                    GlyphBundle::new("¤", colour.0, 12.0, fonts.primary.clone()),
+                    Transform {
+                        translation: origin.extend(RenderLayer::Bullet.as_z()),
+                        ..Default::default()
                     },
                     Health::new(1, 0),
                     Collider { radius: size.0 },

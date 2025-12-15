@@ -10,19 +10,8 @@ pub fn spawn_final_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: V
     commands
         .spawn((
             ShipBundle {
-                glyph: Text2dBundle {
-                    text: Text::from_section(
-                        "Œ",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 50.0,
-                            color: Colour::ENEMY,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
-                    transform: Transform::from_translation(position),
-                    ..default()
-                },
+                glyph: GlyphBundle::new("Œ", Colour::ENEMY, 50.0, fonts.primary.clone()),
+                transform: Transform::from_translation(position),
                 physics: Physics::new(8.0),
                 engine: Engine {
                     power: 40.0,

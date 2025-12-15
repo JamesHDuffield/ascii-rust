@@ -24,7 +24,8 @@ use crate::util::Colour;
 // Bundles
 #[derive(Bundle, Default)]
 pub struct ShipBundle {
-    pub glyph: Text2dBundle,
+    pub glyph: GlyphBundle,
+    pub transform: Transform,
     pub physics: Physics,
     pub engine: Engine,
     pub health: Health,
@@ -34,6 +35,24 @@ pub struct ShipBundle {
     pub despawn_with_scene: DespawnWithScene,
     pub explodes_on_despawn: ExplodesOnDespawn,
     pub hit_flash: HitFlash,
+}
+
+#[derive(Bundle, Default)]
+pub struct GlyphBundle {
+    pub text: Text2d,
+    pub font: TextFont,
+    pub layout: TextLayout,
+    pub color: TextColor
+}
+
+impl GlyphBundle {
+    pub fn new(glyph: &str, color: Color, font_size: f32, font: Handle<Font>) -> Self {
+        GlyphBundle {
+            text: Text2d(glyph.to_string()),
+            font: TextFont {font_size, font, ..Default::default() },
+            layout: TextLayout::new_with_justify(JustifyText::Center),
+            color: TextColor(color) }
+    }
 }
 
 // Simple components

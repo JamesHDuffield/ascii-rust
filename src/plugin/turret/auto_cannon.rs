@@ -35,21 +35,10 @@ pub fn fire_auto_cannon(
                 let direction = (destination - origin).normalize();
                 commands.spawn((
                     Bullet::new(1.2),
-                    Text2dBundle {
-                        text: Text::from_section(
-                            ".",
-                            TextStyle {
-                                font: fonts.primary.clone(),
-                                font_size: 16.0,
-                                color: colour.0,
-                            },
-                        )
-                        .with_justify(JustifyText::Center),
-                        transform: Transform {
-                            translation: origin.extend(RenderLayer::Bullet.as_z()),
-                            ..Default::default()
-                        },
-                        ..default()
+                    GlyphBundle::new(".", colour.0, 16.0, fonts.primary.clone()),
+                    Transform {
+                        translation: origin.extend(RenderLayer::Bullet.as_z()),
+                        ..Default::default()
                     },
                     Physics {
                         velocity: direction * bullet_speed,

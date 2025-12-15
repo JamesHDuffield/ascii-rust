@@ -10,10 +10,10 @@ pub fn physics_system(
       let current_acceleration = physics.acceleration.clone();
       let drag = physics.drag.clone();
       physics.velocity += current_acceleration;
-      transform.translation += physics.velocity.extend(0.0) * time.delta_seconds();
+      transform.translation += physics.velocity.extend(0.0) * time.delta_secs();
       // TODO make acceleration ramp down
       physics.acceleration = Vec2::ZERO;
-      physics.velocity *= 1.0 - (drag * time.delta_seconds());
+      physics.velocity *= 1.0 - (drag * time.delta_secs());
 
       if physics.face_velocity {
         transform.rotation = Math::quaternion_from_2d_vector(physics.velocity);

@@ -37,7 +37,7 @@ pub fn fire_blast_laser(
                     LaserRender,
                     ShapeBundle {
                         path: GeometryBuilder::build_as(&shapes::Line(origin, target_pos)),
-                        spatial: SpatialBundle::from_transform(Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z())),
+                        transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
                         ..default()
                     },
                     Stroke::new(colour.0, 1.0),

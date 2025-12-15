@@ -48,19 +48,8 @@ fn spawn_loot(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
         .map(|_| {
             (
                 IsLoot,
-                Text2dBundle {
-                    text: Text::from_section(
-                        "*",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 12.0,
-                            color: Colour::PURPLE,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
-                    transform: Transform::from_translation(position),
-                    ..Default::default()
-                },
+                GlyphBundle::new("*", Colour::PURPLE, 12.0, fonts.primary.clone()),
+                Transform::from_translation(position),
                 Physics {
                     acceleration: Vec2 {
                         x: rng.gen_range(-1.0..1.0),
@@ -98,7 +87,7 @@ fn explode(commands: &mut Commands, explodes: &ExplodesOnDespawn, position: Vec2
                   center: position,
                   radius: 0.0,
               }),
-              spatial: SpatialBundle::from_transform(Transform::from_xyz(0., 0., RenderLayer::Effects.as_z())),
+              transform: Transform::from_xyz(0., 0., RenderLayer::Effects.as_z()),
               ..default()
           },
           Stroke::new(explodes.colour, 1.0),

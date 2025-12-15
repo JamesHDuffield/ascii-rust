@@ -10,19 +10,8 @@ pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: V
     commands
         .spawn((
             ShipBundle {
-                glyph: Text2dBundle {
-                    text: Text::from_section(
-                        "@",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 60.0,
-                            color: Colour::ENEMY,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
-                    transform: Transform::from_translation(position),
-                    ..default()
-                },
+                glyph: GlyphBundle::new("@", Colour::ENEMY, 60.0, fonts.primary.clone()),
+                transform: Transform::from_translation(position),
                 physics: Physics::new(12.0),
                 engine: Engine {
                     max_speed: 3.0,

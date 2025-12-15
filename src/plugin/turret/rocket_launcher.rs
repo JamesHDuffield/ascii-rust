@@ -31,21 +31,10 @@ pub fn fire_rocket_launcher(
                 for _ in 0..shots.amount {
                     commands.spawn((
                         Bullet::new(3.0),
-                        Text2dBundle {
-                            text: Text::from_section(
-                                "!",
-                                TextStyle {
-                                    font: fonts.primary.clone(),
-                                    font_size: 12.0,
-                                    color: colour.0,
-                                },
-                            )
-                            .with_justify(JustifyText::Center),
-                            transform: Transform {
-                                translation: origin.extend(RenderLayer::Bullet.as_z()),
-                                ..Default::default()
-                            },
-                            ..default()
+                        GlyphBundle::new("!", colour.0, 12.0, fonts.primary.clone()),
+                        Transform {
+                            translation: origin.extend(RenderLayer::Bullet.as_z()),
+                            ..Default::default()
                         },
                         BaseGlyphRotation {
                             rotation: Quat::from_rotation_z(PI / 2.0),

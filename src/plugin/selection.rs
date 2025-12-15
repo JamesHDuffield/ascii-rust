@@ -99,18 +99,15 @@ fn setup_selection(
     };
 
     let root_entity = commands
-        .spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                position_type: PositionType::Absolute,
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                flex_direction: FlexDirection::Row,
-                column_gap: Val::Px(10.0),
-                ..Default::default()
-            },
-            ..default()
+        .spawn(Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            position_type: PositionType::Absolute,
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            flex_direction: FlexDirection::Row,
+            column_gap: Val::Px(10.0),
+            ..Default::default()
         })
         .with_children(|parent| {
             for option in options {
@@ -167,66 +164,49 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
     };
     parent
         .spawn((
-            ButtonBundle {
-                style: Style {
-                    width: Val::Px(300.0),
-                    height: Val::Px(140.0),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    flex_direction: FlexDirection::Column,
-                    padding: UiRect::all(Val::Px(10.0)),
-                    column_gap: Val::Px(10.0),
-                    ..default()
-                },
-                background_color: NORMAL_BUTTON.into(),
+            Button,
+            Node {
+                width: Val::Px(300.0),
+                height: Val::Px(140.0),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                flex_direction: FlexDirection::Column,
+                padding: UiRect::all(Val::Px(10.0)),
+                column_gap: Val::Px(10.0),
                 ..default()
             },
+            BackgroundColor(NORMAL_BUTTON),
             SelectionButton(upgrade),
         ))
         .with_children(|parent| {
-            parent.spawn(TextBundle {
-                text: Text::from_section(
-                    type_text,
-                    TextStyle {
-                        font: fonts.primary.clone(),
-                        font_size: 14.0,
-                        color: type_color,
-                    },
-                ),
-                style: Style {
+            parent.spawn((
+                Text(type_text),
+                TextFont {  font_size: 14.0, font: fonts.primary.clone(), ..Default::default() },
+                TextColor(type_color),
+                TextLayout::new_with_justify(JustifyText::Center),
+                Node {
                     top: Val::Px(10.0),
                     position_type: PositionType::Absolute,
                     ..Default::default()
-                },
-                ..Default::default()
-            });
-            parent.spawn(TextBundle {
-                text: Text::from_section(
-                    format!("{}", upgrade),
-                    TextStyle {
-                        font: fonts.primary.clone(),
-                        font_size: 24.0,
-                        color: Color::srgb(0.9, 0.9, 0.9),
-                    },
-                ),
-                style: Style {
+                })
+            );
+            parent.spawn((
+                Text(format!("{}", upgrade)),
+                TextFont {  font_size: 24.0, font: fonts.primary.clone(), ..Default::default() },
+                TextColor(Color::srgb(0.9, 0.9, 0.9)),
+                TextLayout::new_with_justify(JustifyText::Center),
+                Node {
                     top: Val::Px(30.0),
                     position_type: PositionType::Absolute,
                     ..Default::default()
-                },
-                ..Default::default()
-            });
-            parent.spawn(TextBundle {
-                text: Text::from_section(
-                    format!("{}", upgrade.describe()),
-                    TextStyle {
-                        font: fonts.primary.clone(),
-                        font_size: 14.0,
-                        color: Color::srgba(0.8, 0.8, 0.8, 0.8),
-                    },
-                )
-                .with_justify(JustifyText::Center),
-                style: Style {
+                }
+            ));
+            parent.spawn((
+                Text(format!("{}", upgrade.describe())),
+                TextFont {  font_size: 14.0, font: fonts.primary.clone(), ..Default::default() },
+                TextColor(Color::srgba(0.8, 0.8, 0.8, 0.8)),
+                TextLayout::new_with_justify(JustifyText::Center),
+                Node {
                     bottom: Val::Px(20.0),
                     position_type: PositionType::Absolute,
                     margin: UiRect {
@@ -235,8 +215,7 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
                     }, // Text wrapping kind of sucks in bevy...
                     width: Val::Px(200.0),
                     ..Default::default()
-                },
-                ..Default::default()
-            });
+                })
+            );
         });
 }

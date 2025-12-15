@@ -38,7 +38,7 @@ pub fn fire_emp(
                             center: origin,
                             radius: 0.0,
                         }),
-                        spatial: SpatialBundle::from_transform(Transform::from_xyz(0.0, 0.0, RenderLayer::Effects.as_z())),
+                        transform: Transform::from_xyz(0.0, 0.0, RenderLayer::Effects.as_z()),
                         ..default()
                     },
                     Stroke::new(colour.0, 1.0),

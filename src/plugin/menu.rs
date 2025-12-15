@@ -1,4 +1,4 @@
-use bevy::{prelude::*, app::AppExit};
+use bevy::{app::AppExit, prelude::*};
 
 use crate::{resource::*, AppState, GameState};
 
@@ -42,17 +42,13 @@ impl Plugin for MainMenuPlugin {
 
 fn setup_menu(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<MenuData>) {
     let root_entity = commands
-        .spawn(NodeBundle {
-            style: Style {
-                // center button
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                flex_direction: FlexDirection::Column,
-                row_gap: Val::Px(10.0),
-                ..default()
-            },
+        .spawn(Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            flex_direction: FlexDirection::Column,
+            row_gap: Val::Px(10.0),
             ..default()
         })
         .with_children(|parent| {
@@ -115,64 +111,49 @@ fn cleanup_game_over(commands: Commands, mut menu_data: ResMut<MenuData>) {
 fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, text: &str, action: ButtonAction) {
     parent
         .spawn((
-            ButtonBundle {
-                style: Style {
-                    min_width: Val::Px(200.0),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    padding: UiRect::all(Val::Px(10.0)),
-                    ..default()
-                },
-                background_color: NORMAL_BUTTON.into(),
+            Button,
+            Node {
+                min_width: Val::Px(200.0),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                padding: UiRect::all(Val::Px(10.0)),
                 ..default()
             },
+            BackgroundColor(NORMAL_BUTTON),
             MenuButton(action),
         ))
         .with_children(|parent| {
-            parent.spawn(TextBundle::from_section(
-                text,
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 40.0,
-                    color: Color::srgb(0.9, 0.9, 0.9),
-                },
+            parent.spawn((
+                Text(text.to_string()),
+                TextFont { font_size: 40.0, font: fonts.primary.clone(), ..Default::default()},
+                TextColor(Color::srgb(0.9, 0.9, 0.9)),
             ));
         });
 }
 
 fn setup_paused(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<MenuData>) {
     let root_entity = commands
-        .spawn(NodeBundle {
-            style: Style {
-                // center button
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                position_type: PositionType::Absolute,
-                padding: UiRect::top(Val::Px(10.0)),
-                justify_content: JustifyContent::Start,
-                align_items: AlignItems::Center,
-                flex_direction: FlexDirection::Column,
-                row_gap: Val::Px(10.0),
-                ..default()
-            },
+        .spawn(Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            position_type: PositionType::Absolute,
+            padding: UiRect::top(Val::Px(10.0)),
+            justify_content: JustifyContent::Start,
+            align_items: AlignItems::Center,
+            flex_direction: FlexDirection::Column,
+            row_gap: Val::Px(10.0),
             ..default()
         })
         .with_children(|parent| {
-            parent.spawn(TextBundle::from_section(
-                "Paused".to_owned(),
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 30.0,
-                    color: Color::srgb(0.9, 0.9, 0.9),
-                },
+            parent.spawn((
+                Text("Paused".to_owned()),
+                TextFont { font_size: 30.0, font: fonts.primary.clone(), ..Default::default()},
+                TextColor(Color::srgb(0.9, 0.9, 0.9)),
             ));
-            parent.spawn(TextBundle::from_section(
-                "Click <Escape> To Resume".to_owned(),
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 16.0,
-                    color: Color::srgb(0.9, 0.9, 0.9),
-                },
+            parent.spawn((
+                Text("Click <Escape> To Resume".to_owned()),
+                TextFont { font_size: 16.0, font: fonts.primary.clone(), ..Default::default()},
+                TextColor(Color::srgb(0.9, 0.9, 0.9)),
             ));
         }).id();
     menu_data.pause = Some(root_entity);
@@ -180,27 +161,21 @@ fn setup_paused(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut
 
 fn setup_game_over(mut commands: Commands, fonts: Res<Fonts>, mut menu_data: ResMut<MenuData>, points: Res<Points>) {
     let root_entity = commands
-        .spawn(NodeBundle {
-            style: Style {
-                height: Val::Percent(100.0),
-                width: Val::Percent(100.0),
-                position_type: PositionType::Absolute,
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                flex_direction: FlexDirection::Column,
-                row_gap: Val::Px(10.0),
-                ..default()
-            },
+        .spawn(Node {
+            height: Val::Percent(100.0),
+            width: Val::Percent(100.0),
+            position_type: PositionType::Absolute,
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            flex_direction: FlexDirection::Column,
+            row_gap: Val::Px(10.0),
             ..default()
         })
         .with_children(|parent| {
-            parent.spawn(TextBundle::from_section(
-                format!("{} points!", points.into_inner()),
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 30.0,
-                    color: Color::srgb(0.9, 0.9, 0.9),
-                },
+            parent.spawn((
+                Text(format!("{} points!", points.into_inner())),
+                TextFont { font_size: 30.0, font: fonts.primary.clone(), ..Default::default()},
+                TextColor(Color::srgb(0.9, 0.9, 0.9)),
             ));
             button(parent, &fonts, "Return To Title", ButtonAction::ToTitle);
         })

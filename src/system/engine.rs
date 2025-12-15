@@ -11,7 +11,7 @@ pub fn engine_system(
       
       let current = transform.translation.truncate();
       if let Some(target) = engine.target {
-          engine.speed += engine.power * time.delta_seconds();
+          engine.speed += engine.power * time.delta_secs();
           if engine.speed > engine.max_speed { engine.speed = engine.max_speed; }
           let to_target = match engine.method {
             EngineMethod::Approach => approach(current, target),
@@ -19,8 +19,8 @@ pub fn engine_system(
             EngineMethod::Orbit(distance) => orbit(current, target, distance),
           };
           // Can only steer so many degrees per second
-          let max_steer_this_step = time.delta_seconds() * PI * engine.steering_factor;
-          let mut desired_steer = to_target.angle_between(physics.velocity);
+          let max_steer_this_step = time.delta_secs() * PI * engine.steering_factor;
+          let mut desired_steer = to_target.angle_to(physics.velocity);
           if desired_steer.is_nan() { // When 0 velocity
             desired_steer = 0.0;
           }
@@ -29,7 +29,7 @@ pub fn engine_system(
 
           physics.add_force(to_target.normalize() * engine.speed);
       } else {
-          engine.speed -= engine.power * time.delta_seconds() * engine.depower_factor;
+          engine.speed -= engine.power * time.delta_secs() * engine.depower_factor;
           if engine.speed < 0.0 { engine.speed = 0.0 }
       }
   }

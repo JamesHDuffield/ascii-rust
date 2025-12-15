@@ -10,19 +10,8 @@ pub fn spawn_fighter(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3
     commands
         .spawn((
             ShipBundle {
-                glyph: Text2dBundle {
-                    text: Text::from_section(
-                        "w",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 18.0,
-                            color: Colour::ENEMY,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
-                    transform: Transform::from_translation(position),
-                    ..default()
-                },
+                glyph: GlyphBundle::new("w", Colour::ENEMY, 18.0, fonts.primary.clone()),
+                transform: Transform::from_translation(position),
                 physics: Physics::new(5.0),
                 engine: Engine::new(14.0, 14.0),
                 health: Health::new(10, 0),

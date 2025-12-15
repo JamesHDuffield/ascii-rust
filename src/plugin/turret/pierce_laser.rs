@@ -40,7 +40,7 @@ pub fn fire_pierce_laser(
                     LaserRender,
                     ShapeBundle {
                         path: GeometryBuilder::build_as(&shapes::Line(origin, end)),
-                        spatial: SpatialBundle::from_transform(Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z())),
+                        transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
                         ..default()
                     },
                     Stroke::new(colour.0, size.0),

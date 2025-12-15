@@ -43,7 +43,7 @@ fn spawn_space_object(commands: &mut Commands) {
             Stroke::new(Colour::WHITE, 2.0),
             ShapeBundle {
                 path: generate_object_geometry(10, size-10., size+10.),
-                spatial: SpatialBundle::from_transform(Transform::from_translation(position.extend(RenderLayer::Background.as_z()))),
+                transform: Transform::from_translation(position.extend(RenderLayer::Background.as_z())),
                 ..default()
             },
             ExplodesOnDespawn {

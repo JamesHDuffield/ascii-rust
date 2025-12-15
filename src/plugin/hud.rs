@@ -26,77 +26,56 @@ pub enum UINode {
 fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
     commands
         .spawn((
-            NodeBundle {
-                style: Style {
-                    width: Val::Percent(20.0),
-                    height: Val::Percent(20.0),
-                    margin: UiRect::all(Val::Px(5.0)),
-                    column_gap: Val::Px(2.0),
-                    flex_direction: FlexDirection::Column,
-                    ..default()
-                },
+            Node {
+                width: Val::Percent(20.0),
+                height: Val::Percent(20.0),
+                margin: UiRect::all(Val::Px(5.0)),
+                column_gap: Val::Px(2.0),
+                flex_direction: FlexDirection::Column,
                 ..default()
             },
             UINode::Status,
             DespawnWithScene,
         ))
         .with_children(|parent| {
-            parent.spawn(TextBundle::from_section(
-                "",
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 12.0,
-                    color: Colour::WHITE,
-                },
+            parent.spawn((
+                Text("".to_string()),
+                TextFont { font_size: 12.0, font: fonts.primary.clone(), ..Default::default()},
+                TextColor(Colour::WHITE),
             ));
-            parent.spawn(TextBundle::from_section(
-                "",
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 12.0,
-                    color: Colour::SHIELD,
-                },
+            parent.spawn((
+                Text("".to_string()),
+                TextFont { font_size: 12.0, font: fonts.primary.clone(), ..Default::default()},
+                TextColor(Colour::SHIELD),
             ));
-            parent.spawn(TextBundle::from_section(
-                "",
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 12.0,
-                    color: Colour::RED,
-                },
+            parent.spawn((
+                Text("".to_string()),
+                TextFont { font_size: 12.0, font: fonts.primary.clone(), ..Default::default()},
+                TextColor(Colour::RED),
             ));
-            parent.spawn(TextBundle::from_section(
-                "",
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 12.0,
-                    color: Colour::INACTIVE,
-                },
+            parent.spawn((
+                Text("".to_string()),
+                TextFont { font_size: 12.0, font: fonts.primary.clone(), ..Default::default()},
+                TextColor(Colour::INACTIVE),
             ));
-            parent.spawn(TextBundle::from_section(
-                "",
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 12.0,
-                    color: Colour::PLAYER,
-                },
+            parent.spawn((
+                Text("".to_string()),
+                TextFont { font_size: 12.0, font: fonts.primary.clone(), ..Default::default()},
+                TextColor(Colour::PLAYER),
             ));
         });
     
     commands
         .spawn((
-            NodeBundle {
-                style: Style {
-                    position_type: PositionType::Absolute,
-                    right: Val::Px(0.0),
-                    width: Val::Percent(20.0),
-                    height: Val::Percent(20.0),
-                    margin: UiRect::all(Val::Px(5.0)),
-                    column_gap: Val::Px(2.0),
-                    flex_direction: FlexDirection::Column,
-                    align_items: AlignItems::End,
-                    ..default()
-                },
+            Node {
+                position_type: PositionType::Absolute,
+                right: Val::Px(0.0),
+                width: Val::Percent(20.0),
+                height: Val::Percent(20.0),
+                margin: UiRect::all(Val::Px(5.0)),
+                column_gap: Val::Px(2.0),
+                flex_direction: FlexDirection::Column,
+                align_items: AlignItems::End,
                 ..default()
             },
             UINode::Equipment,
@@ -104,32 +83,26 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
         ))
         .with_children(|parent| {
             for _ in 0..10 {
-                parent.spawn(TextBundle::from_section(
-                    "",
-                    TextStyle {
-                        font: fonts.primary.clone(),
-                        font_size: 12.0,
-                        color: Colour::WHITE,
-                    },
+                parent.spawn((
+                    Text("".to_string()),
+                    TextFont { font_size: 12.0, font: fonts.primary.clone(), ..Default::default()},
+                    TextColor(Colour::WHITE),
                 ));
             }
         });
     
     commands
         .spawn((
-            NodeBundle {
-                style: Style {
-                    position_type: PositionType::Absolute,
-                    right: Val::Px(0.0),
-                    bottom: Val::Px(0.0),
-                    width: Val::Percent(20.0),
-                    height: Val::Percent(20.0),
-                    margin: UiRect::all(Val::Px(5.0)),
-                    column_gap: Val::Px(2.0),
-                    flex_direction: FlexDirection::ColumnReverse,
-                    align_items: AlignItems::End,
-                    ..default()
-                },
+            Node {
+                position_type: PositionType::Absolute,
+                right: Val::Px(0.0),
+                bottom: Val::Px(0.0),
+                width: Val::Percent(20.0),
+                height: Val::Percent(20.0),
+                margin: UiRect::all(Val::Px(5.0)),
+                column_gap: Val::Px(2.0),
+                flex_direction: FlexDirection::ColumnReverse,
+                align_items: AlignItems::End,
                 ..default()
             },
             UINode::Upgrades,
@@ -137,13 +110,10 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
         ))
         .with_children(|parent| {
             for _ in 0..10 {
-                parent.spawn(TextBundle::from_section(
-                    "",
-                    TextStyle {
-                        font: fonts.primary.clone(),
-                        font_size: 12.0,
-                        color: Colour::WHITE,
-                    },
+                parent.spawn((
+                    Text("".to_string()),
+                    TextFont { font_size: 12.0, font: fonts.primary.clone(), ..Default::default()},
+                    TextColor(Colour::WHITE),
                 ));
             }
         });
@@ -201,9 +171,7 @@ pub fn hud_system(
             for (i, display) in displays.iter().enumerate() {
                 if let Some(&child) = children.get(i) {
                     if let Ok(mut text) = q_child.get_mut(child) {
-                        if let Some(section) = text.sections.get_mut(0) {
-                            section.value = display.to_string();
-                        }
+                        text.0 = display.to_string();
                     }
                 }
             }

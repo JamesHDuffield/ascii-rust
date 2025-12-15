@@ -54,23 +54,19 @@ pub fn take_damage_events(
                 // Floating Text
                 commands.spawn((
                     FloatingText::default(),
-                    Text2dBundle {
-                        text: Text::from_section(
-                            format!("{}", ev.damage.amount),
-                            TextStyle {
-                                font: fonts.primary.clone(),
-                                font_size: if ev.damage.is_crit { 14.0 } else { 12.0 },
-                                color: if ev.damage.is_crit { Colour::YELLOW } else { Colour::WHITE },
-                            },
-                        )
-                        .with_justify(JustifyText::Center),
-                        transform: Transform::from_xyz(
-                            transform.translation.x,
-                            transform.translation.y + 10.0,
-                            RenderLayer::Effects.as_z(),
-                        ),
+                    Text2d::new(format!("{}", ev.damage.amount)),
+                    TextFont {
+                        font: fonts.primary.clone(),
+                        font_size: if ev.damage.is_crit { 14.0 } else { 12.0 },
                         ..default()
                     },
+                    TextColor(if ev.damage.is_crit { Colour::YELLOW } else { Colour::WHITE }),
+                    TextLayout::new_with_justify(JustifyText::Center),
+                    Transform::from_xyz(
+                        transform.translation.x,
+                        transform.translation.y + 10.0,
+                        RenderLayer::Effects.as_z(),
+                    ),
                 ));
             }
 
