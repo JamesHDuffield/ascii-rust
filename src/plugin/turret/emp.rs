@@ -36,7 +36,7 @@ pub fn fire_emp(
                     ShapeBundle {
                         path: GeometryBuilder::build_as(&shapes::Circle {
                             center: origin,
-                            radius: 0.0,
+                            radius: 0.1,
                         }),
                         transform: Transform::from_xyz(0.0, 0.0, RenderLayer::Effects.as_z()),
                         ..default()

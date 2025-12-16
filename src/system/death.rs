@@ -85,7 +85,7 @@ fn explode(commands: &mut Commands, explodes: &ExplodesOnDespawn, position: Vec2
           ShapeBundle {
               path: GeometryBuilder::build_as(&shapes::Circle {
                   center: position,
-                  radius: 0.0,
+                  radius: 0.1,
               }),
               transform: Transform::from_xyz(0., 0., RenderLayer::Effects.as_z()),
               ..default()
