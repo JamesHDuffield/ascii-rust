@@ -4,7 +4,7 @@ use bevy::prelude::*;
 pub fn bullet_system(
     mut commands: Commands,
     time: Res<Time>,
-    mut query: Query<(&mut Bullet, Entity, &Transform, &Owner, Option<&AoeDamage>), With<Bullet>>,
+    mut query: Query<(&mut Bullet, Entity, &Transform, &Owner, Option<&AoeDamage>), (With<Bullet>, Without<ShouldDespawn>)>,
     potential_query: Query<
         (&Collider, &Transform, Entity),
         (Without<Bullet>, With<Collider>, With<Health>),
